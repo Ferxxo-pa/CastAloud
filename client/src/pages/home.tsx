@@ -1,15 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
-import { Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CastDisplay from "@/components/CastDisplay";
 import VoiceInterface from "@/components/VoiceInterface";
+import VoiceSettings from "@/components/VoiceSettings";
 import useSpeechSynthesis from "@/hooks/useSpeechSynthesis";
 import { useState } from "react";
 import type { Cast } from "@shared/schema";
 
 export default function Home() {
   const [showVoiceInterface, setShowVoiceInterface] = useState(false);
-  const { speak, isSpeaking, stop } = useSpeechSynthesis();
+  const { speak, isSpeaking, stop, voices, settings, updateSettings } = useSpeechSynthesis();
 
   const { data: cast, isLoading, error } = useQuery<Cast>({
     queryKey: ["/api/cast/current"],
@@ -33,22 +33,34 @@ export default function Home() {
     setShowVoiceInterface(false);
   };
 
+  const handleTestVoice = () => {
+    speak("This is a test of your voice settings. How does this sound?");
+  };
+
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background">
-        <header className="bg-surface shadow-sm border-b border-gray-200 px-4 py-4">
+      <div className="min-h-screen bg-fc-gray-50">
+        <header className="bg-white shadow-sm border-b border-fc-gray-200 px-4 py-3">
           <div className="max-w-md mx-auto flex items-center justify-between">
-            <h1 className="text-xl font-semibold text-text-primary">Voice Assistant</h1>
-            <Button variant="ghost" size="icon">
-              <Settings className="h-5 w-5 text-text-secondary" />
-            </Button>
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-fc-purple rounded-lg flex items-center justify-center">
+                <i className="fas fa-volume-up text-white text-sm" aria-hidden="true"></i>
+              </div>
+              <h1 className="text-lg font-semibold text-fc-gray-900">Farcaster Voice</h1>
+            </div>
+            <VoiceSettings
+              voices={voices}
+              settings={settings}
+              updateSettings={updateSettings}
+              onTestVoice={handleTestVoice}
+            />
           </div>
         </header>
-        <main className="max-w-md mx-auto px-4 py-6">
-          <div className="bg-surface rounded-xl shadow-sm border border-gray-200 p-6">
+        <main className="max-w-md mx-auto px-4 py-4">
+          <div className="bg-white rounded-xl border border-fc-gray-200 p-6">
             <div className="animate-pulse space-y-4">
               <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-gray-300 rounded-full"></div>
+                <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
                 <div className="space-y-2">
                   <div className="h-4 bg-gray-300 rounded w-20"></div>
                   <div className="h-3 bg-gray-300 rounded w-16"></div>
@@ -68,18 +80,26 @@ export default function Home() {
 
   if (error || !cast) {
     return (
-      <div className="min-h-screen bg-background">
-        <header className="bg-surface shadow-sm border-b border-gray-200 px-4 py-4">
+      <div className="min-h-screen bg-fc-gray-50">
+        <header className="bg-white shadow-sm border-b border-fc-gray-200 px-4 py-3">
           <div className="max-w-md mx-auto flex items-center justify-between">
-            <h1 className="text-xl font-semibold text-text-primary">Voice Assistant</h1>
-            <Button variant="ghost" size="icon">
-              <Settings className="h-5 w-5 text-text-secondary" />
-            </Button>
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-fc-purple rounded-lg flex items-center justify-center">
+                <i className="fas fa-volume-up text-white text-sm" aria-hidden="true"></i>
+              </div>
+              <h1 className="text-lg font-semibold text-fc-gray-900">Farcaster Voice</h1>
+            </div>
+            <VoiceSettings
+              voices={voices}
+              settings={settings}
+              updateSettings={updateSettings}
+              onTestVoice={handleTestVoice}
+            />
           </div>
         </header>
-        <main className="max-w-md mx-auto px-4 py-6">
-          <div className="bg-surface rounded-xl shadow-sm border border-gray-200 p-6 text-center">
-            <p className="text-error">Failed to load cast. Please try refreshing the page.</p>
+        <main className="max-w-md mx-auto px-4 py-4">
+          <div className="bg-white rounded-xl border border-fc-gray-200 p-6 text-center">
+            <p className="text-fc-error">Failed to load cast. Please try refreshing the page.</p>
           </div>
         </main>
       </div>
@@ -96,9 +116,12 @@ export default function Home() {
             </div>
             <h1 className="text-lg font-semibold text-fc-gray-900">Farcaster Voice</h1>
           </div>
-          <Button variant="ghost" size="icon" className="text-fc-gray-500">
-            <Settings className="h-5 w-5" />
-          </Button>
+          <VoiceSettings
+            voices={voices}
+            settings={settings}
+            updateSettings={updateSettings}
+            onTestVoice={handleTestVoice}
+          />
         </div>
       </header>
 
