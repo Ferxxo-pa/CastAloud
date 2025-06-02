@@ -159,28 +159,21 @@ export default function CastAloud() {
           </div>
 
           <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
-            <div className="space-y-3 mb-6">
-              <div className="p-4 bg-purple-50 rounded-xl border border-purple-100">
-                <p className="text-sm font-medium text-gray-900">Paste Warpcast Link</p>
-                <p className="text-xs text-gray-600 mt-1">Copy the URL from any Warpcast post</p>
-              </div>
-              
-              <div className="text-center">
-                <span className="text-xs text-gray-500 bg-white px-3 py-1 rounded-full border">or</span>
-              </div>
-              
-              <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
-                <p className="text-sm font-medium text-gray-900">Paste Cast Text</p>
-                <p className="text-xs text-gray-600 mt-1">Copy and paste the text content directly</p>
-              </div>
-            </div>
-
             <div className="space-y-4">
-              <button 
-                onClick={handlePasteText}
-                className="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-3 px-4 rounded-xl transition-colors duration-200"
+              <input
+                type="url"
+                placeholder="Paste Warpcast post URL here..."
+                value={castUrl}
+                onChange={(e) => setCastUrl(e.target.value)}
+                className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent text-base"
+              />
+              
+              <button
+                onClick={handleExtractCast}
+                disabled={!castUrl.trim() || extractCastMutation.isPending}
+                className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-gray-300 text-white font-medium py-3 px-4 rounded-xl transition-colors duration-200"
               >
-                Paste Cast Text
+                {extractCastMutation.isPending ? 'Loading post...' : 'Load Post'}
               </button>
               
 
