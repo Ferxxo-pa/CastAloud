@@ -10,7 +10,8 @@ import { apiRequest } from "@/lib/queryClient";
 
 export default function CastAloud() {
   const urlParams = new URLSearchParams(window.location.search);
-  const [castText, setCastText] = useState(urlParams.get('text') || '');
+  const [castText, setCastText] = useState('');
+  const [castUrl, setCastUrl] = useState('');
   const [reply, setReply] = useState('');
   const [feedback, setFeedback] = useState('');
   const [polishedReply, setPolishedReply] = useState('');
@@ -54,6 +55,23 @@ export default function CastAloud() {
     }
   });
 
+  const extractCastMutation = useMutation({
+    mutationFn: async (url: string) => {
+      const response = await fetch('/api/extract-cast', {
+        method: 'POST',
+        body: JSON.stringify({ url }),
+        headers: { "Content-Type": "application/json" }
+      });
+      if (!response.ok) {
+        throw new Error('Failed to extract cast');
+      }
+      return response.json();
+    },
+    onSuccess: (data) => {
+      setCastText(data.text);
+    }
+  });
+
   const handleReadCast = () => {
     if (currentVoiceSystem.isSpeaking) {
       currentVoiceSystem.stop();
@@ -85,6 +103,12 @@ export default function CastAloud() {
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     alert('Copied to clipboard!');
+  };
+
+  const handleExtractCast = () => {
+    if (castUrl.trim()) {
+      extractCastMutation.mutate(castUrl.trim());
+    }
   };
 
   const handlePasteText = () => {
@@ -299,25 +323,68 @@ export default function CastAloud() {
             </div>
           )}
 
+          {/* Cast URL Input */}
+          {!castText && (
+            <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-200">
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Paste Warpcast Post URL
+                  </label>
+                  <input
+                    type="url"
+                    placeholder="https://warpcast.com/username/0x..."
+                    value={castUrl}
+                    onChange={(e) => setCastUrl(e.target.value)}
+                    className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent text-base"
+                  />
+                </div>
+                
+                <button
+                  onClick={handleExtractCast}
+                  disabled={!castUrl.trim() || extractCastMutation.isPending}
+                  className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-gray-300 text-white font-medium py-3 px-4 rounded-xl transition-colors duration-200"
+                >
+                  {extractCastMutation.isPending ? 'Loading post...' : 'Load Post'}
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Cast Content */}
-          <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-200">
-            <p className="text-gray-800 text-base leading-relaxed mb-4">{castText}</p>
-            
-            <button 
-              onClick={handleReadCast}
-              className={`w-full font-medium py-3 px-4 rounded-xl transition-colors duration-200 ${
-                currentVoiceSystem.isSpeaking 
-                  ? 'bg-red-500 hover:bg-red-600 text-white' 
-                  : 'bg-purple-600 hover:bg-purple-700 text-white'
-              }`}
-            >
-              {currentVoiceSystem.isSpeaking ? 'Stop Reading' : 'Read Aloud'}
-            </button>
-          </div>
+          {castText && (
+            <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-200">
+              <div className="flex items-center justify-between mb-3">
+                <button
+                  onClick={() => {
+                    setCastText('');
+                    setCastUrl('');
+                  }}
+                  className="text-sm text-gray-500 hover:text-gray-700"
+                >
+                  ← Load different post
+                </button>
+              </div>
+              
+              <p className="text-gray-800 text-base leading-relaxed mb-4">{castText}</p>
+              
+              <button 
+                onClick={handleReadCast}
+                className={`w-full font-medium py-3 px-4 rounded-xl transition-colors duration-200 ${
+                  currentVoiceSystem.isSpeaking 
+                    ? 'bg-red-500 hover:bg-red-600 text-white' 
+                    : 'bg-purple-600 hover:bg-purple-700 text-white'
+                }`}
+              >
+                {currentVoiceSystem.isSpeaking ? 'Stop Reading' : 'Read Aloud'}
+              </button>
+            </div>
+          )}
 
           {/* Reply Section */}
-          <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">Write a reply</h2>
+          {castText && (
+            <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-200">
+              <h2 className="text-lg font-semibold text-gray-900 mb-3">Write a reply</h2>
             
             <textarea
               placeholder="What's your reply?"
@@ -344,10 +411,11 @@ export default function CastAloud() {
                 {polishReplyMutation.isPending ? 'Polishing...' : 'Polish Reply'}
               </button>
             </div>
-          </div>
+            </div>
+          )}
 
           {/* Feedback */}
-          {showFeedback && feedback && (
+          {showFeedback && feedback && castText && (
             <div className="bg-blue-50 rounded-2xl p-5 border border-blue-200">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-lg font-semibold text-blue-900">AI Feedback</h3>
