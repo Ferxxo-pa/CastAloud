@@ -131,23 +131,23 @@ export default function Home() {
             <CastDisplay cast={cast} />
             
             {/* Accessibility buttons positioned on the right side */}
-            <div className="absolute top-4 right-4 flex flex-col space-y-2">
+            <div className="absolute top-3 right-3 flex flex-col space-y-1">
               <Button
                 onClick={() => handleReadAloud(cast)}
-                className="w-12 h-12 bg-fc-purple hover:bg-fc-purple-dark text-white rounded-full flex items-center justify-center shadow-lg border-0"
+                className="w-8 h-8 bg-fc-purple hover:bg-fc-purple-dark text-white rounded-lg flex items-center justify-center shadow-sm border-0"
                 size="sm"
                 title={isSpeaking ? 'Stop reading' : 'Read aloud'}
               >
-                <span className="text-xl">🔊</span>
+                <span className="text-sm">🔊</span>
               </Button>
 
               <Button
                 onClick={() => handleVoiceReply(cast)}
-                className="w-12 h-12 bg-fc-success hover:bg-green-700 text-white rounded-full flex items-center justify-center shadow-lg border-0"
+                className="w-8 h-8 bg-fc-success hover:bg-green-700 text-white rounded-lg flex items-center justify-center shadow-sm border-0"
                 size="sm"
                 title="Voice reply"
               >
-                <span className="text-xl">🗣️</span>
+                <span className="text-sm">🗣️</span>
               </Button>
             </div>
           </div>
