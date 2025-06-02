@@ -175,6 +175,20 @@ export default function CastAloud() {
               >
                 {extractCastMutation.isPending ? 'Loading post...' : 'Load Post'}
               </button>
+
+              <div className="flex items-center">
+                <div className="flex-1 border-t border-gray-200"></div>
+                <span className="px-3 text-xs text-gray-500">or</span>
+                <div className="flex-1 border-t border-gray-200"></div>
+              </div>
+
+              <textarea
+                placeholder="Or paste the cast text directly here..."
+                value={castText}
+                onChange={(e) => setCastText(e.target.value)}
+                rows={3}
+                className="w-full p-3 border border-gray-200 rounded-xl resize-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-base"
+              />
               
 
               

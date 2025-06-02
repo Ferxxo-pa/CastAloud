@@ -488,7 +488,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             // Pattern 3: Extract hash from end of URL path
             const urlParts = url.split('/');
             const lastPart = urlParts[urlParts.length - 1];
-            if (lastPart && lastPart.startsWith('0x') && lastPart.length >= 10) {
+            if (lastPart && lastPart.startsWith('0x')) {
               castHash = lastPart;
             }
           }
