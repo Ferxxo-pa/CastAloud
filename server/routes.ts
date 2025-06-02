@@ -471,9 +471,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log("Processing URL:", url);
 
-      // Extract cast hash from Warpcast URL
+      // Extract cast hash from Warpcast or Farcaster URLs
       let castHash = null;
-      if (url.includes('warpcast.com/')) {
+      if (url.includes('warpcast.com/') || url.includes('farcaster.xyz/')) {
         // Try different URL patterns
         // Pattern 1: /0x[hash]
         let hashMatch = url.match(/\/0x([a-fA-F0-9]+)/);
