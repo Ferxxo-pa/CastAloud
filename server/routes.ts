@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertVoiceCommentSchema } from "@shared/schema";
+import { handleFrameIndex, handleFrameAction, handleFrameImage } from "./frame";
 import OpenAI from "openai";
 import multer from "multer";
 import fs from "fs";
@@ -15,6 +16,128 @@ const openai = new OpenAI({
 const upload = multer({ dest: 'uploads/' });
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Frame routes
+  app.get("/frame", handleFrameIndex);
+  app.post("/api/frame/action", handleFrameAction);
+  app.get("/api/frame/image", handleFrameImage);
+
+  // Voice recorder page for complex interactions
+  app.get("/voice-recorder", (req, res) => {
+    const { castId } = req.query;
+    res.send(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <title>Voice Recorder</title>
+          <style>
+            body { font-family: Arial, sans-serif; max-width: 400px; margin: 0 auto; padding: 20px; }
+            .btn { padding: 12px 24px; margin: 10px; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; }
+            .primary { background: #7C3AED; color: white; }
+            .success { background: #16A34A; color: white; }
+            .danger { background: #EF4444; color: white; }
+            .record-btn { width: 100px; height: 100px; border-radius: 50%; font-size: 24px; }
+            #status { text-align: center; margin: 20px 0; }
+          </style>
+        </head>
+        <body>
+          <h2>🎤 Voice Reply</h2>
+          <div id="status">Ready to record</div>
+          <div style="text-align: center;">
+            <button id="recordBtn" class="btn danger record-btn">🎤</button>
+          </div>
+          <div id="result" style="margin-top: 20px;"></div>
+          
+          <script>
+            let mediaRecorder;
+            let isRecording = false;
+            const recordBtn = document.getElementById('recordBtn');
+            const status = document.getElementById('status');
+            const result = document.getElementById('result');
+            
+            recordBtn.onclick = async () => {
+              if (!isRecording) {
+                try {
+                  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                  mediaRecorder = new MediaRecorder(stream);
+                  const chunks = [];
+                  
+                  mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
+                  mediaRecorder.onstop = async () => {
+                    const blob = new Blob(chunks, { type: 'audio/wav' });
+                    await processAudio(blob);
+                  };
+                  
+                  mediaRecorder.start();
+                  isRecording = true;
+                  recordBtn.textContent = '⏹️';
+                  recordBtn.className = 'btn success record-btn';
+                  status.textContent = 'Recording... Click to stop';
+                } catch (err) {
+                  status.textContent = 'Microphone access denied';
+                }
+              } else {
+                mediaRecorder.stop();
+                isRecording = false;
+                recordBtn.textContent = '🎤';
+                recordBtn.className = 'btn danger record-btn';
+                status.textContent = 'Processing...';
+              }
+            };
+            
+            async function processAudio(blob) {
+              const formData = new FormData();
+              formData.append('audio', blob, 'recording.wav');
+              formData.append('castHash', 'frame-cast');
+              formData.append('castContent', 'Frame interaction');
+              
+              try {
+                const response = await fetch('/api/voice/process', {
+                  method: 'POST',
+                  body: formData
+                });
+                
+                const data = await response.json();
+                if (response.ok) {
+                  result.innerHTML = \`
+                    <h3>Generated Reply:</h3>
+                    <p>\${data.generatedComment}</p>
+                    <button class="btn primary" onclick="postReply(\${data.id}, '\${data.generatedComment}')">Post Reply</button>
+                  \`;
+                  status.textContent = 'Review your reply';
+                } else {
+                  status.textContent = 'Error: ' + data.message;
+                }
+              } catch (err) {
+                status.textContent = 'Processing failed';
+              }
+            }
+            
+            async function postReply(id, comment) {
+              try {
+                const response = await fetch(\`/api/voice/post/\${id}\`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ comment })
+                });
+                
+                if (response.ok) {
+                  result.innerHTML = '<h3>✅ Reply posted successfully!</h3>';
+                  status.textContent = 'Done! You can close this page.';
+                } else {
+                  status.textContent = 'Failed to post reply';
+                }
+              } catch (err) {
+                status.textContent = 'Posting failed';
+              }
+            }
+          </script>
+        </body>
+      </html>
+    `);
+  });
+
   // Get current cast
   app.get("/api/cast/current", async (req, res) => {
     try {
