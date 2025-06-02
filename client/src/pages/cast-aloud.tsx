@@ -59,6 +59,10 @@ export default function CastAloud() {
     },
     onSuccess: (data) => {
       setPolishedReply(data.polishedText);
+      // Read the suggested improvement aloud
+      setTimeout(() => {
+        currentVoiceSystem.speak("Here's the suggested improvement: " + data.polishedText);
+      }, 500);
     }
   });
 
