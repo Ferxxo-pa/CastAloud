@@ -154,9 +154,6 @@ export default function CastAloud() {
               
               <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
                 <div className="flex items-start space-x-3">
-                  <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-white text-xs font-bold">2</span>
-                  </div>
                   <div>
                     <p className="text-sm font-medium text-gray-900">Paste Cast Text</p>
                     <p className="text-xs text-gray-600 mt-1">Copy and paste the text content directly</p>
