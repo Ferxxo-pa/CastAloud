@@ -127,30 +127,27 @@ export default function Home() {
 
       <main className="max-w-md mx-auto px-4 py-4 space-y-4">
         {feed.map((cast, index) => (
-          <div key={cast.hash || index} className="bg-white rounded-xl border border-fc-gray-200 overflow-hidden">
+          <div key={cast.hash || index} className="bg-white rounded-xl border border-fc-gray-200 overflow-hidden relative">
             <CastDisplay cast={cast} />
             
-            <div className="p-4 space-y-3 border-t border-fc-gray-200">
+            {/* Accessibility buttons positioned on the right side */}
+            <div className="absolute top-4 right-4 flex flex-col space-y-2">
               <Button
                 onClick={() => handleReadAloud(cast)}
-                className="w-full bg-fc-purple hover:bg-fc-purple-dark text-white font-medium py-3 px-4 rounded-xl h-auto border-0"
-                size="lg"
+                className="w-12 h-12 bg-fc-purple hover:bg-fc-purple-dark text-white rounded-full flex items-center justify-center shadow-lg border-0"
+                size="sm"
+                title={isSpeaking ? 'Stop reading' : 'Read aloud'}
               >
-                <span className="flex items-center justify-center space-x-2">
-                  <i className={`fas ${isSpeaking ? 'fa-pause' : 'fa-volume-up'} text-lg`} aria-hidden="true"></i>
-                  <span className="text-base">{isSpeaking ? 'Stop Reading' : 'Read Aloud'}</span>
-                </span>
+                <span className="text-xl">🔊</span>
               </Button>
 
               <Button
                 onClick={() => handleVoiceReply(cast)}
-                className="w-full bg-fc-success hover:bg-green-700 text-white font-medium py-3 px-4 rounded-xl h-auto border-0"
-                size="lg"
+                className="w-12 h-12 bg-fc-success hover:bg-green-700 text-white rounded-full flex items-center justify-center shadow-lg border-0"
+                size="sm"
+                title="Voice reply"
               >
-                <span className="flex items-center justify-center space-x-2">
-                  <i className="fas fa-microphone text-lg" aria-hidden="true"></i>
-                  <span className="text-base">Voice Reply</span>
-                </span>
+                <span className="text-xl">🗣️</span>
               </Button>
             </div>
           </div>
