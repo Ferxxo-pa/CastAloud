@@ -135,8 +135,6 @@ export default function CastAloud() {
           </div>
 
           <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Share a cast</h2>
-            
             <div className="space-y-3 mb-6">
               <div className="p-4 bg-purple-50 rounded-xl border border-purple-100">
                 <div className="flex items-start space-x-3">
