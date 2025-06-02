@@ -164,27 +164,57 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Cast hash and content are required" });
       }
 
-      // For demo purposes, simulate voice processing
-      const demoTranscription = "This is a demo transcription. In a real implementation, this would be the converted speech from your audio recording.";
-      const demoComment = "Great post! I really enjoyed reading this content. Thanks for sharing your thoughts with the community.";
+      // Transcribe audio using Whisper
+      const audioFilePath = req.file.path;
+      const audioReadStream = fs.createReadStream(audioFilePath);
+
+      const transcription = await openai.audio.transcriptions.create({
+        file: audioReadStream,
+        model: "whisper-1",
+      });
+
+      if (!transcription.text || transcription.text.trim().length === 0) {
+        // Clean up uploaded file
+        fs.unlinkSync(audioFilePath);
+        return res.status(400).json({ message: "Could not transcribe audio. Please try speaking more clearly." });
+      }
+
+      // Generate improved comment using GPT-4o
+      // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system",
+            content: "You are helping someone reply to a social media post. Take their voice input and turn it into a well-formatted, natural-sounding comment. Keep the original meaning and tone, but improve grammar, structure, and clarity. Make it conversational and engaging. Respond with JSON in this format: { 'comment': 'the improved comment text' }"
+          },
+          {
+            role: "user",
+            content: `Original post: "${castContent}"\n\nUser's voice input: "${transcription.text}"\n\nPlease turn this voice input into a good reply to the original post.`
+          }
+        ],
+        response_format: { type: "json_object" },
+      });
+
+      const result = JSON.parse(completion.choices[0].message.content || '{"comment": ""}');
+      const generatedComment = result.comment || transcription.text;
 
       // Store the voice comment
       const voiceComment = await storage.createVoiceComment({
         castHash,
-        originalAudio: null,
-        transcription: demoTranscription,
-        generatedComment: demoComment,
+        originalAudio: null, // We're not storing the audio file for now
+        transcription: transcription.text,
+        generatedComment,
         posted: false,
       });
 
       // Clean up uploaded file
-      fs.unlinkSync(req.file.path);
+      fs.unlinkSync(audioFilePath);
 
       res.json({
         id: voiceComment.id,
-        transcription: demoTranscription,
-        generatedComment: demoComment,
-        demo: true
+        transcription: transcription.text,
+        generatedComment,
       });
 
     } catch (error) {
@@ -195,7 +225,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         fs.unlinkSync(req.file.path);
       }
       
-      res.status(500).json({ message: "Failed to process voice recording" });
+      if (error.message.includes('API key')) {
+        res.status(500).json({ message: "OpenAI API key not configured properly" });
+      } else {
+        res.status(500).json({ message: "Failed to process voice recording" });
+      }
     }
   });
 
