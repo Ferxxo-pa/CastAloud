@@ -18,15 +18,15 @@ export default function HomeSimple() {
           </p>
           
           <div className="space-y-3">
-            <Link href="/mini-app?text=Hello%20world!%20This%20is%20a%20sample%20cast%20about%20the%20future%20of%20decentralized%20social%20networks.">
+            <Link href="/cast-aloud?text=Hello%20world!%20This%20is%20a%20sample%20cast%20about%20the%20future%20of%20decentralized%20social%20networks.">
               <button className="block w-full bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded-lg text-center font-medium">
-                🔊 Try with Sample Cast
+                Read Cast Aloud
               </button>
             </Link>
             
-            <Link href="/mini-app?text=Just%20published%20my%20thoughts%20on%20web3%20accessibility.%20Making%20technology%20inclusive%20for%20everyone%20should%20be%20our%20top%20priority.">
+            <Link href="/cast-aloud?text=Just%20published%20my%20thoughts%20on%20web3%20accessibility.%20Making%20technology%20inclusive%20for%20everyone%20should%20be%20our%20top%20priority.">
               <button className="block w-full bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-lg text-center font-medium">
-                🎙️ Try Voice Reply Demo
+                Write AI-Assisted Reply
               </button>
             </Link>
           </div>

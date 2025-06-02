@@ -47,6 +47,31 @@ async function polishReply(text: string): Promise<string> {
   return response.choices[0].message.content || text;
 }
 
+async function getFeedbackOnComment(text: string): Promise<{ feedback: string; polishedText: string }> {
+  const response = await openai.chat.completions.create({
+    model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+    messages: [
+      {
+        role: "system",
+        content: "You are a helpful writing assistant that provides constructive feedback on social media comments. First, give specific feedback on tone, clarity, and engagement potential. Then suggest an improved version. Be encouraging but honest."
+      },
+      {
+        role: "user",
+        content: `Please provide feedback on this comment and suggest improvements: "${text}"`
+      }
+    ],
+    max_tokens: 300,
+    temperature: 0.7,
+    response_format: { type: "json_object" }
+  });
+
+  const result = JSON.parse(response.choices[0].message.content || '{"feedback": "Good comment!", "polishedText": "' + text + '"}');
+  return {
+    feedback: result.feedback || "Your comment looks good!",
+    polishedText: result.polishedText || text
+  };
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Frame routes
   app.get("/frame", handleFrameIndex);
@@ -424,6 +449,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error processing reply:", error);
       res.status(500).json({ error: "Failed to process reply" });
+    }
+  });
+
+  // Get AI feedback on comment
+  app.post("/api/get-feedback", async (req, res) => {
+    try {
+      const { text } = req.body;
+      if (!text) {
+        return res.status(400).json({ error: "No text provided" });
+      }
+
+      try {
+        const result = await getFeedbackOnComment(text);
+        res.json(result);
+      } catch (feedbackError) {
+        console.log("OpenAI feedback failed, using fallback");
+        res.json({ 
+          feedback: "Your comment looks good! Consider being more specific or adding examples to make it more engaging.",
+          polishedText: text + " (AI feedback requires OpenAI API key)" 
+        });
+      }
+    } catch (error) {
+      console.error("Error getting feedback:", error);
+      res.status(500).json({ error: "Failed to get feedback" });
     }
   });
 
