@@ -105,7 +105,8 @@ export default function MiniApp() {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-md mx-auto p-4">
         <header className="mb-6">
-          <h1 className="text-xl font-semibold text-center">Voice Assistant</h1>
+          <h1 className="text-xl font-semibold text-center">Cast Aloud</h1>
+          <p className="text-sm text-gray-600 text-center mt-1">Read and reply to casts with voice</p>
         </header>
 
         {/* Cast Content */}
