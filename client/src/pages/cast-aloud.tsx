@@ -137,15 +137,8 @@ export default function CastAloud() {
           <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
             <div className="space-y-3 mb-6">
               <div className="p-4 bg-purple-50 rounded-xl border border-purple-100">
-                <div className="flex items-start space-x-3">
-                  <div className="w-6 h-6 bg-purple-600 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-white text-xs font-bold">1</span>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">Paste Warpcast Link</p>
-                    <p className="text-xs text-gray-600 mt-1">Copy the URL from any Warpcast post</p>
-                  </div>
-                </div>
+                <p className="text-sm font-medium text-gray-900">Paste Warpcast Link</p>
+                <p className="text-xs text-gray-600 mt-1">Copy the URL from any Warpcast post</p>
               </div>
               
               <div className="text-center">
@@ -153,12 +146,8 @@ export default function CastAloud() {
               </div>
               
               <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
-                <div className="flex items-start space-x-3">
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">Paste Cast Text</p>
-                    <p className="text-xs text-gray-600 mt-1">Copy and paste the text content directly</p>
-                  </div>
-                </div>
+                <p className="text-sm font-medium text-gray-900">Paste Cast Text</p>
+                <p className="text-xs text-gray-600 mt-1">Copy and paste the text content directly</p>
               </div>
             </div>
 
