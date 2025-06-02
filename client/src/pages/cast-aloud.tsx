@@ -321,10 +321,6 @@ export default function CastAloud() {
 
           {/* Cast Content */}
           <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-lg font-semibold text-gray-900">Cast</h2>
-              <div className="w-2 h-2 bg-purple-600 rounded-full"></div>
-            </div>
             <p className="text-gray-800 text-base leading-relaxed mb-4">{castText}</p>
             
             <button 
