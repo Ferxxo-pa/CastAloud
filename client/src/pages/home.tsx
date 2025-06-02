@@ -147,7 +147,7 @@ export default function Home() {
                 size="sm"
                 title="Voice reply"
               >
-                <span className="text-sm">🗣️</span>
+                <span className="text-sm">🎙️</span>
               </Button>
             </div>
           </div>
