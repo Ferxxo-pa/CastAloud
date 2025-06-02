@@ -9,7 +9,7 @@ import type { Cast } from "@shared/schema";
 
 export default function Home() {
   const [showVoiceInterface, setShowVoiceInterface] = useState<{ show: boolean; cast?: Cast }>({ show: false });
-  const { speak, isSpeaking, stop, voices, selectedVoice, setSelectedVoice } = useOpenAITTS();
+  const { speak, isSpeaking, stop, voices, selectedVoice, setSelectedVoice, speed, setSpeed } = useOpenAITTS();
 
   const { data: feed, isLoading, error } = useQuery<Cast[]>({
     queryKey: ["/api/feed"],

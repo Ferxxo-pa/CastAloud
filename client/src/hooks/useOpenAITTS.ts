@@ -22,11 +22,14 @@ interface UseOpenAITTSReturn {
   voices: OpenAIVoice[];
   selectedVoice: string;
   setSelectedVoice: (voice: string) => void;
+  speed: number;
+  setSpeed: (speed: number) => void;
 }
 
 export default function useOpenAITTS(): UseOpenAITTSReturn {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [selectedVoice, setSelectedVoice] = useState('alloy');
+  const [speed, setSpeed] = useState(1.0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const speak = async (text: string) => {
@@ -44,7 +47,8 @@ export default function useOpenAITTS(): UseOpenAITTSReturn {
         },
         body: JSON.stringify({
           text,
-          voice: selectedVoice
+          voice: selectedVoice,
+          speed: speed
         })
       });
 
@@ -91,6 +95,8 @@ export default function useOpenAITTS(): UseOpenAITTSReturn {
     isSpeaking,
     voices: OPENAI_VOICES,
     selectedVoice,
-    setSelectedVoice
+    setSelectedVoice,
+    speed,
+    setSpeed
   };
 }

@@ -217,7 +217,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Text-to-speech endpoint
   app.post("/api/tts", async (req, res) => {
     try {
-      const { text, voice = "alloy" } = req.body;
+      const { text, voice = "alloy", speed = 1.0 } = req.body;
       
       if (!text) {
         return res.status(400).json({ message: "Text is required" });
@@ -227,11 +227,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(500).json({ message: "OpenAI API key not configured" });
       }
 
+      // Clamp speed between 0.25 and 4.0 as per OpenAI API limits
+      const clampedSpeed = Math.max(0.25, Math.min(4.0, speed));
+
       // Generate speech using OpenAI TTS
       const mp3 = await openai.audio.speech.create({
         model: "tts-1",
         voice: voice,
         input: text,
+        speed: clampedSpeed,
       });
 
       const buffer = Buffer.from(await mp3.arrayBuffer());

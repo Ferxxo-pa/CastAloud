@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Slider } from "@/components/ui/slider";
 import {
   Select,
   SelectContent,
@@ -22,16 +23,32 @@ interface OpenAIVoiceSettingsProps {
   voices: OpenAIVoice[];
   selectedVoice: string;
   setSelectedVoice: (voice: string) => void;
+  speed: number;
+  setSpeed: (speed: number) => void;
   onTestVoice: () => void;
 }
 
 export default function OpenAIVoiceSettings({ 
   voices, 
   selectedVoice, 
-  setSelectedVoice, 
+  setSelectedVoice,
+  speed,
+  setSpeed,
   onTestVoice 
 }: OpenAIVoiceSettingsProps) {
   const currentVoice = voices.find(v => v.id === selectedVoice);
+
+  const handleSpeedChange = (value: number[]) => {
+    setSpeed(value[0]);
+  };
+
+  const getSpeedLabel = (speed: number) => {
+    if (speed < 0.75) return "Very Slow";
+    if (speed < 1.0) return "Slow";
+    if (speed === 1.0) return "Normal";
+    if (speed < 1.5) return "Fast";
+    return "Very Fast";
+  };
 
   return (
     <Popover>
@@ -70,6 +87,25 @@ export default function OpenAIVoiceSettings({
                 ))}
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-xs font-medium text-fc-gray-700">
+              Speed: {getSpeedLabel(speed)} ({speed.toFixed(1)}x)
+            </label>
+            <Slider
+              value={[speed]}
+              onValueChange={handleSpeedChange}
+              max={2.0}
+              min={0.5}
+              step={0.1}
+              className="w-full"
+            />
+            <div className="flex justify-between text-xs text-fc-gray-500">
+              <span>0.5x</span>
+              <span>1.0x</span>
+              <span>2.0x</span>
+            </div>
           </div>
 
           <div className="pt-2">
