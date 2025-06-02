@@ -171,17 +171,9 @@ export default function CastAloud() {
                 Paste Cast Text
               </button>
               
-              <div className="text-center">
-                <span className="text-xs text-gray-500 bg-gray-100 px-3 py-1 rounded-full">or paste manually</span>
-              </div>
+
               
-              <textarea
-                placeholder="Paste cast content here..."
-                value={castText}
-                onChange={(e) => setCastText(e.target.value)}
-                rows={4}
-                className="w-full p-3 border border-gray-200 rounded-xl resize-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              />
+
               
               {castText && (
                 <button className="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium py-3 px-4 rounded-xl transition-colors duration-200">
