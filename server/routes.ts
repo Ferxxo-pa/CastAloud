@@ -460,6 +460,58 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Extract cast content from URL
+  app.post("/api/extract-cast", async (req, res) => {
+    try {
+      const { url } = req.body;
+      
+      if (!url) {
+        return res.status(400).json({ error: "URL is required" });
+      }
+
+      // Extract cast hash from Warpcast URL
+      let castHash = null;
+      if (url.includes('warpcast.com/')) {
+        const hashMatch = url.match(/\/0x([a-fA-F0-9]+)/);
+        if (hashMatch) {
+          castHash = '0x' + hashMatch[1];
+        }
+      }
+
+      if (!castHash) {
+        return res.status(400).json({ error: "Could not extract cast hash from URL" });
+      }
+
+      if (!process.env.NEYNAR_API_KEY) {
+        return res.status(500).json({ error: "Neynar API key not configured" });
+      }
+
+      // Use Neynar API to fetch cast content
+      const neynarResponse = await fetch(`https://api.neynar.com/v2/farcaster/cast?identifier=${castHash}&type=hash`, {
+        headers: {
+          'api_key': process.env.NEYNAR_API_KEY,
+          'accept': 'application/json'
+        }
+      });
+
+      if (!neynarResponse.ok) {
+        throw new Error(`Neynar API error: ${neynarResponse.status}`);
+      }
+
+      const castData = await neynarResponse.json();
+      const text = castData.cast?.text || '';
+
+      if (!text) {
+        return res.status(404).json({ error: "Cast not found or has no text content" });
+      }
+
+      res.json({ text });
+    } catch (error) {
+      console.error("Error extracting cast:", error);
+      res.status(500).json({ error: "Failed to extract cast content" });
+    }
+  });
+
   // Get AI feedback on comment
   app.post("/api/get-feedback", async (req, res) => {
     try {
