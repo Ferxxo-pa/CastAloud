@@ -9,7 +9,7 @@ import fs from "fs";
 import path from "path";
 
 const openai = new OpenAI({ 
-  apiKey: process.env.OPENAI_API_KEY
+  apiKey: process.env.OPENAI_API_KEY || ""
 });
 
 // Configure multer for audio file uploads
@@ -53,11 +53,11 @@ async function getFeedbackOnComment(text: string): Promise<{ feedback: string; p
     messages: [
       {
         role: "system",
-        content: "You are a helpful writing assistant that provides constructive feedback on social media comments. First, give specific feedback on tone, clarity, and engagement potential. Then suggest an improved version. Be encouraging but honest."
+        content: "You are a helpful writing assistant. Provide constructive feedback on social media comments and suggest improvements. Respond in JSON format with 'feedback' and 'polishedText' fields."
       },
       {
         role: "user",
-        content: `Please provide feedback on this comment and suggest improvements: "${text}"`
+        content: `Please provide feedback on this comment and suggest an improved version: "${text}"\n\nRespond in JSON format: {"feedback": "your feedback here", "polishedText": "improved version here"}`
       }
     ],
     max_tokens: 300,
@@ -65,11 +65,19 @@ async function getFeedbackOnComment(text: string): Promise<{ feedback: string; p
     response_format: { type: "json_object" }
   });
 
-  const result = JSON.parse(response.choices[0].message.content || '{"feedback": "Good comment!", "polishedText": "' + text + '"}');
-  return {
-    feedback: result.feedback || "Your comment looks good!",
-    polishedText: result.polishedText || text
-  };
+  try {
+    const result = JSON.parse(response.choices[0].message.content || '{}');
+    return {
+      feedback: result.feedback || "Your comment looks good! Consider adding more detail or examples.",
+      polishedText: result.polishedText || text
+    };
+  } catch (parseError) {
+    // If JSON parsing fails, return the raw content as feedback
+    return {
+      feedback: response.choices[0].message.content || "Your comment looks good!",
+      polishedText: text
+    };
+  }
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
