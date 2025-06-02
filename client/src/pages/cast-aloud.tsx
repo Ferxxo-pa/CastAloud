@@ -162,7 +162,7 @@ export default function CastAloud() {
             <div className="space-y-4">
               <input
                 type="url"
-                placeholder="Paste Warpcast post URL here..."
+                placeholder="Paste Farcaster post URL here..."
                 value={castUrl}
                 onChange={(e) => setCastUrl(e.target.value)}
                 className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent text-base"
