@@ -1,39 +1,32 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import useSpeechSynthesis from "@/hooks/useSpeechSynthesis";
 import useOpenAITTS from "@/hooks/useOpenAITTS";
-import { useMutation } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 
 export default function CastAloud() {
-  const [castText, setCastText] = useState("");
-  const [userComment, setUserComment] = useState("");
-  const [feedback, setFeedback] = useState("");
-  const [polishedReply, setPolishedReply] = useState("");
+  const urlParams = new URLSearchParams(window.location.search);
+  const [castText, setCastText] = useState(urlParams.get('text') || '');
+  const [reply, setReply] = useState('');
+  const [feedback, setFeedback] = useState('');
+  const [polishedReply, setPolishedReply] = useState('');
   const [showFeedback, setShowFeedback] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [voiceType, setVoiceType] = useState<"browser" | "openai">("browser");
-  
+
   const browserVoice = useSpeechSynthesis();
   const openaiVoice = useOpenAITTS();
 
-  const currentVoiceSystem = voiceType === "browser" ? browserVoice : openaiVoice;
-
-  // Get cast text from URL parameters
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const text = urlParams.get('text');
-    if (text) {
-      setCastText(decodeURIComponent(text));
-    }
-  }, []);
+  const currentVoiceSystem = voiceType === "openai" ? openaiVoice : browserVoice;
 
   const getFeedbackMutation = useMutation({
     mutationFn: async (text: string) => {
-      const response = await fetch("/api/get-feedback", {
-        method: "POST",
+      const response = await apiRequest('/api/get-feedback', {
+        method: 'POST',
         body: JSON.stringify({ text }),
         headers: { "Content-Type": "application/json" }
       });
@@ -48,8 +41,8 @@ export default function CastAloud() {
 
   const polishReplyMutation = useMutation({
     mutationFn: async (text: string) => {
-      const response = await fetch("/api/polish-reply", {
-        method: "POST",
+      const response = await apiRequest('/api/polish-reply', {
+        method: 'POST',
         body: JSON.stringify({ text }),
         headers: { "Content-Type": "application/json" }
       });
@@ -68,25 +61,29 @@ export default function CastAloud() {
     }
   };
 
-  const handleGetFeedback = () => {
-    if (userComment.trim()) {
-      getFeedbackMutation.mutate(userComment);
-    }
+  const handleReadFeedback = () => {
+    currentVoiceSystem.speak(feedback);
   };
 
-  const handleReadFeedback = () => {
-    if (feedback) {
-      currentVoiceSystem.speak(feedback);
+  const handleReadPolishedReply = () => {
+    currentVoiceSystem.speak(polishedReply);
+  };
+
+  const handleGetFeedback = () => {
+    if (reply.trim()) {
+      getFeedbackMutation.mutate(reply);
     }
   };
 
   const handlePolishReply = () => {
-    polishReplyMutation.mutate(userComment);
+    if (reply.trim()) {
+      polishReplyMutation.mutate(reply);
+    }
   };
 
-  const handleCopyReply = () => {
-    navigator.clipboard.writeText(polishedReply);
-    alert('Reply copied to clipboard!');
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    alert('Copied to clipboard!');
   };
 
   const handlePasteText = () => {
@@ -99,56 +96,69 @@ export default function CastAloud() {
 
   if (!castText) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
         <div className="max-w-md mx-auto">
-          <div className="text-center mb-6">
-            <h1 className="text-xl font-semibold mb-4">Cast Aloud</h1>
-            <p className="text-gray-600 mb-4">Get any cast read aloud and write AI-assisted replies</p>
+          <div className="text-center mb-8">
+            <div className="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-white text-2xl">🔊</span>
+            </div>
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">Cast Aloud</h1>
+            <p className="text-gray-600">Read casts aloud and write better replies</p>
           </div>
 
-          <div className="bg-white rounded-lg p-6 border">
-            <h2 className="font-medium mb-4">How to share a cast:</h2>
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Share a cast</h2>
             
-            <div className="space-y-4 mb-6">
-              <div className="p-3 bg-blue-50 rounded-lg border-l-4 border-blue-400">
-                <p className="text-sm"><strong>Method 1:</strong> Copy cast text and paste it below</p>
+            <div className="space-y-3 mb-6">
+              <div className="p-4 bg-purple-50 rounded-xl border border-purple-100">
+                <div className="flex items-start space-x-3">
+                  <div className="w-6 h-6 bg-purple-600 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-white text-xs font-bold">1</span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">Copy & Paste</p>
+                    <p className="text-xs text-gray-600 mt-1">Copy any cast text and paste below</p>
+                  </div>
+                </div>
               </div>
               
-              <div className="p-3 bg-green-50 rounded-lg border-l-4 border-green-400">
-                <p className="text-sm"><strong>Method 2:</strong> Share via URL with ?text= parameter</p>
-                <p className="text-xs text-gray-600 mt-1">Example: /cast-aloud?text=Your cast content here</p>
-              </div>
-              
-              <div className="p-3 bg-purple-50 rounded-lg border-l-4 border-purple-400">
-                <p className="text-sm"><strong>Method 3:</strong> Use the bookmarklet (copy this to bookmarks):</p>
-                <code className="text-xs bg-gray-100 p-1 rounded block mt-1 break-all">
-                  javascript:window.open('/cast-aloud?text='+encodeURIComponent(window.getSelection().toString()||prompt('Enter cast text:')))
-                </code>
+              <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
+                <div className="flex items-start space-x-3">
+                  <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-white text-xs font-bold">2</span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">Share via URL</p>
+                    <p className="text-xs text-gray-600 mt-1">Add ?text= to the URL</p>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div className="space-y-3">
-              <Button onClick={handlePasteText} className="w-full">
-                📋 Paste Cast Text
-              </Button>
+            <div className="space-y-4">
+              <button 
+                onClick={handlePasteText}
+                className="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-3 px-4 rounded-xl transition-colors duration-200"
+              >
+                Paste Cast Text
+              </button>
               
-              <div className="text-center text-sm text-gray-500">or paste manually:</div>
+              <div className="text-center">
+                <span className="text-xs text-gray-500 bg-gray-100 px-3 py-1 rounded-full">or paste manually</span>
+              </div>
               
-              <Textarea
+              <textarea
                 placeholder="Paste cast content here..."
                 value={castText}
                 onChange={(e) => setCastText(e.target.value)}
                 rows={4}
-                className="w-full"
+                className="w-full p-3 border border-gray-200 rounded-xl resize-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               />
               
               {castText && (
-                <Button
-                  onClick={() => {/* Text is already set */}}
-                  className="w-full"
-                >
-                  ➡️ Read This Cast
-                </Button>
+                <button className="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium py-3 px-4 rounded-xl transition-colors duration-200">
+                  Continue →
+                </button>
               )}
             </div>
           </div>
@@ -158,237 +168,223 @@ export default function CastAloud() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-md mx-auto p-4">
-        <header className="mb-6">
+    <div className="min-h-screen bg-gray-100">
+      <div className="max-w-md mx-auto">
+        {/* Header */}
+        <div className="bg-white border-b border-gray-200 px-4 py-3">
           <div className="flex items-center justify-between">
-            <div className="text-center flex-1">
-              <h1 className="text-xl font-semibold">Cast Aloud</h1>
-              <p className="text-sm text-gray-600 mt-1">Read and reply to casts with AI assistance</p>
-            </div>
-            <Button
-              onClick={() => setShowSettings(!showSettings)}
-              variant="outline"
-              size="sm"
-              className="ml-4"
-            >
-              ⚙️ Voice
-            </Button>
-          </div>
-        </header>
-
-        {/* Voice Settings */}
-        {showSettings && (
-          <div className="bg-white rounded-lg p-4 mb-6 border">
-            <h3 className="font-medium mb-4">Voice Settings</h3>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-2">Voice Engine:</label>
-                <Select value={voiceType} onValueChange={(value: "browser" | "openai") => setVoiceType(value)}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="browser">Browser Voices (Free)</SelectItem>
-                    <SelectItem value="openai">OpenAI Voices (High Quality)</SelectItem>
-                  </SelectContent>
-                </Select>
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center">
+                <span className="text-white text-sm">🔊</span>
               </div>
+              <div>
+                <h1 className="text-lg font-semibold text-gray-900">Cast Aloud</h1>
+              </div>
+            </div>
+            <button
+              onClick={() => setShowSettings(!showSettings)}
+              className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M12 1v6m0 6v6"/>
+                <path d="m21 12-6-3-3 3-3-3-6 3"/>
+              </svg>
+            </button>
+          </div>
+        </div>
 
-              {voiceType === "browser" && browserVoice.voices.length > 0 && (
+        <div className="p-4 space-y-4">
+          {/* Voice Settings */}
+          {showSettings && (
+            <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Voice Settings</h3>
+              
+              <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Browser Voice:</label>
-                  <Select 
-                    value={browserVoice.settings.voice?.name || ""} 
-                    onValueChange={(name) => {
-                      const voice = browserVoice.voices.find(v => v.name === name);
-                      if (voice) {
-                        browserVoice.updateSettings({ voice });
-                      }
-                    }}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a voice" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {browserVoice.voices.map((voice) => (
-                        <SelectItem key={voice.name} value={voice.name}>
-                          {voice.name} ({voice.lang})
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
-
-              {voiceType === "openai" && (
-                <div>
-                  <label className="block text-sm font-medium mb-2">OpenAI Voice:</label>
-                  <Select 
-                    value={openaiVoice.selectedVoice} 
-                    onValueChange={openaiVoice.setSelectedVoice}
-                  >
-                    <SelectTrigger>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Voice Engine</label>
+                  <Select value={voiceType} onValueChange={(value: "browser" | "openai") => setVoiceType(value)}>
+                    <SelectTrigger className="w-full">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {openaiVoice.voices.map((voice) => (
-                        <SelectItem key={voice.id} value={voice.id}>
-                          {voice.name} - {voice.description}
-                        </SelectItem>
-                      ))}
+                      <SelectItem value="browser">Browser Voices (Free)</SelectItem>
+                      <SelectItem value="openai">OpenAI Voices (Premium)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
-              )}
 
-              {voiceType === "browser" && (
+                {voiceType === "browser" && browserVoice.voices.length > 0 && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Browser Voice</label>
+                    <Select 
+                      value={browserVoice.settings.voice?.name || ""} 
+                      onValueChange={(name) => {
+                        const voice = browserVoice.voices.find(v => v.name === name);
+                        if (voice) {
+                          browserVoice.updateSettings({ voice });
+                        }
+                      }}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select a voice" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {browserVoice.voices.map((voice) => (
+                          <SelectItem key={voice.name} value={voice.name}>
+                            {voice.name} ({voice.lang})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+
+                {voiceType === "openai" && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">OpenAI Voice</label>
+                    <Select 
+                      value={openaiVoice.selectedVoice} 
+                      onValueChange={openaiVoice.setSelectedVoice}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {openaiVoice.voices.map((voice) => (
+                          <SelectItem key={voice.id} value={voice.id}>
+                            {voice.name} - {voice.description}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+
                 <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Speed: {browserVoice.settings.rate.toFixed(1)}x
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Speed: {voiceType === "openai" ? openaiVoice.speed.toFixed(1) : browserVoice.settings.rate.toFixed(1)}x
                   </label>
                   <Slider
-                    value={[browserVoice.settings.rate]}
-                    onValueChange={([rate]) => browserVoice.updateSettings({ rate })}
-                    min={0.5}
-                    max={2}
-                    step={0.1}
+                    value={voiceType === "openai" ? [openaiVoice.speed] : [browserVoice.settings.rate]}
+                    onValueChange={([speed]) => {
+                      if (voiceType === "openai") {
+                        openaiVoice.setSpeed(speed);
+                      } else {
+                        browserVoice.updateSettings({ rate: speed });
+                      }
+                    }}
+                    min={voiceType === "openai" ? 0.25 : 0.5}
+                    max={voiceType === "openai" ? 4 : 2}
+                    step={voiceType === "openai" ? 0.25 : 0.1}
                     className="w-full"
                   />
                 </div>
-              )}
 
-              {voiceType === "openai" && (
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Speed: {openaiVoice.speed.toFixed(1)}x
-                  </label>
-                  <Slider
-                    value={[openaiVoice.speed]}
-                    onValueChange={([speed]) => openaiVoice.setSpeed(speed)}
-                    min={0.25}
-                    max={4}
-                    step={0.25}
-                    className="w-full"
-                  />
-                </div>
-              )}
-
-              <Button
-                onClick={() => {
-                  const testText = "This is a test of your voice settings. How does this sound?";
-                  currentVoiceSystem.speak(testText);
-                }}
-                variant="outline"
-                className="w-full"
-              >
-                🔊 Test Voice
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {/* Cast Content */}
-        <div className="bg-white rounded-lg p-4 mb-6 border">
-          <h2 className="font-medium mb-2">Cast Content:</h2>
-          <p className="text-gray-700 mb-4">{castText}</p>
-          
-          <Button 
-            onClick={handleReadCast}
-            className="w-full h-12 text-lg"
-            variant={currentVoiceSystem.isSpeaking ? "secondary" : "default"}
-          >
-            {currentVoiceSystem.isSpeaking ? "🔇 Stop Reading" : "🔊 Read This Cast"}
-          </Button>
-        </div>
-
-        {/* Comment Input */}
-        <div className="bg-white rounded-lg p-4 mb-6 border">
-          <h2 className="font-medium mb-2">Write Your Reply:</h2>
-          <Textarea 
-            value={userComment}
-            onChange={(e) => setUserComment(e.target.value)}
-            placeholder="Type your reply here..."
-            className="mb-4"
-            rows={4}
-          />
-          
-          <div className="space-y-2">
-            <Button 
-              onClick={handleGetFeedback}
-              className="w-full"
-              disabled={!userComment.trim() || getFeedbackMutation.isPending}
-            >
-              {getFeedbackMutation.isPending ? "Getting Feedback..." : "💬 Get AI Feedback"}
-            </Button>
-          </div>
-        </div>
-
-        {/* Feedback Section */}
-        {showFeedback && (
-          <div className="space-y-4">
-            <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="font-medium text-blue-900">AI Feedback:</h3>
-                <Button 
-                  onClick={handleReadFeedback}
-                  size="sm"
-                  variant="outline"
-                  className="text-blue-700 border-blue-300"
-                >
-                  🔊 Read Aloud
-                </Button>
-              </div>
-              <p className="text-blue-800 text-sm">{feedback}</p>
-            </div>
-
-            <div className="bg-white rounded-lg p-4 border">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="font-medium">Suggested Improvement:</h3>
-                <Button 
-                  onClick={() => currentVoiceSystem.speak(polishedReply)}
-                  size="sm"
-                  variant="outline"
-                  className="text-blue-700 border-blue-300"
-                >
-                  🔊 Read Aloud
-                </Button>
-              </div>
-              <Textarea 
-                value={polishedReply}
-                onChange={(e) => setPolishedReply(e.target.value)}
-                className="mb-4"
-                rows={4}
-              />
-              <div className="space-y-2">
-                <Button onClick={handleCopyReply} className="w-full">
-                  ✔️ Copy Reply
-                </Button>
-                <Button 
-                  onClick={handlePolishReply} 
-                  variant="outline" 
-                  className="w-full"
-                  disabled={polishReplyMutation.isPending}
-                >
-                  🤖 Polish Again
-                </Button>
-                <Button 
+                <button
                   onClick={() => {
-                    setUserComment("");
-                    setFeedback("");
-                    setPolishedReply("");
-                    setShowFeedback(false);
-                  }} 
-                  variant="outline" 
-                  className="w-full"
+                    const testText = "This is a test of your voice settings. How does this sound?";
+                    currentVoiceSystem.speak(testText);
+                  }}
+                  className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-xl transition-colors duration-200"
                 >
-                  🔄 Start Over
-                </Button>
+                  Test Voice
+                </button>
               </div>
             </div>
+          )}
+
+          {/* Cast Content */}
+          <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-lg font-semibold text-gray-900">Cast</h2>
+              <div className="w-2 h-2 bg-purple-600 rounded-full"></div>
+            </div>
+            <p className="text-gray-800 text-base leading-relaxed mb-4">{castText}</p>
+            
+            <button 
+              onClick={handleReadCast}
+              className={`w-full font-medium py-3 px-4 rounded-xl transition-colors duration-200 ${
+                currentVoiceSystem.isSpeaking 
+                  ? 'bg-red-500 hover:bg-red-600 text-white' 
+                  : 'bg-purple-600 hover:bg-purple-700 text-white'
+              }`}
+            >
+              {currentVoiceSystem.isSpeaking ? 'Stop Reading' : 'Read Aloud'}
+            </button>
           </div>
-        )}
+
+          {/* Reply Section */}
+          <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-200">
+            <h2 className="text-lg font-semibold text-gray-900 mb-3">Write a reply</h2>
+            
+            <textarea
+              placeholder="What's your reply?"
+              value={reply}
+              onChange={(e) => setReply(e.target.value)}
+              rows={3}
+              className="w-full p-3 border border-gray-200 rounded-xl resize-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-base"
+            />
+            
+            <div className="flex space-x-2 mt-3">
+              <button
+                onClick={handleGetFeedback}
+                disabled={!reply.trim() || getFeedbackMutation.isPending}
+                className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 text-white font-medium py-2 px-4 rounded-xl transition-colors duration-200"
+              >
+                {getFeedbackMutation.isPending ? 'Getting feedback...' : 'Get Feedback'}
+              </button>
+              
+              <button
+                onClick={handlePolishReply}
+                disabled={!reply.trim() || polishReplyMutation.isPending}
+                className="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-gray-300 text-white font-medium py-2 px-4 rounded-xl transition-colors duration-200"
+              >
+                {polishReplyMutation.isPending ? 'Polishing...' : 'Polish Reply'}
+              </button>
+            </div>
+          </div>
+
+          {/* Feedback */}
+          {showFeedback && feedback && (
+            <div className="bg-blue-50 rounded-2xl p-5 border border-blue-200">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-lg font-semibold text-blue-900">AI Feedback</h3>
+                <button
+                  onClick={handleReadFeedback}
+                  className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded-lg transition-colors"
+                >
+                  🔊
+                </button>
+              </div>
+              <p className="text-blue-800 text-sm leading-relaxed">{feedback}</p>
+            </div>
+          )}
+
+          {/* Polished Reply */}
+          {polishedReply && (
+            <div className="bg-green-50 rounded-2xl p-5 border border-green-200">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-lg font-semibold text-green-900">Suggested Reply</h3>
+                <div className="flex space-x-2">
+                  <button
+                    onClick={handleReadPolishedReply}
+                    className="p-2 text-green-600 hover:text-green-800 hover:bg-green-100 rounded-lg transition-colors"
+                  >
+                    🔊
+                  </button>
+                  <button
+                    onClick={() => copyToClipboard(polishedReply)}
+                    className="p-2 text-green-600 hover:text-green-800 hover:bg-green-100 rounded-lg transition-colors"
+                  >
+                    📋
+                  </button>
+                </div>
+              </div>
+              <p className="text-green-800 text-sm leading-relaxed">{polishedReply}</p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
