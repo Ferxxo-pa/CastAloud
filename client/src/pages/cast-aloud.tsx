@@ -150,6 +150,10 @@ export default function CastAloud() {
                 </div>
               </div>
               
+              <div className="text-center">
+                <span className="text-xs text-gray-500 bg-white px-3 py-1 rounded-full border">or</span>
+              </div>
+              
               <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
                 <div className="flex items-start space-x-3">
                   <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
