@@ -43,8 +43,6 @@ export default function CastAloud() {
       setFeedback(data.feedback);
       setPolishedReply(data.polishedText);
       setShowFeedback(true);
-      // Read the feedback aloud
-      currentVoiceSystem.speak(data.feedback);
     }
   });
 
@@ -59,10 +57,6 @@ export default function CastAloud() {
     },
     onSuccess: (data) => {
       setPolishedReply(data.polishedText);
-      // Read the suggested improvement aloud
-      setTimeout(() => {
-        currentVoiceSystem.speak("Here's the suggested improvement: " + data.polishedText);
-      }, 500);
     }
   });
 
@@ -95,13 +89,69 @@ export default function CastAloud() {
     alert('Reply copied to clipboard!');
   };
 
+  const handlePasteText = () => {
+    navigator.clipboard.readText().then(text => {
+      setCastText(text);
+    }).catch(() => {
+      alert('Please paste text manually in the box below');
+    });
+  };
+
   if (!castText) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="text-center">
-          <h1 className="text-xl font-semibold mb-4">Cast Aloud</h1>
-          <p className="text-gray-600 mb-4">No cast content found. Add text with ?text= parameter.</p>
-          <p className="text-sm text-gray-500">Example: /cast-aloud?text=Your cast content here</p>
+        <div className="max-w-md mx-auto">
+          <div className="text-center mb-6">
+            <h1 className="text-xl font-semibold mb-4">Cast Aloud</h1>
+            <p className="text-gray-600 mb-4">Get any cast read aloud and write AI-assisted replies</p>
+          </div>
+
+          <div className="bg-white rounded-lg p-6 border">
+            <h2 className="font-medium mb-4">How to share a cast:</h2>
+            
+            <div className="space-y-4 mb-6">
+              <div className="p-3 bg-blue-50 rounded-lg border-l-4 border-blue-400">
+                <p className="text-sm"><strong>Method 1:</strong> Copy cast text and paste it below</p>
+              </div>
+              
+              <div className="p-3 bg-green-50 rounded-lg border-l-4 border-green-400">
+                <p className="text-sm"><strong>Method 2:</strong> Share via URL with ?text= parameter</p>
+                <p className="text-xs text-gray-600 mt-1">Example: /cast-aloud?text=Your cast content here</p>
+              </div>
+              
+              <div className="p-3 bg-purple-50 rounded-lg border-l-4 border-purple-400">
+                <p className="text-sm"><strong>Method 3:</strong> Use the bookmarklet (copy this to bookmarks):</p>
+                <code className="text-xs bg-gray-100 p-1 rounded block mt-1 break-all">
+                  javascript:window.open('/cast-aloud?text='+encodeURIComponent(window.getSelection().toString()||prompt('Enter cast text:')))
+                </code>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <Button onClick={handlePasteText} className="w-full">
+                📋 Paste Cast Text
+              </Button>
+              
+              <div className="text-center text-sm text-gray-500">or paste manually:</div>
+              
+              <Textarea
+                placeholder="Paste cast content here..."
+                value={castText}
+                onChange={(e) => setCastText(e.target.value)}
+                rows={4}
+                className="w-full"
+              />
+              
+              {castText && (
+                <Button
+                  onClick={() => {/* Text is already set */}}
+                  className="w-full"
+                >
+                  ➡️ Read This Cast
+                </Button>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     );
