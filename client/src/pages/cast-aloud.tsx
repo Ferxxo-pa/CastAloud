@@ -294,7 +294,17 @@ export default function CastAloud() {
             </div>
 
             <div className="bg-white rounded-lg p-4 border">
-              <h3 className="font-medium mb-2">Suggested Improvement:</h3>
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="font-medium">Suggested Improvement:</h3>
+                <Button 
+                  onClick={() => currentVoiceSystem.speak(polishedReply)}
+                  size="sm"
+                  variant="outline"
+                  className="text-blue-700 border-blue-300"
+                >
+                  🔊 Read Aloud
+                </Button>
+              </div>
               <Textarea 
                 value={polishedReply}
                 onChange={(e) => setPolishedReply(e.target.value)}
