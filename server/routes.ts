@@ -469,17 +469,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "URL is required" });
       }
 
+      console.log("Processing URL:", url);
+
       // Extract cast hash from Warpcast URL
       let castHash = null;
       if (url.includes('warpcast.com/')) {
-        const hashMatch = url.match(/\/0x([a-fA-F0-9]+)/);
+        // Try different URL patterns
+        // Pattern 1: /0x[hash]
+        let hashMatch = url.match(/\/0x([a-fA-F0-9]+)/);
         if (hashMatch) {
           castHash = '0x' + hashMatch[1];
+        } else {
+          // Pattern 2: /conversation/0x[hash]
+          hashMatch = url.match(/\/conversation\/0x([a-fA-F0-9]+)/);
+          if (hashMatch) {
+            castHash = '0x' + hashMatch[1];
+          } else {
+            // Pattern 3: Extract hash from end of URL path
+            const urlParts = url.split('/');
+            const lastPart = urlParts[urlParts.length - 1];
+            if (lastPart && lastPart.startsWith('0x') && lastPart.length >= 10) {
+              castHash = lastPart;
+            }
+          }
         }
       }
 
+      console.log("Extracted cast hash:", castHash);
+
       if (!castHash) {
-        return res.status(400).json({ error: "Could not extract cast hash from URL" });
+        console.log("Failed to extract hash from URL:", url);
+        return res.status(400).json({ error: "Could not extract cast hash from URL. Please make sure it's a valid Warpcast post URL." });
       }
 
       if (!process.env.NEYNAR_API_KEY) {
@@ -487,6 +507,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Use Neynar API to fetch cast content
+      console.log("Fetching cast from Neynar API:", castHash);
       const neynarResponse = await fetch(`https://api.neynar.com/v2/farcaster/cast?identifier=${castHash}&type=hash`, {
         headers: {
           'api_key': process.env.NEYNAR_API_KEY,
@@ -494,21 +515,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       });
 
+      console.log("Neynar API response status:", neynarResponse.status);
+
       if (!neynarResponse.ok) {
-        throw new Error(`Neynar API error: ${neynarResponse.status}`);
+        const errorText = await neynarResponse.text();
+        console.error("Neynar API error:", neynarResponse.status, errorText);
+        throw new Error(`Neynar API error: ${neynarResponse.status} - ${errorText}`);
       }
 
       const castData = await neynarResponse.json();
+      console.log("Cast data received:", JSON.stringify(castData, null, 2));
+      
       const text = castData.cast?.text || '';
 
       if (!text) {
+        console.log("No text found in cast data");
         return res.status(404).json({ error: "Cast not found or has no text content" });
       }
 
+      console.log("Successfully extracted text:", text);
       res.json({ text });
     } catch (error) {
       console.error("Error extracting cast:", error);
-      res.status(500).json({ error: "Failed to extract cast content" });
+      res.status(500).json({ error: "Failed to extract cast content: " + error.message });
     }
   });
 
