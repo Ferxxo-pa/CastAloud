@@ -25,11 +25,20 @@ export default function VoiceInterface({ cast, onClose }: VoiceInterfaceProps) {
   const processVoiceMutation = useMutation({
     mutationFn: async (audioBlob: Blob) => {
       const formData = new FormData();
-      formData.append('audio', audioBlob, 'recording.webm');
+      formData.append('audio', audioBlob, 'recording.wav');
       formData.append('castHash', cast.hash);
       formData.append('castContent', cast.content);
 
-      const response = await apiRequest('POST', '/api/voice/process', formData);
+      const response = await fetch('/api/voice/process', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to process voice');
+      }
+
       return response.json();
     },
     onSuccess: (data) => {
@@ -99,12 +108,12 @@ export default function VoiceInterface({ cast, onClose }: VoiceInterfaceProps) {
         return (
           <div className="text-center space-y-6">
             <div className="flex flex-col items-center space-y-4">
-              <div className={`w-20 h-20 ${isRecording ? 'bg-error' : 'bg-error'} text-white rounded-full flex items-center justify-center text-3xl ${isRecording ? 'recording-pulse' : ''}`}>
+              <div className={`w-20 h-20 ${isRecording ? 'bg-fc-error' : 'bg-fc-error'} text-white rounded-full flex items-center justify-center text-3xl ${isRecording ? 'recording-pulse' : ''}`}>
                 <i className="fas fa-microphone" aria-hidden="true"></i>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-text-primary mb-2">Record Your Reply</h3>
-                <p className="text-text-secondary">
+                <h3 className="text-lg font-semibold text-fc-gray-900 mb-2">Record Your Reply</h3>
+                <p className="text-fc-gray-600">
                   {isRecording ? 'Recording... Tap to stop' : 'Tap the microphone to start recording'}
                 </p>
               </div>
@@ -113,7 +122,7 @@ export default function VoiceInterface({ cast, onClose }: VoiceInterfaceProps) {
             <div className="space-y-3">
               <Button
                 onClick={handleToggleRecording}
-                className={`w-full ${isRecording ? 'bg-gray-500 hover:bg-gray-600' : 'bg-error hover:bg-red-600'} text-white font-medium py-4 px-6 rounded-xl h-auto`}
+                className={`w-full ${isRecording ? 'bg-fc-gray-600 hover:bg-gray-700' : 'bg-fc-error hover:bg-red-600'} text-white font-medium py-4 px-6 rounded-xl h-auto border-0`}
               >
                 <span className="text-lg">
                   {isRecording ? 'Stop Recording' : 'Start Recording'}
@@ -123,7 +132,7 @@ export default function VoiceInterface({ cast, onClose }: VoiceInterfaceProps) {
               <Button
                 onClick={onClose}
                 variant="secondary"
-                className="w-full bg-gray-500 hover:bg-gray-600 text-white font-medium py-3 px-6 rounded-xl h-auto"
+                className="w-full bg-fc-gray-500 hover:bg-fc-gray-600 text-white font-medium py-3 px-6 rounded-xl h-auto border-0"
               >
                 Cancel
               </Button>
@@ -254,7 +263,7 @@ export default function VoiceInterface({ cast, onClose }: VoiceInterfaceProps) {
   };
 
   return (
-    <div className="bg-surface rounded-xl shadow-lg border border-gray-200 p-6">
+    <div className="bg-white rounded-xl border border-fc-gray-200 p-6">
       {renderStateContent()}
     </div>
   );

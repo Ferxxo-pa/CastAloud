@@ -23,29 +23,39 @@ export default function CastDisplay({ cast }: CastDisplayProps) {
   };
 
   return (
-    <div className="bg-surface rounded-xl shadow-sm border border-gray-200 p-6">
+    <div className="bg-white rounded-xl border border-fc-gray-200 p-4">
       <div className="flex items-start space-x-3 mb-4">
-        <div className="w-12 h-12 bg-gray-300 rounded-full flex-shrink-0 flex items-center justify-center">
-          <User className="h-6 w-6 text-gray-600" />
+        <div className="w-10 h-10 bg-fc-purple rounded-full flex-shrink-0 flex items-center justify-center">
+          <User className="h-5 w-5 text-white" />
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center space-x-2">
-            <span className="font-medium text-text-primary">@{cast.authorUsername}</span>
-            <span className="text-text-secondary text-sm">{formatTimestamp(cast.timestamp)}</span>
+            <span className="font-semibold text-fc-gray-900">@{cast.authorUsername}</span>
+            <span className="text-fc-gray-500 text-sm">·</span>
+            <span className="text-fc-gray-500 text-sm">{formatTimestamp(cast.timestamp)}</span>
           </div>
         </div>
       </div>
       
-      <div className="mb-6">
-        <p className="text-lg leading-relaxed text-text-primary">
+      <div className="mb-4">
+        <p className="text-base leading-relaxed text-fc-gray-900">
           {cast.content}
         </p>
       </div>
 
-      <div className="flex items-center space-x-6 text-text-secondary text-sm">
-        <span>{cast.likesCount} likes</span>
-        <span>{cast.recastsCount} recasts</span>
-        <span>{cast.repliesCount} replies</span>
+      <div className="flex items-center space-x-6 text-fc-gray-500 text-sm">
+        <div className="flex items-center space-x-1">
+          <i className="fas fa-heart text-xs" aria-hidden="true"></i>
+          <span>{cast.likesCount}</span>
+        </div>
+        <div className="flex items-center space-x-1">
+          <i className="fas fa-retweet text-xs" aria-hidden="true"></i>
+          <span>{cast.recastsCount}</span>
+        </div>
+        <div className="flex items-center space-x-1">
+          <i className="fas fa-comment text-xs" aria-hidden="true"></i>
+          <span>{cast.repliesCount}</span>
+        </div>
       </div>
     </div>
   );
