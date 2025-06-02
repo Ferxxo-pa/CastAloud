@@ -46,12 +46,12 @@ export default function Home() {
               <div className="w-8 h-8 bg-fc-purple rounded-lg flex items-center justify-center">
                 <i className="fas fa-volume-up text-white text-sm" aria-hidden="true"></i>
               </div>
-              <h1 className="text-lg font-semibold text-fc-gray-900">Farcaster Voice</h1>
+              <h1 className="text-lg font-semibold text-fc-gray-900">Farcaster Feed</h1>
             </div>
-            <VoiceSettings
+            <OpenAIVoiceSettings
               voices={voices}
-              settings={settings}
-              updateSettings={updateSettings}
+              selectedVoice={selectedVoice}
+              setSelectedVoice={setSelectedVoice}
               onTestVoice={handleTestVoice}
             />
           </div>
@@ -87,19 +87,19 @@ export default function Home() {
               <div className="w-8 h-8 bg-fc-purple rounded-lg flex items-center justify-center">
                 <i className="fas fa-volume-up text-white text-sm" aria-hidden="true"></i>
               </div>
-              <h1 className="text-lg font-semibold text-fc-gray-900">Farcaster Voice</h1>
+              <h1 className="text-lg font-semibold text-fc-gray-900">Farcaster Feed</h1>
             </div>
-            <VoiceSettings
+            <OpenAIVoiceSettings
               voices={voices}
-              settings={settings}
-              updateSettings={updateSettings}
+              selectedVoice={selectedVoice}
+              setSelectedVoice={setSelectedVoice}
               onTestVoice={handleTestVoice}
             />
           </div>
         </header>
         <main className="max-w-md mx-auto px-4 py-4">
           <div className="bg-white rounded-xl border border-fc-gray-200 p-6 text-center">
-            <p className="text-fc-error">To access your Farcaster feed, please upgrade your Neynar plan to include API access.</p>
+            <p className="text-fc-error">Failed to load feed. Please refresh the page.</p>
           </div>
         </main>
       </div>
@@ -116,10 +116,10 @@ export default function Home() {
             </div>
             <h1 className="text-lg font-semibold text-fc-gray-900">Farcaster Feed</h1>
           </div>
-          <VoiceSettings
+          <OpenAIVoiceSettings
             voices={voices}
-            settings={settings}
-            updateSettings={updateSettings}
+            selectedVoice={selectedVoice}
+            setSelectedVoice={setSelectedVoice}
             onTestVoice={handleTestVoice}
           />
         </div>
@@ -166,8 +166,8 @@ export default function Home() {
             <div>
               <h4 className="font-medium text-fc-gray-900 mb-2">Accessibility Features</h4>
               <ul className="text-sm text-fc-gray-600 space-y-1">
-                <li>• Tap "Read Aloud" to hear any post</li>
-                <li>• Use "Voice Reply" to respond with speech</li>
+                <li>• Tap 🔊 to hear any post with high-quality OpenAI voices</li>
+                <li>• Use 🎙️ to respond with speech</li>
                 <li>• AI converts your voice to polished comments</li>
               </ul>
             </div>

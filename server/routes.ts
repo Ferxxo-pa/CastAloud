@@ -214,6 +214,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Text-to-speech endpoint
+  app.post("/api/tts", async (req, res) => {
+    try {
+      const { text, voice = "alloy" } = req.body;
+      
+      if (!text) {
+        return res.status(400).json({ message: "Text is required" });
+      }
+
+      if (!process.env.OPENAI_API_KEY_) {
+        return res.status(500).json({ message: "OpenAI API key not configured" });
+      }
+
+      // Generate speech using OpenAI TTS
+      const mp3 = await openai.audio.speech.create({
+        model: "tts-1",
+        voice: voice,
+        input: text,
+      });
+
+      const buffer = Buffer.from(await mp3.arrayBuffer());
+      
+      res.set({
+        'Content-Type': 'audio/mpeg',
+        'Content-Length': buffer.length.toString(),
+      });
+      
+      res.send(buffer);
+    } catch (error) {
+      console.error("Error generating speech:", error);
+      res.status(500).json({ message: "Failed to generate speech" });
+    }
+  });
+
   // Process voice recording
   app.post("/api/voice/process", upload.single('audio'), async (req, res) => {
     try {
