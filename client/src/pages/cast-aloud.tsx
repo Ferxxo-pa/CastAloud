@@ -431,7 +431,7 @@ export default function CastAloud() {
           )}
 
           {/* Polished Reply */}
-          {polishedReply && (
+          {polishedReply && castText && (
             <div className="bg-green-50 rounded-2xl p-5 border border-green-200">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-lg font-semibold text-green-900">Suggested Reply</h3>
