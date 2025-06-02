@@ -17,6 +17,7 @@ export default function CastAloud() {
   const [showFeedback, setShowFeedback] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [voiceType, setVoiceType] = useState<"browser" | "openai">("browser");
+  const [isLoading, setIsLoading] = useState(false);
 
   const browserVoice = useSpeechSynthesis();
   const openaiVoice = useOpenAITTS();
@@ -25,7 +26,7 @@ export default function CastAloud() {
 
   const getFeedbackMutation = useMutation({
     mutationFn: async (text: string) => {
-      const response = await apiRequest('/api/get-feedback', {
+      const response = await fetch('/api/get-feedback', {
         method: 'POST',
         body: JSON.stringify({ text }),
         headers: { "Content-Type": "application/json" }
@@ -41,7 +42,7 @@ export default function CastAloud() {
 
   const polishReplyMutation = useMutation({
     mutationFn: async (text: string) => {
-      const response = await apiRequest('/api/polish-reply', {
+      const response = await fetch('/api/polish-reply', {
         method: 'POST',
         body: JSON.stringify({ text }),
         headers: { "Content-Type": "application/json" }
@@ -88,10 +89,37 @@ export default function CastAloud() {
 
   const handlePasteText = () => {
     navigator.clipboard.readText().then(text => {
-      setCastText(text);
+      if (text.includes('warpcast.com') || text.includes('farcaster')) {
+        // It's a URL, extract the cast content
+        handleUrlInput(text);
+      } else {
+        // It's text content
+        setCastText(text);
+      }
     }).catch(() => {
       alert('Please paste text manually in the box below');
     });
+  };
+
+  const handleUrlInput = async (url: string) => {
+    try {
+      setIsLoading(true);
+      const response = await fetch('/api/extract-cast', {
+        method: 'POST',
+        body: JSON.stringify({ url }),
+        headers: { "Content-Type": "application/json" }
+      });
+      const data = await response.json();
+      if (data.text) {
+        setCastText(data.text);
+      } else {
+        alert('Could not extract text from this URL. Please paste the text manually.');
+      }
+    } catch (error) {
+      alert('Error extracting text from URL. Please paste the text manually.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   if (!castText) {
@@ -116,8 +144,8 @@ export default function CastAloud() {
                     <span className="text-white text-xs font-bold">1</span>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-900">Copy & Paste</p>
-                    <p className="text-xs text-gray-600 mt-1">Copy any cast text and paste below</p>
+                    <p className="text-sm font-medium text-gray-900">Paste Warpcast Link</p>
+                    <p className="text-xs text-gray-600 mt-1">Copy the URL from any Warpcast post</p>
                   </div>
                 </div>
               </div>
@@ -128,8 +156,8 @@ export default function CastAloud() {
                     <span className="text-white text-xs font-bold">2</span>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-900">Share via URL</p>
-                    <p className="text-xs text-gray-600 mt-1">Add ?text= to the URL</p>
+                    <p className="text-sm font-medium text-gray-900">Paste Cast Text</p>
+                    <p className="text-xs text-gray-600 mt-1">Copy and paste the text content directly</p>
                   </div>
                 </div>
               </div>
@@ -178,7 +206,7 @@ export default function CastAloud() {
                 <span className="text-white text-sm">🔊</span>
               </div>
               <div>
-                <h1 className="text-lg font-semibold text-gray-900">Cast Aloud</h1>
+                <h1 className="text-lg text-gray-900 font-bold">Cast Aloud</h1>
               </div>
             </div>
             <button
