@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
 import useSpeechSynthesis from "@/hooks/useSpeechSynthesis";
+import useOpenAITTS from "@/hooks/useOpenAITTS";
 import { useMutation } from "@tanstack/react-query";
 
 export default function CastAloud() {
@@ -10,8 +13,13 @@ export default function CastAloud() {
   const [feedback, setFeedback] = useState("");
   const [polishedReply, setPolishedReply] = useState("");
   const [showFeedback, setShowFeedback] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [voiceType, setVoiceType] = useState<"browser" | "openai">("browser");
   
-  const { speak, isSpeaking, stop } = useSpeechSynthesis();
+  const browserVoice = useSpeechSynthesis();
+  const openaiVoice = useOpenAITTS();
+
+  const currentVoiceSystem = voiceType === "browser" ? browserVoice : openaiVoice;
 
   // Get cast text from URL parameters
   useEffect(() => {
@@ -36,7 +44,7 @@ export default function CastAloud() {
       setPolishedReply(data.polishedText);
       setShowFeedback(true);
       // Read the feedback aloud
-      speak(data.feedback);
+      currentVoiceSystem.speak(data.feedback);
     }
   });
 
@@ -55,10 +63,10 @@ export default function CastAloud() {
   });
 
   const handleReadCast = () => {
-    if (isSpeaking) {
-      stop();
+    if (currentVoiceSystem.isSpeaking) {
+      currentVoiceSystem.stop();
     } else {
-      speak(castText);
+      currentVoiceSystem.speak(castText);
     }
   };
 
@@ -70,7 +78,7 @@ export default function CastAloud() {
 
   const handleReadFeedback = () => {
     if (feedback) {
-      speak(feedback);
+      currentVoiceSystem.speak(feedback);
     }
   };
 
@@ -99,9 +107,133 @@ export default function CastAloud() {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-md mx-auto p-4">
         <header className="mb-6">
-          <h1 className="text-xl font-semibold text-center">Cast Aloud</h1>
-          <p className="text-sm text-gray-600 text-center mt-1">Read and reply to casts with AI assistance</p>
+          <div className="flex items-center justify-between">
+            <div className="text-center flex-1">
+              <h1 className="text-xl font-semibold">Cast Aloud</h1>
+              <p className="text-sm text-gray-600 mt-1">Read and reply to casts with AI assistance</p>
+            </div>
+            <Button
+              onClick={() => setShowSettings(!showSettings)}
+              variant="outline"
+              size="sm"
+              className="ml-4"
+            >
+              ⚙️ Voice
+            </Button>
+          </div>
         </header>
+
+        {/* Voice Settings */}
+        {showSettings && (
+          <div className="bg-white rounded-lg p-4 mb-6 border">
+            <h3 className="font-medium mb-4">Voice Settings</h3>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Voice Engine:</label>
+                <Select value={voiceType} onValueChange={(value: "browser" | "openai") => setVoiceType(value)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="browser">Browser Voices (Free)</SelectItem>
+                    <SelectItem value="openai">OpenAI Voices (High Quality)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {voiceType === "browser" && browserVoice.voices.length > 0 && (
+                <div>
+                  <label className="block text-sm font-medium mb-2">Browser Voice:</label>
+                  <Select 
+                    value={browserVoice.settings.voice?.name || ""} 
+                    onValueChange={(name) => {
+                      const voice = browserVoice.voices.find(v => v.name === name);
+                      if (voice) {
+                        browserVoice.updateSettings({ voice });
+                      }
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a voice" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {browserVoice.voices.map((voice) => (
+                        <SelectItem key={voice.name} value={voice.name}>
+                          {voice.name} ({voice.lang})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+              {voiceType === "openai" && (
+                <div>
+                  <label className="block text-sm font-medium mb-2">OpenAI Voice:</label>
+                  <Select 
+                    value={openaiVoice.selectedVoice} 
+                    onValueChange={openaiVoice.setSelectedVoice}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {openaiVoice.voices.map((voice) => (
+                        <SelectItem key={voice.id} value={voice.id}>
+                          {voice.name} - {voice.description}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+              {voiceType === "browser" && (
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Speed: {browserVoice.settings.rate.toFixed(1)}x
+                  </label>
+                  <Slider
+                    value={[browserVoice.settings.rate]}
+                    onValueChange={([rate]) => browserVoice.updateSettings({ rate })}
+                    min={0.5}
+                    max={2}
+                    step={0.1}
+                    className="w-full"
+                  />
+                </div>
+              )}
+
+              {voiceType === "openai" && (
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Speed: {openaiVoice.speed.toFixed(1)}x
+                  </label>
+                  <Slider
+                    value={[openaiVoice.speed]}
+                    onValueChange={([speed]) => openaiVoice.setSpeed(speed)}
+                    min={0.25}
+                    max={4}
+                    step={0.25}
+                    className="w-full"
+                  />
+                </div>
+              )}
+
+              <Button
+                onClick={() => {
+                  const testText = "This is a test of your voice settings. How does this sound?";
+                  currentVoiceSystem.speak(testText);
+                }}
+                variant="outline"
+                className="w-full"
+              >
+                🔊 Test Voice
+              </Button>
+            </div>
+          </div>
+        )}
 
         {/* Cast Content */}
         <div className="bg-white rounded-lg p-4 mb-6 border">
@@ -111,9 +243,9 @@ export default function CastAloud() {
           <Button 
             onClick={handleReadCast}
             className="w-full h-12 text-lg"
-            variant={isSpeaking ? "secondary" : "default"}
+            variant={currentVoiceSystem.isSpeaking ? "secondary" : "default"}
           >
-            {isSpeaking ? "🔇 Stop Reading" : "🔊 Read This Cast"}
+            {currentVoiceSystem.isSpeaking ? "🔇 Stop Reading" : "🔊 Read This Cast"}
           </Button>
         </div>
 
