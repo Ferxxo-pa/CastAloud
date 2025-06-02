@@ -2,14 +2,14 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import CastDisplay from "@/components/CastDisplay";
 import VoiceInterface from "@/components/VoiceInterface";
-import OpenAIVoiceSettings from "@/components/OpenAIVoiceSettings";
-import useOpenAITTS from "@/hooks/useOpenAITTS";
+import VoiceSettings from "@/components/VoiceSettings";
+import useSpeechSynthesis from "@/hooks/useSpeechSynthesis";
 import { useState } from "react";
 import type { Cast } from "@shared/schema";
 
 export default function Home() {
   const [showVoiceInterface, setShowVoiceInterface] = useState<{ show: boolean; cast?: Cast }>({ show: false });
-  const { speak, isSpeaking, stop, voices, selectedVoice, setSelectedVoice, speed, setSpeed } = useOpenAITTS();
+  const { speak, isSpeaking, stop, voices, settings, updateSettings } = useSpeechSynthesis();
 
   const { data: feed, isLoading, error } = useQuery<Cast[]>({
     queryKey: ["/api/feed"],
@@ -34,7 +34,7 @@ export default function Home() {
   };
 
   const handleTestVoice = () => {
-    speak("This is a test of your OpenAI voice settings. How does this sound?");
+    speak("This is a test of your voice settings. How does this sound?");
   };
 
   if (isLoading) {

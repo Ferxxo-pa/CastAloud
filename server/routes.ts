@@ -9,11 +9,43 @@ import fs from "fs";
 import path from "path";
 
 const openai = new OpenAI({ 
-  apiKey: process.env.OPENAI_API_KEY_
+  apiKey: process.env.OPENAI_API_KEY
 });
 
 // Configure multer for audio file uploads
 const upload = multer({ dest: 'uploads/' });
+
+// Helper functions
+async function transcribeAudio(audioFilePath: string): Promise<{ text: string }> {
+  const audioReadStream = fs.createReadStream(audioFilePath);
+  
+  const transcription = await openai.audio.transcriptions.create({
+    file: audioReadStream,
+    model: "whisper-1",
+  });
+
+  return { text: transcription.text };
+}
+
+async function polishReply(text: string): Promise<string> {
+  const response = await openai.chat.completions.create({
+    model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+    messages: [
+      {
+        role: "system",
+        content: "You are a helpful assistant that polishes social media replies. Make the text more clear, friendly, and well-written while preserving the original meaning and tone. Keep it concise and natural for Farcaster."
+      },
+      {
+        role: "user",
+        content: `Please polish this reply: "${text}"`
+      }
+    ],
+    max_tokens: 200,
+    temperature: 0.7
+  });
+
+  return response.choices[0].message.content || text;
+}
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Frame routes
@@ -330,6 +362,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } else {
         res.status(500).json({ message: "Failed to process voice recording" });
       }
+    }
+  });
+
+  // Simple transcription endpoint for mini app
+  app.post("/api/transcribe", upload.single('audio'), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: "No audio file provided" });
+      }
+
+      const audioFilePath = req.file.path;
+      
+      const transcription = await transcribeAudio(audioFilePath);
+      
+      // Clean up uploaded file
+      fs.unlinkSync(audioFilePath);
+      
+      res.json({ transcription: transcription.text });
+    } catch (error) {
+      console.error("Error transcribing audio:", error);
+      
+      if (req.file && fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+      }
+      
+      res.status(500).json({ error: "Failed to transcribe audio" });
+    }
+  });
+
+  // AI reply polishing endpoint for mini app
+  app.post("/api/polish-reply", async (req, res) => {
+    try {
+      const { text } = req.body;
+      if (!text) {
+        return res.status(400).json({ error: "No text provided" });
+      }
+
+      const polishedText = await polishReply(text);
+      
+      res.json({ polishedText });
+    } catch (error) {
+      console.error("Error polishing reply:", error);
+      res.status(500).json({ error: "Failed to polish reply" });
     }
   });
 
