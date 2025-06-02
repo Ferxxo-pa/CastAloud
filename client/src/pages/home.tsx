@@ -130,8 +130,8 @@ export default function Home() {
           <div key={cast.hash || index} className="bg-white rounded-xl border border-fc-gray-200 overflow-hidden relative">
             <CastDisplay cast={cast} />
             
-            {/* Accessibility buttons positioned on the right side */}
-            <div className="absolute top-3 right-3 flex flex-col space-y-1">
+            {/* Accessibility buttons positioned in bottom right corner */}
+            <div className="absolute bottom-3 right-3 flex space-x-1">
               <Button
                 onClick={() => handleReadAloud(cast)}
                 className="w-8 h-8 bg-fc-purple hover:bg-fc-purple-dark text-white rounded-lg flex items-center justify-center shadow-sm border-0"
