@@ -152,6 +152,68 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get feed from Farcaster via Neynar
+  app.get("/api/feed", async (req, res) => {
+    try {
+      // Demo feed showing accessibility features
+      const demoFeed = [
+        {
+          id: 1,
+          hash: "0x123abc",
+          authorFid: 1234,
+          authorUsername: "alice",
+          authorDisplayName: "Alice Johnson",
+          content: "Just shipped a new accessibility feature for our social app! Voice-to-text is working great and helping users engage more easily. Building inclusive tech should be the default.",
+          timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
+          likesCount: 23,
+          recastsCount: 5,
+          repliesCount: 12
+        },
+        {
+          id: 2,
+          hash: "0x456def",
+          authorFid: 5678,
+          authorUsername: "bob",
+          authorDisplayName: "Bob Chen",
+          content: "The future of web accessibility is voice interfaces. Being able to listen to posts and reply with voice makes social media so much more inclusive for people with different needs and abilities.",
+          timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000),
+          likesCount: 41,
+          recastsCount: 8,
+          repliesCount: 6
+        },
+        {
+          id: 3,
+          hash: "0x789ghi",
+          authorFid: 9012,
+          authorUsername: "carol",
+          authorDisplayName: "Carol Williams",
+          content: "Love seeing more accessibility tools in web3! As someone with dyslexia, having text read aloud makes consuming content so much easier. Keep building these important features!",
+          timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000),
+          likesCount: 67,
+          recastsCount: 15,
+          repliesCount: 23
+        },
+        {
+          id: 4,
+          hash: "0xabcjkl",
+          authorFid: 3456,
+          authorUsername: "david",
+          authorDisplayName: "David Kim",
+          content: "AI-powered voice interfaces are game changers for accessibility. Imagine being able to interact with any app just by speaking naturally and having it understand your intent perfectly.",
+          timestamp: new Date(Date.now() - 8 * 60 * 60 * 1000),
+          likesCount: 34,
+          recastsCount: 7,
+          repliesCount: 11
+        }
+      ];
+
+      res.json(demoFeed);
+    } catch (error) {
+      console.error("Error fetching feed:", error);
+      res.status(500).json({ message: "Failed to fetch feed" });
+    }
+  });
+
   // Process voice recording
   app.post("/api/voice/process", upload.single('audio'), async (req, res) => {
     try {
