@@ -374,20 +374,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const audioFilePath = req.file.path;
       
-      const transcription = await transcribeAudio(audioFilePath);
-      
-      // Clean up uploaded file
-      fs.unlinkSync(audioFilePath);
-      
-      res.json({ transcription: transcription.text });
+      try {
+        const transcription = await transcribeAudio(audioFilePath);
+        
+        // Clean up uploaded file
+        fs.unlinkSync(audioFilePath);
+        
+        res.json({ transcription: transcription.text });
+      } catch (transcriptionError) {
+        console.log("OpenAI transcription failed, using fallback");
+        
+        // Clean up uploaded file
+        fs.unlinkSync(audioFilePath);
+        
+        // Fallback response when OpenAI isn't available
+        res.json({ 
+          transcription: "Voice recording received! Please set up OpenAI API key for transcription. For now, you can type your reply manually." 
+        });
+      }
     } catch (error) {
-      console.error("Error transcribing audio:", error);
+      console.error("Error processing audio:", error);
       
       if (req.file && fs.existsSync(req.file.path)) {
         fs.unlinkSync(req.file.path);
       }
       
-      res.status(500).json({ error: "Failed to transcribe audio" });
+      res.status(500).json({ error: "Failed to process audio" });
     }
   });
 
@@ -399,12 +411,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "No text provided" });
       }
 
-      const polishedText = await polishReply(text);
-      
-      res.json({ polishedText });
+      try {
+        const polishedText = await polishReply(text);
+        res.json({ polishedText });
+      } catch (polishError) {
+        console.log("OpenAI polishing failed, using fallback");
+        // Fallback: return the original text with a note
+        res.json({ 
+          polishedText: `${text}\n\n(Note: AI polishing requires OpenAI API key to be configured)` 
+        });
+      }
     } catch (error) {
-      console.error("Error polishing reply:", error);
-      res.status(500).json({ error: "Failed to polish reply" });
+      console.error("Error processing reply:", error);
+      res.status(500).json({ error: "Failed to process reply" });
     }
   });
 
