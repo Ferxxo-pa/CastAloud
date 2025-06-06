@@ -157,8 +157,14 @@ export default function CastAloud() {
 
 
         <div className="p-4 space-y-4">
-          {/* Input Section */}
+          {/* Simple Header */}
+          {!castText && (
+            <div className="text-center mb-6">
+              <h1 className="text-xl font-semibold text-fc-gray-900">Cast Aloud</h1>
+            </div>
+          )}
 
+          {/* Input Section */}
           {!castText && (
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-fc-gray-200 h-[320px]">
               <div className="space-y-4">
