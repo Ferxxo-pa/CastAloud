@@ -166,7 +166,7 @@ export default function HomeSimple() {
             
             <button 
               onClick={() => setShowVoiceSettings(!showVoiceSettings)}
-              className="block w-full bg-fc-purple-light hover:bg-fc-purple text-white py-3 px-4 rounded-lg text-center font-medium"
+              className="block w-full bg-fc-gray-200 hover:bg-fc-gray-300 text-fc-gray-800 hover:text-fc-gray-900 py-3 px-4 rounded-lg text-center font-medium transition-colors duration-200"
             >
               Voice Settings
             </button>
