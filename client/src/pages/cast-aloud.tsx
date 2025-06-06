@@ -161,6 +161,7 @@ export default function CastAloud() {
           {!castText && (
             <div className="text-center mb-6">
               <h1 className="text-xl font-semibold text-fc-gray-900">Cast Aloud</h1>
+              <p className="text-fc-gray-600 mt-1">Accessibility tools for reading and replying to casts</p>
             </div>
           )}
 
