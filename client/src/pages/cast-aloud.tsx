@@ -230,86 +230,41 @@ export default function CastAloud() {
 
           {/* Voice Settings */}
           {showSettings && (
-            <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Voice Settings</h3>
+            <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-200">
+              <h3 className="font-medium mb-3">Voice Settings</h3>
               
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Voice Engine</label>
-                  <Select value={voiceType} onValueChange={(value: "browser" | "openai") => setVoiceType(value)}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="browser">Browser Voices (Free)</SelectItem>
-                      <SelectItem value="openai">OpenAI Voices (Premium)</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Voice</label>
+                  <select 
+                    value={browserVoice.settings.voice?.name || ''}
+                    onChange={(e) => {
+                      const voice = browserVoice.voices.find(v => v.name === e.target.value);
+                      if (voice) {
+                        browserVoice.updateSettings({ voice });
+                      }
+                    }}
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  >
+                    {browserVoice.voices.map((voice) => (
+                      <option key={voice.name} value={voice.name}>
+                        {voice.name} ({voice.lang})
+                      </option>
+                    ))}
+                  </select>
                 </div>
-
-                {voiceType === "browser" && browserVoice.voices.length > 0 && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Browser Voice</label>
-                    <Select 
-                      value={browserVoice.settings.voice?.name || ""} 
-                      onValueChange={(name) => {
-                        const voice = browserVoice.voices.find(v => v.name === name);
-                        if (voice) {
-                          browserVoice.updateSettings({ voice });
-                        }
-                      }}
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select a voice" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {browserVoice.voices.map((voice) => (
-                          <SelectItem key={voice.name} value={voice.name}>
-                            {voice.name} ({voice.lang})
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
-
-                {voiceType === "openai" && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">OpenAI Voice</label>
-                    <Select 
-                      value={openaiVoice.selectedVoice} 
-                      onValueChange={openaiVoice.setSelectedVoice}
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {openaiVoice.voices.map((voice) => (
-                          <SelectItem key={voice.id} value={voice.id}>
-                            {voice.name} - {voice.description}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Speed: {voiceType === "openai" ? openaiVoice.speed.toFixed(1) : browserVoice.settings.rate.toFixed(1)}x
+                    Speed: {browserVoice.settings.rate.toFixed(1)}x
                   </label>
-                  <Slider
-                    value={voiceType === "openai" ? [openaiVoice.speed] : [browserVoice.settings.rate]}
-                    onValueChange={([speed]) => {
-                      if (voiceType === "openai") {
-                        openaiVoice.setSpeed(speed);
-                      } else {
-                        browserVoice.updateSettings({ rate: speed });
-                      }
-                    }}
-                    min={voiceType === "openai" ? 0.25 : 0.5}
-                    max={voiceType === "openai" ? 4 : 2}
-                    step={voiceType === "openai" ? 0.25 : 0.1}
+                  <input
+                    type="range"
+                    min="0.5"
+                    max="2"
+                    step="0.1"
+                    value={browserVoice.settings.rate}
+                    onChange={(e) => browserVoice.updateSettings({ rate: parseFloat(e.target.value) })}
                     className="w-full"
                   />
                 </div>
@@ -317,9 +272,9 @@ export default function CastAloud() {
                 <button
                   onClick={() => {
                     const testText = "This is a test of your voice settings. How does this sound?";
-                    currentVoiceSystem.speak(testText);
+                    browserVoice.speak(testText);
                   }}
-                  className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-xl transition-colors duration-200"
+                  className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors duration-200"
                 >
                   Test Voice
                 </button>
