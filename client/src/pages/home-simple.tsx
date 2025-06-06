@@ -59,39 +59,43 @@ export default function HomeSimple() {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-md mx-auto p-4">
         <header className="mb-6">
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <h1 className="text-2xl font-bold text-center">Cast Aloud</h1>
-              <p className="text-gray-600 text-center mt-2">
-                Accessibility tools for reading and replying to casts
-              </p>
-            </div>
-            <button
-              onClick={readPageAloud}
-              className={`ml-4 p-3 rounded-full transition-colors duration-200 ${
-                isSpeaking 
-                  ? 'bg-red-100 hover:bg-red-200 text-red-600' 
-                  : 'bg-purple-100 hover:bg-purple-200 text-purple-600'
-              }`}
-              title={isSpeaking ? 'Stop reading' : 'Read page aloud'}
-            >
-              {isSpeaking ? (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold">Cast Aloud</h1>
+            <p className="text-gray-600 mt-2">
+              Accessibility tools for reading and replying to casts
+            </p>
+          </div>
+        </header>
+
+        <div className="bg-white rounded-lg p-6 border relative">
+          <button
+            onClick={readPageAloud}
+            className={`absolute top-4 right-4 px-3 py-2 rounded-lg transition-colors duration-200 flex items-center gap-2 text-sm font-medium ${
+              isSpeaking 
+                ? 'bg-red-100 hover:bg-red-200 text-red-600' 
+                : 'bg-purple-100 hover:bg-purple-200 text-purple-600'
+            }`}
+            title={isSpeaking ? 'Stop reading' : 'Read page aloud'}
+          >
+            {isSpeaking ? (
+              <>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <rect x="6" y="4" width="4" height="16" rx="1"/>
                   <rect x="14" y="4" width="4" height="16" rx="1"/>
                 </svg>
-              ) : (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                Stop
+              </>
+            ) : (
+              <>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
                   <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
                   <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
                 </svg>
-              )}
-            </button>
-          </div>
-        </header>
-
-        <div className="bg-white rounded-lg p-6 border">
+                Read Aloud
+              </>
+            )}
+          </button>
           <h2 className="text-lg font-semibold mb-4">Try the Mini App</h2>
           <p className="text-gray-600 mb-4">
             The mini app helps you read casts aloud and create voice replies with AI assistance.
