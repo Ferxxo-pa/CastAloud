@@ -506,35 +506,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(500).json({ error: "Neynar API key not configured" });
       }
 
-      // Use Neynar API to fetch cast content
-      console.log("Fetching cast from Neynar API:", castHash);
-      const neynarResponse = await fetch(`https://api.neynar.com/v2/farcaster/cast?identifier=${castHash}&type=hash`, {
+      // Try different approaches with Neynar API
+      let text = '';
+      let apiUsed = 'Neynar';
+
+      // Try with the extracted hash first
+      console.log("Trying Neynar API with hash:", castHash);
+      let neynarResponse = await fetch(`https://api.neynar.com/v2/farcaster/cast?identifier=${castHash}&type=hash`, {
         headers: {
           'api_key': process.env.NEYNAR_API_KEY,
           'accept': 'application/json'
         }
       });
 
-      console.log("Neynar API response status:", neynarResponse.status);
+      if (!neynarResponse.ok) {
+        // If hash fails, try with URL identifier
+        console.log("Hash failed, trying with URL identifier:", url);
+        neynarResponse = await fetch(`https://api.neynar.com/v2/farcaster/cast?identifier=${encodeURIComponent(url)}&type=url`, {
+          headers: {
+            'api_key': process.env.NEYNAR_API_KEY,
+            'accept': 'application/json'
+          }
+        });
+      }
+
+      if (!neynarResponse.ok) {
+        // Try alternative V1 API if V2 fails
+        console.log("V2 failed, trying V1 API with hash:", castHash);
+        neynarResponse = await fetch(`https://api.neynar.com/v1/farcaster/cast?hash=${castHash}`, {
+          headers: {
+            'api_key': process.env.NEYNAR_API_KEY,
+            'accept': 'application/json'
+          }
+        });
+      }
+
+      console.log("Final API response status:", neynarResponse.status);
 
       if (!neynarResponse.ok) {
         const errorText = await neynarResponse.text();
-        console.error("Neynar API error:", neynarResponse.status, errorText);
+        console.error("All Neynar API attempts failed:", neynarResponse.status, errorText);
         throw new Error(`Neynar API error: ${neynarResponse.status} - ${errorText}`);
       }
 
       const castData = await neynarResponse.json();
       console.log("Cast data received:", JSON.stringify(castData, null, 2));
       
-      const text = castData.cast?.text || '';
+      // Handle different response formats
+      text = castData.cast?.text || castData.result?.cast?.text || castData.text || '';
 
       if (!text) {
-        console.log("No text found in cast data");
+        console.log("No text found in cast data from any API");
         return res.status(404).json({ error: "Cast not found or has no text content" });
       }
 
-      console.log("Successfully extracted text:", text);
-      res.json({ text });
+      console.log(`Successfully extracted text using ${apiUsed}:`, text);
+      res.json({ text, apiUsed });
     } catch (error) {
       console.error("Error extracting cast:", error);
       res.status(500).json({ error: "Failed to extract cast content: " + error.message });
