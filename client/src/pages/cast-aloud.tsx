@@ -156,17 +156,19 @@ export default function CastAloud() {
       <div className="max-w-md mx-auto">
 
 
-        <div className="p-4 space-y-4">
-          {/* Simple Header */}
-          {!castText && (
-            <div className="text-center mb-6">
-              <h1 className="text-xl font-semibold text-fc-gray-900">Cast Aloud</h1>
-              <p className="text-fc-gray-600 mt-1">Accessibility tools for reading and replying to casts</p>
+        <div className="p-4">
+          <header className="mb-6">
+            <div className="text-center">
+              <h1 className="text-2xl font-bold text-fc-gray-900">Cast Aloud</h1>
+              <p className="text-fc-gray-600 mt-2">
+                Accessibility tools for reading and replying to casts
+              </p>
             </div>
-          )}
+          </header>
 
-          {/* Input Section */}
-          {!castText && (
+          <div className="space-y-4">
+            {/* Input Section */}
+            {!castText && (
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-fc-gray-200 h-[320px]">
               <div className="space-y-4">
                 <input
@@ -464,6 +466,7 @@ export default function CastAloud() {
                 </div>
               </div>
             )}
+          </div>
           </div>
         </div>
       </div>
