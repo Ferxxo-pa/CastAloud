@@ -154,26 +154,7 @@ export default function CastAloud() {
   return (
     <div className="min-h-screen bg-gray-100">
       <div className="max-w-md mx-auto">
-        {/* Header */}
-        <div className="bg-white border-b border-gray-200 px-4 py-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-            </div>
-            <button
-              onClick={() => setShowSettings(!showSettings)}
-              className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="3" y="11" width="18" height="2" rx="1"/>
-                <circle cx="7" cy="12" r="1"/>
-                <rect x="7" y="5" width="2" height="6" rx="1"/>
-                <rect x="15" y="13" width="2" height="6" rx="1"/>
-                <rect x="15" y="3" width="2" height="4" rx="1"/>
-                <circle cx="16" cy="9" r="1"/>
-              </svg>
-            </button>
-          </div>
-        </div>
+
 
         <div className="p-4 space-y-4">
           {/* Input Section */}
@@ -230,143 +211,7 @@ export default function CastAloud() {
             </div>
           )}
 
-          {/* Voice Settings */}
-          {showSettings && (
-            <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-200">
-              <h3 className="font-medium mb-3">Voice Settings</h3>
-              
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Voice Type</label>
-                  <div className="space-y-2">
-                    <div className="flex items-center">
-                      <input
-                        type="radio"
-                        id="browser-voices"
-                        name="voiceType"
-                        value="browser"
-                        checked={voiceType === "browser"}
-                        onChange={(e) => setVoiceType(e.target.value as "browser")}
-                        className="mr-2"
-                      />
-                      <label htmlFor="browser-voices" className="text-sm">
-                        Browser Voices (Free)
-                      </label>
-                    </div>
-                    <div className="flex items-center opacity-50">
-                      <input
-                        type="radio"
-                        id="premium-voices"
-                        name="voiceType"
-                        value="openai"
-                        disabled
-                        className="mr-2"
-                      />
-                      <label htmlFor="premium-voices" className="text-sm flex items-center text-gray-400">
-                        Premium AI Voices
-                        <span className="ml-1 px-2 py-0.5 bg-gray-100 text-gray-500 text-xs rounded-full">
-                          Coming Soon
-                        </span>
-                      </label>
-                    </div>
-                  </div>
-                </div>
 
-                {voiceType === "browser" && (
-                  <>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Voice</label>
-                      <select 
-                        value={browserVoice.settings.voice?.name || ''}
-                        onChange={(e) => {
-                          const voice = browserVoice.voices.find(v => v.name === e.target.value);
-                          if (voice) {
-                            browserVoice.updateSettings({ voice });
-                          }
-                        }}
-                        className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                      >
-                        {browserVoice.voices.map((voice) => (
-                          <option key={voice.name} value={voice.name}>
-                            {voice.name} ({voice.lang})
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Speed: {browserVoice.settings.rate.toFixed(1)}x
-                      </label>
-                      <input
-                        type="range"
-                        min="0.5"
-                        max="2"
-                        step="0.1"
-                        value={browserVoice.settings.rate}
-                        onChange={(e) => browserVoice.updateSettings({ rate: parseFloat(e.target.value) })}
-                        className="w-full"
-                      />
-                    </div>
-
-                    <button
-                      onClick={() => {
-                        const testText = "This is a test of your voice settings. How does this sound?";
-                        browserVoice.speak(testText);
-                      }}
-                      className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors duration-200"
-                    >
-                      Test Voice
-                    </button>
-                  </>
-                )}
-
-                {voiceType === "openai" && userTier === "premium" && (
-                  <>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Premium Voice</label>
-                      <select 
-                        value={openaiVoice.selectedVoice}
-                        onChange={(e) => openaiVoice.setSelectedVoice(e.target.value)}
-                        className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                      >
-                        {openaiVoice.voices.map((voice) => (
-                          <option key={voice.id} value={voice.id}>
-                            {voice.name} - {voice.description}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Speed: {openaiVoice.speed.toFixed(1)}x
-                      </label>
-                      <input
-                        type="range"
-                        min="0.25"
-                        max="4"
-                        step="0.25"
-                        value={openaiVoice.speed}
-                        onChange={(e) => openaiVoice.setSpeed(parseFloat(e.target.value))}
-                        className="w-full"
-                      />
-                    </div>
-
-                    <button
-                      onClick={() => {
-                        const testText = "This is a test of your premium voice settings. How does this sound?";
-                        openaiVoice.speak(testText);
-                      }}
-                      className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors duration-200"
-                    >
-                      Test Premium Voice
-                    </button>
-                  </>
-                )}
-              </div>
-            </div>
-          )}
 
 
 
@@ -474,6 +319,158 @@ export default function CastAloud() {
               <p className="text-green-800 text-sm leading-relaxed">{polishedReply}</p>
             </div>
           )}
+
+          {/* Voice Settings at Bottom */}
+          <div className="mt-8 pt-4 border-t border-gray-200">
+            <button
+              onClick={() => setShowSettings(!showSettings)}
+              className="w-full flex items-center justify-center gap-2 p-3 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-xl transition-colors duration-200"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"/>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                <path d="M12 17h.01"/>
+              </svg>
+              <span className="text-sm font-medium">Voice Settings</span>
+            </button>
+
+            {showSettings && (
+              <div className="mt-3 bg-white rounded-2xl p-4 shadow-sm border border-gray-200">
+                <h3 className="font-medium mb-3">Voice Settings</h3>
+                
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Voice Type</label>
+                    <div className="space-y-2">
+                      <div className="flex items-center">
+                        <input
+                          type="radio"
+                          id="browser-voices"
+                          name="voiceType"
+                          value="browser"
+                          checked={voiceType === "browser"}
+                          onChange={(e) => setVoiceType(e.target.value as "browser")}
+                          className="mr-2"
+                        />
+                        <label htmlFor="browser-voices" className="text-sm">
+                          Browser Voices (Free)
+                        </label>
+                      </div>
+                      <div className="flex items-center opacity-50">
+                        <input
+                          type="radio"
+                          id="premium-voices"
+                          name="voiceType"
+                          value="openai"
+                          disabled
+                          className="mr-2"
+                        />
+                        <label htmlFor="premium-voices" className="text-sm flex items-center text-gray-400">
+                          Premium AI Voices
+                          <span className="ml-1 px-2 py-0.5 bg-gray-100 text-gray-500 text-xs rounded-full">
+                            Coming Soon
+                          </span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  {voiceType === "browser" && (
+                    <>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Voice</label>
+                        <select 
+                          value={browserVoice.settings.voice?.name || ''}
+                          onChange={(e) => {
+                            const voice = browserVoice.voices.find(v => v.name === e.target.value);
+                            if (voice) {
+                              browserVoice.updateSettings({ voice });
+                            }
+                          }}
+                          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        >
+                          {browserVoice.voices.map((voice) => (
+                            <option key={voice.name} value={voice.name}>
+                              {voice.name} ({voice.lang})
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Speed: {browserVoice.settings.rate.toFixed(1)}x
+                        </label>
+                        <input
+                          type="range"
+                          min="0.5"
+                          max="2"
+                          step="0.1"
+                          value={browserVoice.settings.rate}
+                          onChange={(e) => browserVoice.updateSettings({ rate: parseFloat(e.target.value) })}
+                          className="w-full"
+                        />
+                      </div>
+
+                      <button
+                        onClick={() => {
+                          const testText = "This is a test of your voice settings. How does this sound?";
+                          browserVoice.speak(testText);
+                        }}
+                        className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors duration-200"
+                      >
+                        Test Voice
+                      </button>
+                    </>
+                  )}
+
+                  {voiceType === "openai" && userTier === "premium" && (
+                    <>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Premium Voice</label>
+                        <select 
+                          value={openaiVoice.selectedVoice}
+                          onChange={(e) => openaiVoice.setSelectedVoice(e.target.value)}
+                          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        >
+                          {openaiVoice.voices.map((voice) => (
+                            <option key={voice.id} value={voice.id}>
+                              {voice.name} - {voice.description}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Speed: {openaiVoice.speed.toFixed(1)}x
+                        </label>
+                        <input
+                          type="range"
+                          min="0.25"
+                          max="4"
+                          step="0.25"
+                          value={openaiVoice.speed}
+                          onChange={(e) => openaiVoice.setSpeed(parseFloat(e.target.value))}
+                          className="w-full"
+                        />
+                      </div>
+
+                      <button
+                        onClick={() => {
+                          const testText = "This is a test of your premium voice settings. How does this sound?";
+                          openaiVoice.speak(testText);
+                        }}
+                        className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors duration-200"
+                      >
+                        Test Premium Voice
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
