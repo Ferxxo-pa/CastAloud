@@ -152,7 +152,7 @@ export default function CastAloud() {
 
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-fc-gray-50">
       <div className="max-w-md mx-auto">
 
 
@@ -160,29 +160,29 @@ export default function CastAloud() {
           {/* Input Section */}
           {!castText && (
             <div className="text-center mb-8">
-              <div className="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-fc-purple rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-white text-2xl">🔊</span>
               </div>
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">Cast Aloud</h1>
-              <p className="text-gray-600">Read casts aloud and write better replies</p>
+              <h1 className="text-2xl font-bold text-fc-gray-900 mb-2">Cast Aloud</h1>
+              <p className="text-fc-gray-600">Read casts aloud and write better replies</p>
             </div>
           )}
 
           {!castText && (
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 h-[320px]">
+            <div className="bg-white rounded-2xl p-6 shadow-sm border border-fc-gray-200 h-[320px]">
               <div className="space-y-4">
                 <input
                   type="url"
                   placeholder="Paste Farcaster post URL here..."
                   value={castUrl}
                   onChange={(e) => setCastUrl(e.target.value)}
-                  className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent text-base"
+                  className="w-full p-3 border border-fc-gray-200 rounded-xl focus:ring-2 focus:ring-fc-purple focus:border-transparent text-base"
                 />
 
                 <div className="flex items-center">
-                  <div className="flex-1 border-t border-gray-200"></div>
-                  <span className="px-3 text-xs text-gray-500">or</span>
-                  <div className="flex-1 border-t border-gray-200"></div>
+                  <div className="flex-1 border-t border-fc-gray-200"></div>
+                  <span className="px-3 text-xs text-fc-gray-500">or</span>
+                  <div className="flex-1 border-t border-fc-gray-200"></div>
                 </div>
 
                 <textarea
@@ -190,7 +190,7 @@ export default function CastAloud() {
                   value={inputText}
                   onChange={(e) => setInputText(e.target.value)}
                   rows={3}
-                  className="w-full p-3 border border-gray-200 rounded-xl resize-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-base"
+                  className="w-full p-3 border border-fc-gray-200 rounded-xl resize-none focus:ring-2 focus:ring-fc-purple focus:border-transparent text-base"
                 />
 
                 <button
@@ -203,7 +203,7 @@ export default function CastAloud() {
                     }
                   }}
                   disabled={!(castUrl.trim() || inputText.trim()) || extractCastMutation.isPending}
-                  className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-gray-300 text-white font-medium py-3 px-4 rounded-xl transition-colors duration-200"
+                  className="w-full bg-fc-purple hover:bg-fc-purple-dark disabled:bg-fc-gray-300 text-white font-medium py-3 px-4 rounded-xl transition-colors duration-200"
                 >
                   {extractCastMutation.isPending ? 'Loading...' : 'Continue →'}
                 </button>
