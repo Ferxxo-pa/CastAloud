@@ -34,10 +34,11 @@ export default function HomeSimple() {
           <div className="mt-6 p-4 bg-gray-50 rounded-lg">
             <h3 className="font-medium mb-2">How it works:</h3>
             <ol className="text-sm text-gray-600 space-y-1">
-              <li>1. 🔊 Click "Read This Cast" to hear the content</li>
-              <li>2. 🎙️ Click "Speak a Reply" to record your voice</li>
-              <li>3. 🤖 AI polishes your reply for clarity</li>
-              <li>4. ✔️ Copy and paste to Farcaster</li>
+              <li>1. 📝 Paste a Farcaster post URL or text directly</li>
+              <li>2. 🔊 Click "Read Aloud" to hear the content</li>
+              <li>3. ✍️ Type your reply in the text area</li>
+              <li>4. 🤖 Get AI feedback or polish your reply</li>
+              <li>5. 📋 Copy the improved reply to post on Farcaster</li>
             </ol>
           </div>
         </div>
