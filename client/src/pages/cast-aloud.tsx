@@ -158,15 +158,6 @@ export default function CastAloud() {
 
         <div className="p-4 space-y-4">
           {/* Input Section */}
-          {!castText && (
-            <div className="text-center mb-8">
-              <div className="w-16 h-16 bg-fc-purple rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-white text-2xl">🔊</span>
-              </div>
-              <h1 className="text-2xl font-bold text-fc-gray-900 mb-2">Cast Aloud</h1>
-              <p className="text-fc-gray-600">Read casts aloud and write better replies</p>
-            </div>
-          )}
 
           {!castText && (
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-fc-gray-200 h-[320px]">
