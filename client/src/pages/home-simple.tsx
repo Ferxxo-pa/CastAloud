@@ -56,24 +56,24 @@ export default function HomeSimple() {
     }
   };
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-fc-gray-50">
       <div className="max-w-md mx-auto p-4">
         <header className="mb-6">
           <div className="text-center">
-            <h1 className="text-2xl font-bold">Cast Aloud</h1>
-            <p className="text-gray-600 mt-2">
+            <h1 className="text-2xl font-bold text-fc-gray-900">Cast Aloud</h1>
+            <p className="text-fc-gray-600 mt-2">
               Accessibility tools for reading and replying to casts
             </p>
           </div>
         </header>
 
-        <div className="bg-white rounded-lg p-6 border relative">
+        <div className="bg-white rounded-lg p-6 border border-fc-gray-200 relative">
           <button
             onClick={readPageAloud}
             className={`absolute top-4 right-4 px-3 py-2 rounded-lg transition-colors duration-200 flex items-center gap-2 text-sm font-medium ${
               isSpeaking 
-                ? 'bg-red-100 hover:bg-red-200 text-red-600' 
-                : 'bg-purple-100 hover:bg-purple-200 text-purple-600'
+                ? 'bg-fc-error/10 hover:bg-fc-error/20 text-fc-error' 
+                : 'bg-fc-purple/10 hover:bg-fc-purple/20 text-fc-purple'
             }`}
             title={isSpeaking ? 'Stop reading' : 'Read page aloud'}
           >
@@ -96,21 +96,21 @@ export default function HomeSimple() {
               </>
             )}
           </button>
-          <h2 className="text-lg font-semibold mb-4">Try the Mini App</h2>
-          <p className="text-gray-600 mb-4">
+          <h2 className="text-lg font-semibold mb-4 text-fc-gray-900">Try the Mini App</h2>
+          <p className="text-fc-gray-600 mb-4">
             The mini app helps you read casts aloud and create voice replies with AI assistance.
           </p>
           
           <div className="space-y-3">
             <Link href="/cast-aloud?text=Hello%20world!%20This%20is%20a%20sample%20cast%20about%20the%20future%20of%20decentralized%20social%20networks.">
-              <button className="block w-full bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded-lg text-center font-medium">
+              <button className="block w-full bg-fc-purple hover:bg-fc-purple-dark text-white py-3 px-4 rounded-lg text-center font-medium">
                 Read Cast Aloud
               </button>
             </Link>
             
             <button 
               onClick={() => setShowVoiceSettings(!showVoiceSettings)}
-              className="block w-full bg-purple-500 hover:bg-purple-600 text-white py-3 px-4 rounded-lg text-center font-medium"
+              className="block w-full bg-fc-purple-light hover:bg-fc-purple text-white py-3 px-4 rounded-lg text-center font-medium"
             >
               Voice Settings
             </button>

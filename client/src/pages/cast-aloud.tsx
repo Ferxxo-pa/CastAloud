@@ -321,18 +321,18 @@ export default function CastAloud() {
           )}
 
           {/* Voice Settings at Bottom */}
-          <div className="mt-8 pt-4 border-t border-gray-200">
+          <div className="mt-8 pt-4 border-t border-fc-gray-200">
             <button
               onClick={() => setShowSettings(!showSettings)}
-              className="w-full flex items-center justify-center gap-2 p-3 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-xl transition-colors duration-200"
+              className="w-full flex items-center justify-center gap-2 p-3 text-fc-gray-600 hover:text-fc-purple hover:bg-fc-purple-light/10 rounded-xl transition-colors duration-200"
             >
               <span className="text-xl">⚙️</span>
               <span className="text-sm font-medium">Voice Settings</span>
             </button>
 
             {showSettings && (
-              <div className="mt-3 bg-white rounded-2xl p-4 shadow-sm border border-gray-200">
-                <h3 className="font-medium mb-3">Voice Settings</h3>
+              <div className="mt-3 bg-white rounded-2xl p-4 shadow-sm border border-fc-gray-200">
+                <h3 className="font-medium mb-3 text-fc-gray-900">Voice Settings</h3>
                 
                 <div className="space-y-4">
                   <div>
