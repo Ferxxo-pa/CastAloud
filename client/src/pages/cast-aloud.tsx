@@ -326,11 +326,7 @@ export default function CastAloud() {
               onClick={() => setShowSettings(!showSettings)}
               className="w-full flex items-center justify-center gap-2 p-3 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-xl transition-colors duration-200"
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"/>
-                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-                <path d="M12 17h.01"/>
-              </svg>
+              <span className="text-xl">⚙️</span>
               <span className="text-sm font-medium">Voice Settings</span>
             </button>
 
