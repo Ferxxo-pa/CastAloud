@@ -168,14 +168,6 @@ export default function CastAloud() {
                 onChange={(e) => setCastUrl(e.target.value)}
                 className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent text-base"
               />
-              
-              <button
-                onClick={handleExtractCast}
-                disabled={!castUrl.trim() || extractCastMutation.isPending}
-                className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-gray-300 text-white font-medium py-3 px-4 rounded-xl transition-colors duration-200"
-              >
-                {extractCastMutation.isPending ? 'Loading post...' : 'Load Post'}
-              </button>
 
               <div className="flex items-center">
                 <div className="flex-1 border-t border-gray-200"></div>
@@ -191,25 +183,20 @@ export default function CastAloud() {
                 className="w-full p-3 border border-gray-200 rounded-xl resize-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-base"
               />
 
-              {inputText.trim() && (
+              {(castUrl.trim() || inputText.trim()) && (
                 <button
                   onClick={() => {
-                    setCastText(inputText.trim());
-                    setInputText('');
+                    if (castUrl.trim()) {
+                      handleExtractCast();
+                    } else if (inputText.trim()) {
+                      setCastText(inputText.trim());
+                      setInputText('');
+                    }
                   }}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-xl transition-colors duration-200"
+                  disabled={extractCastMutation.isPending}
+                  className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-gray-300 text-white font-medium py-3 px-4 rounded-xl transition-colors duration-200"
                 >
-                  Continue →
-                </button>
-              )}
-              
-
-              
-
-              
-              {castText && (
-                <button className="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium py-3 px-4 rounded-xl transition-colors duration-200">
-                  Continue →
+                  {extractCastMutation.isPending ? 'Loading...' : 'Continue →'}
                 </button>
               )}
             </div>
