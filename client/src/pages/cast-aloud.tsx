@@ -210,22 +210,20 @@ export default function CastAloud() {
                   className="w-full p-3 border border-gray-200 rounded-xl resize-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-base"
                 />
 
-                {(castUrl.trim() || inputText.trim()) && (
-                  <button
-                    onClick={() => {
-                      if (castUrl.trim()) {
-                        handleExtractCast();
-                      } else if (inputText.trim()) {
-                        setCastText(inputText.trim());
-                        setInputText('');
-                      }
-                    }}
-                    disabled={extractCastMutation.isPending}
-                    className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-gray-300 text-white font-medium py-3 px-4 rounded-xl transition-colors duration-200"
-                  >
-                    {extractCastMutation.isPending ? 'Loading...' : 'Continue →'}
-                  </button>
-                )}
+                <button
+                  onClick={() => {
+                    if (castUrl.trim()) {
+                      handleExtractCast();
+                    } else if (inputText.trim()) {
+                      setCastText(inputText.trim());
+                      setInputText('');
+                    }
+                  }}
+                  disabled={!(castUrl.trim() || inputText.trim()) || extractCastMutation.isPending}
+                  className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-gray-300 text-white font-medium py-3 px-4 rounded-xl transition-colors duration-200"
+                >
+                  {extractCastMutation.isPending ? 'Loading...' : 'Continue →'}
+                </button>
               </div>
             </div>
           )}
