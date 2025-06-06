@@ -6,7 +6,22 @@ export default function HomeSimple() {
   const [showVoiceSettings, setShowVoiceSettings] = useState(false);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [selectedVoice, setSelectedVoice] = useState<SpeechSynthesisVoice | null>(null);
-  const [speechRate, setSpeechRate] = useState(0.9);
+  
+  // Load speech rate from localStorage
+  const [speechRate, setSpeechRate] = useState(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('voiceSettings');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          return parsed.speechRate || 0.9;
+        }
+      } catch (error) {
+        console.warn('Failed to load voice settings:', error);
+      }
+    }
+    return 0.9;
+  });
 
   // Load available voices
   useEffect(() => {

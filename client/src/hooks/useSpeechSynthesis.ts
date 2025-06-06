@@ -21,11 +21,39 @@ export default function useSpeechSynthesis(): UseSpeechSynthesisReturn {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isSupported] = useState(() => 'speechSynthesis' in window);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
-  const [settings, setSettings] = useState<VoiceSettings>({
-    rate: 0.8,    // Slightly slower for accessibility
-    pitch: 1,     // Normal pitch
-    volume: 1,    // Full volume
-    voice: null   // Will be set to default
+  
+  // Load settings from localStorage
+  const [settings, setSettings] = useState<VoiceSettings>(() => {
+    if (typeof window === 'undefined') {
+      return {
+        rate: 0.8,
+        pitch: 1,
+        volume: 1,
+        voice: null
+      };
+    }
+    
+    try {
+      const saved = localStorage.getItem('speechSynthesisSettings');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return {
+          rate: parsed.rate || 0.8,
+          pitch: parsed.pitch || 1,
+          volume: parsed.volume || 1,
+          voice: null // Voice will be restored separately
+        };
+      }
+    } catch (error) {
+      console.warn('Failed to load speech synthesis settings:', error);
+    }
+    
+    return {
+      rate: 0.8,
+      pitch: 1,
+      volume: 1,
+      voice: null
+    };
   });
 
   // Load available voices
@@ -36,13 +64,31 @@ export default function useSpeechSynthesis(): UseSpeechSynthesisReturn {
       const availableVoices = window.speechSynthesis.getVoices();
       setVoices(availableVoices);
       
-      // Set default voice (prefer English voices)
+      // Restore saved voice or set default
       if (availableVoices.length > 0 && !settings.voice) {
-        const englishVoice = availableVoices.find(voice => 
-          voice.lang.startsWith('en')
-        ) || availableVoices[0];
+        let voiceToSelect = null;
         
-        setSettings(prev => ({ ...prev, voice: englishVoice }));
+        // Try to restore saved voice
+        try {
+          const saved = localStorage.getItem('speechSynthesisSettings');
+          if (saved) {
+            const parsed = JSON.parse(saved);
+            if (parsed.voiceName) {
+              voiceToSelect = availableVoices.find(voice => voice.name === parsed.voiceName);
+            }
+          }
+        } catch (error) {
+          console.warn('Failed to restore saved voice:', error);
+        }
+        
+        // If no saved voice found, use default (prefer English voices)
+        if (!voiceToSelect) {
+          voiceToSelect = availableVoices.find(voice => 
+            voice.lang.startsWith('en')
+          ) || availableVoices[0];
+        }
+        
+        setSettings(prev => ({ ...prev, voice: voiceToSelect }));
       }
     };
 
@@ -56,7 +102,24 @@ export default function useSpeechSynthesis(): UseSpeechSynthesisReturn {
   }, [isSupported, settings.voice]);
 
   const updateSettings = useCallback((newSettings: Partial<VoiceSettings>) => {
-    setSettings(prev => ({ ...prev, ...newSettings }));
+    setSettings(prev => {
+      const updated = { ...prev, ...newSettings };
+      
+      // Save to localStorage
+      try {
+        const toSave = {
+          rate: updated.rate,
+          pitch: updated.pitch,
+          volume: updated.volume,
+          voiceName: updated.voice?.name || null
+        };
+        localStorage.setItem('speechSynthesisSettings', JSON.stringify(toSave));
+      } catch (error) {
+        console.warn('Failed to save speech synthesis settings:', error);
+      }
+      
+      return updated;
+    });
   }, []);
 
   const speak = useCallback((text: string) => {
