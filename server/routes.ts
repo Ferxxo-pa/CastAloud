@@ -89,11 +89,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Mini App manifest for Farcaster
   app.get("/manifest.json", (req, res) => {
     const baseUrl = `${req.protocol}://${req.get('host')}`;
+    const domain = req.get('host') || 'localhost:5000';
+    
     res.json({
       "accountAssociation": {
         "header": "eyJmaWQiOjEsInR5cGUiOiJjdXN0b2R5IiwibWFkZSI6MX0",
-        "payload": "eyJkb21haW4iOiJjYXN0YWxvdWQuY29tIn0",
-        "signature": "example_signature"
+        "payload": `eyJkb21haW4iOiIke domain.replace(':', '%3A')}"`,
+        "signature": "cast_aloud_signature_placeholder"
       },
       "frame": {
         "version": "1",
@@ -107,6 +109,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
         "webhookUrl": `${baseUrl}/api/frame/action`
       }
     });
+  });
+  
+  // Webhook for Farcaster Frame validation
+  app.post("/webhook/farcaster", (req, res) => {
+    const { type, data } = req.body;
+    
+    // Handle different webhook types
+    switch (type) {
+      case 'frame_validation':
+        res.json({ success: true, message: "Cast Aloud Frame validated" });
+        break;
+      case 'cast_action':
+        // Handle cast actions when frame is used
+        res.json({ success: true, message: "Action processed" });
+        break;
+      default:
+        res.json({ success: true, message: "Webhook received" });
+    }
+  });
+  
+  // TTS endpoint for Frame interactions
+  app.post("/api/tts", async (req, res) => {
+    try {
+      const { text, voice = "alloy" } = req.body;
+      
+      if (!text) {
+        return res.status(400).json({ error: "Text is required" });
+      }
+
+      const mp3 = await openai.audio.speech.create({
+        model: "tts-1",
+        voice: voice as any,
+        input: text.substring(0, 4096), // Limit text length
+      });
+
+      const buffer = Buffer.from(await mp3.arrayBuffer());
+      
+      res.setHeader('Content-Type', 'audio/mpeg');
+      res.setHeader('Content-Length', buffer.length);
+      res.send(buffer);
+    } catch (error) {
+      console.error('TTS error:', error);
+      res.status(500).json({ error: 'TTS generation failed' });
+    }
   });
   
   // App icon for Mini App
