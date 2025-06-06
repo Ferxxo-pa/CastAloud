@@ -20,7 +20,12 @@ export default function HomeSimple() {
   // API mutations
   const processContentMutation = useMutation({
     mutationFn: async (input: string) => {
-      const response = await apiRequest('POST', '/api/process-content', { input });
+      const response = await fetch('/api/process-content', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ input })
+      });
+      if (!response.ok) throw new Error('Failed to process content');
       return await response.json();
     },
     onSuccess: (data) => {
@@ -31,14 +36,24 @@ export default function HomeSimple() {
 
   const getFeedbackMutation = useMutation({
     mutationFn: async (text: string) => {
-      const response = await apiRequest('POST', '/api/feedback', { text });
+      const response = await fetch('/api/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text })
+      });
+      if (!response.ok) throw new Error('Failed to get feedback');
       return await response.json();
     }
   });
 
   const polishReplyMutation = useMutation({
     mutationFn: async (text: string) => {
-      const response = await apiRequest('POST', '/api/polish-reply', { text });
+      const response = await fetch('/api/polish-reply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text })
+      });
+      if (!response.ok) throw new Error('Failed to polish reply');
       return await response.json();
     },
     onSuccess: (data) => {
