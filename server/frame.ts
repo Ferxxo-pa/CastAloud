@@ -294,7 +294,7 @@ export async function handleFrameImage(req: Request, res: Response) {
           </text>
           
           <text x="600" y="500" font-family="Arial, sans-serif" font-size="20" fill="white" fill-opacity="0.8" text-anchor="middle">
-            ${message || 'Ready to record your voice reply'}
+            ${messageStr || 'Ready to record your voice reply'}
           </text>
         </svg>
       `;
