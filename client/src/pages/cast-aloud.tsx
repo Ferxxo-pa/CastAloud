@@ -11,6 +11,7 @@ import { apiRequest } from "@/lib/queryClient";
 export default function CastAloud() {
   const urlParams = new URLSearchParams(window.location.search);
   const [castText, setCastText] = useState('');
+  const [inputText, setInputText] = useState('');
   const [castUrl, setCastUrl] = useState('');
   const [reply, setReply] = useState('');
   const [feedback, setFeedback] = useState('');
@@ -184,11 +185,23 @@ export default function CastAloud() {
 
               <textarea
                 placeholder="Or paste the cast text directly here..."
-                value={castText}
-                onChange={(e) => setCastText(e.target.value)}
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
                 rows={3}
                 className="w-full p-3 border border-gray-200 rounded-xl resize-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-base"
               />
+
+              {inputText.trim() && (
+                <button
+                  onClick={() => {
+                    setCastText(inputText.trim());
+                    setInputText('');
+                  }}
+                  className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-xl transition-colors duration-200"
+                >
+                  Continue →
+                </button>
+              )}
               
 
               
