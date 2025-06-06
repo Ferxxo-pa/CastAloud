@@ -147,64 +147,7 @@ export default function CastAloud() {
     }
   };
 
-  if (!castText) {
-    return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-        <div className="max-w-md mx-auto">
-          <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-white text-2xl">🔊</span>
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Cast Aloud</h1>
-            <p className="text-gray-600">Read casts aloud and write better replies</p>
-          </div>
 
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 h-[320px]">
-            <div className="space-y-4">
-              <input
-                type="url"
-                placeholder="Paste Farcaster post URL here..."
-                value={castUrl}
-                onChange={(e) => setCastUrl(e.target.value)}
-                className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent text-base"
-              />
-
-              <div className="flex items-center">
-                <div className="flex-1 border-t border-gray-200"></div>
-                <span className="px-3 text-xs text-gray-500">or</span>
-                <div className="flex-1 border-t border-gray-200"></div>
-              </div>
-
-              <textarea
-                placeholder="Or paste the cast text directly here..."
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-                rows={3}
-                className="w-full p-3 border border-gray-200 rounded-xl resize-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-base"
-              />
-
-              {(castUrl.trim() || inputText.trim()) && (
-                <button
-                  onClick={() => {
-                    if (castUrl.trim()) {
-                      handleExtractCast();
-                    } else if (inputText.trim()) {
-                      setCastText(inputText.trim());
-                      setInputText('');
-                    }
-                  }}
-                  disabled={extractCastMutation.isPending}
-                  className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-gray-300 text-white font-medium py-3 px-4 rounded-xl transition-colors duration-200"
-                >
-                  {extractCastMutation.isPending ? 'Loading...' : 'Continue →'}
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -231,6 +174,62 @@ export default function CastAloud() {
         </div>
 
         <div className="p-4 space-y-4">
+          {/* Input Section */}
+          {!castText && (
+            <div className="text-center mb-8">
+              <div className="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-white text-2xl">🔊</span>
+              </div>
+              <h1 className="text-2xl font-bold text-gray-900 mb-2">Cast Aloud</h1>
+              <p className="text-gray-600">Read casts aloud and write better replies</p>
+            </div>
+          )}
+
+          {!castText && (
+            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 h-[320px]">
+              <div className="space-y-4">
+                <input
+                  type="url"
+                  placeholder="Paste Farcaster post URL here..."
+                  value={castUrl}
+                  onChange={(e) => setCastUrl(e.target.value)}
+                  className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent text-base"
+                />
+
+                <div className="flex items-center">
+                  <div className="flex-1 border-t border-gray-200"></div>
+                  <span className="px-3 text-xs text-gray-500">or</span>
+                  <div className="flex-1 border-t border-gray-200"></div>
+                </div>
+
+                <textarea
+                  placeholder="Or paste the cast text directly here..."
+                  value={inputText}
+                  onChange={(e) => setInputText(e.target.value)}
+                  rows={3}
+                  className="w-full p-3 border border-gray-200 rounded-xl resize-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-base"
+                />
+
+                {(castUrl.trim() || inputText.trim()) && (
+                  <button
+                    onClick={() => {
+                      if (castUrl.trim()) {
+                        handleExtractCast();
+                      } else if (inputText.trim()) {
+                        setCastText(inputText.trim());
+                        setInputText('');
+                      }
+                    }}
+                    disabled={extractCastMutation.isPending}
+                    className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-gray-300 text-white font-medium py-3 px-4 rounded-xl transition-colors duration-200"
+                  >
+                    {extractCastMutation.isPending ? 'Loading...' : 'Continue →'}
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Voice Settings */}
           {showSettings && (
             <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-200">
