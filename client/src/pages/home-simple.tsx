@@ -1,8 +1,30 @@
 import { Link } from "wouter";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function HomeSimple() {
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [showVoiceSettings, setShowVoiceSettings] = useState(false);
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [selectedVoice, setSelectedVoice] = useState<SpeechSynthesisVoice | null>(null);
+  const [speechRate, setSpeechRate] = useState(0.9);
+
+  // Load available voices
+  useEffect(() => {
+    const loadVoices = () => {
+      const availableVoices = speechSynthesis.getVoices();
+      setVoices(availableVoices);
+      if (availableVoices.length > 0 && !selectedVoice) {
+        setSelectedVoice(availableVoices[0]);
+      }
+    };
+
+    loadVoices();
+    speechSynthesis.addEventListener('voiceschanged', loadVoices);
+    
+    return () => {
+      speechSynthesis.removeEventListener('voiceschanged', loadVoices);
+    };
+  }, [selectedVoice]);
 
   const readPageAloud = () => {
     const textToRead = `
@@ -23,7 +45,10 @@ export default function HomeSimple() {
       setIsSpeaking(false);
     } else {
       const utterance = new SpeechSynthesisUtterance(textToRead);
-      utterance.rate = 0.9;
+      utterance.rate = speechRate;
+      if (selectedVoice) {
+        utterance.voice = selectedVoice;
+      }
       utterance.onstart = () => setIsSpeaking(true);
       utterance.onend = () => setIsSpeaking(false);
       utterance.onerror = () => setIsSpeaking(false);
@@ -79,12 +104,69 @@ export default function HomeSimple() {
               </button>
             </Link>
             
-            <Link href="/cast-aloud?text=Just%20published%20my%20thoughts%20on%20web3%20accessibility.%20Making%20technology%20inclusive%20for%20everyone%20should%20be%20our%20top%20priority.">
-              <button className="block w-full bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-lg text-center font-medium">
-                Write AI-Assisted Reply
-              </button>
-            </Link>
+            <button 
+              onClick={() => setShowVoiceSettings(!showVoiceSettings)}
+              className="block w-full bg-purple-500 hover:bg-purple-600 text-white py-3 px-4 rounded-lg text-center font-medium"
+            >
+              Voice Settings
+            </button>
           </div>
+
+          {showVoiceSettings && (
+            <div className="mt-4 p-4 bg-white border rounded-lg">
+              <h3 className="font-medium mb-3">Voice Settings</h3>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Voice</label>
+                  <select 
+                    value={selectedVoice?.name || ''}
+                    onChange={(e) => {
+                      const voice = voices.find(v => v.name === e.target.value);
+                      setSelectedVoice(voice || null);
+                    }}
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  >
+                    {voices.map((voice) => (
+                      <option key={voice.name} value={voice.name}>
+                        {voice.name} ({voice.lang})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Speed: {speechRate.toFixed(1)}x
+                  </label>
+                  <input
+                    type="range"
+                    min="0.5"
+                    max="2"
+                    step="0.1"
+                    value={speechRate}
+                    onChange={(e) => setSpeechRate(parseFloat(e.target.value))}
+                    className="w-full"
+                  />
+                </div>
+
+                <button
+                  onClick={() => {
+                    const testText = "This is a test of your voice settings. How does this sound?";
+                    const utterance = new SpeechSynthesisUtterance(testText);
+                    utterance.rate = speechRate;
+                    if (selectedVoice) {
+                      utterance.voice = selectedVoice;
+                    }
+                    speechSynthesis.speak(utterance);
+                  }}
+                  className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors duration-200"
+                >
+                  Test Voice
+                </button>
+              </div>
+            </div>
+          )}
 
           <div className="mt-6 p-4 bg-gray-50 rounded-lg">
             <h3 className="font-medium mb-2">How it works:</h3>
