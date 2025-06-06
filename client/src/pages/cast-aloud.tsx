@@ -20,6 +20,8 @@ export default function CastAloud() {
   const [showSettings, setShowSettings] = useState(false);
   const [voiceType, setVoiceType] = useState<"browser" | "openai">("browser");
   const [isLoading, setIsLoading] = useState(false);
+  const [userTier, setUserTier] = useState<"free" | "premium">("free");
+  const [showPaymentInfo, setShowPaymentInfo] = useState(false);
 
   const browserVoice = useSpeechSynthesis();
   const openaiVoice = useOpenAITTS();
@@ -235,49 +237,176 @@ export default function CastAloud() {
               
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Voice</label>
-                  <select 
-                    value={browserVoice.settings.voice?.name || ''}
-                    onChange={(e) => {
-                      const voice = browserVoice.voices.find(v => v.name === e.target.value);
-                      if (voice) {
-                        browserVoice.updateSettings({ voice });
-                      }
-                    }}
-                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  >
-                    {browserVoice.voices.map((voice) => (
-                      <option key={voice.name} value={voice.name}>
-                        {voice.name} ({voice.lang})
-                      </option>
-                    ))}
-                  </select>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Voice Type</label>
+                  <div className="space-y-2">
+                    <div className="flex items-center">
+                      <input
+                        type="radio"
+                        id="browser-voices"
+                        name="voiceType"
+                        value="browser"
+                        checked={voiceType === "browser"}
+                        onChange={(e) => setVoiceType(e.target.value as "browser")}
+                        className="mr-2"
+                      />
+                      <label htmlFor="browser-voices" className="text-sm">
+                        Browser Voices (Free)
+                      </label>
+                    </div>
+                    <div className="flex items-center">
+                      <input
+                        type="radio"
+                        id="premium-voices"
+                        name="voiceType"
+                        value="openai"
+                        checked={voiceType === "openai"}
+                        onChange={(e) => {
+                          if (userTier === "premium") {
+                            setVoiceType(e.target.value as "openai");
+                          } else {
+                            setShowPaymentInfo(true);
+                          }
+                        }}
+                        className="mr-2"
+                      />
+                      <label htmlFor="premium-voices" className="text-sm flex items-center">
+                        Premium AI Voices 
+                        {userTier === "free" && (
+                          <span className="ml-1 px-2 py-0.5 bg-amber-100 text-amber-800 text-xs rounded-full">
+                            Upgrade Required
+                          </span>
+                        )}
+                      </label>
+                    </div>
+                  </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Speed: {browserVoice.settings.rate.toFixed(1)}x
-                  </label>
-                  <input
-                    type="range"
-                    min="0.5"
-                    max="2"
-                    step="0.1"
-                    value={browserVoice.settings.rate}
-                    onChange={(e) => browserVoice.updateSettings({ rate: parseFloat(e.target.value) })}
-                    className="w-full"
-                  />
-                </div>
+                {voiceType === "browser" && (
+                  <>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Voice</label>
+                      <select 
+                        value={browserVoice.settings.voice?.name || ''}
+                        onChange={(e) => {
+                          const voice = browserVoice.voices.find(v => v.name === e.target.value);
+                          if (voice) {
+                            browserVoice.updateSettings({ voice });
+                          }
+                        }}
+                        className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      >
+                        {browserVoice.voices.map((voice) => (
+                          <option key={voice.name} value={voice.name}>
+                            {voice.name} ({voice.lang})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
 
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Speed: {browserVoice.settings.rate.toFixed(1)}x
+                      </label>
+                      <input
+                        type="range"
+                        min="0.5"
+                        max="2"
+                        step="0.1"
+                        value={browserVoice.settings.rate}
+                        onChange={(e) => browserVoice.updateSettings({ rate: parseFloat(e.target.value) })}
+                        className="w-full"
+                      />
+                    </div>
+
+                    <button
+                      onClick={() => {
+                        const testText = "This is a test of your voice settings. How does this sound?";
+                        browserVoice.speak(testText);
+                      }}
+                      className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors duration-200"
+                    >
+                      Test Voice
+                    </button>
+                  </>
+                )}
+
+                {voiceType === "openai" && userTier === "premium" && (
+                  <>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Premium Voice</label>
+                      <select 
+                        value={openaiVoice.selectedVoice}
+                        onChange={(e) => openaiVoice.setSelectedVoice(e.target.value)}
+                        className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      >
+                        {openaiVoice.voices.map((voice) => (
+                          <option key={voice.id} value={voice.id}>
+                            {voice.name} - {voice.description}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Speed: {openaiVoice.speed.toFixed(1)}x
+                      </label>
+                      <input
+                        type="range"
+                        min="0.25"
+                        max="4"
+                        step="0.25"
+                        value={openaiVoice.speed}
+                        onChange={(e) => openaiVoice.setSpeed(parseFloat(e.target.value))}
+                        className="w-full"
+                      />
+                    </div>
+
+                    <button
+                      onClick={() => {
+                        const testText = "This is a test of your premium voice settings. How does this sound?";
+                        openaiVoice.speak(testText);
+                      }}
+                      className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors duration-200"
+                    >
+                      Test Premium Voice
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Payment Information Modal */}
+          {showPaymentInfo && (
+            <div className="bg-amber-50 rounded-2xl p-4 shadow-sm border border-amber-200">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="font-medium text-amber-900">Upgrade to Premium</h3>
                 <button
-                  onClick={() => {
-                    const testText = "This is a test of your voice settings. How does this sound?";
-                    browserVoice.speak(testText);
-                  }}
-                  className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors duration-200"
+                  onClick={() => setShowPaymentInfo(false)}
+                  className="text-amber-600 hover:text-amber-800"
                 >
-                  Test Voice
+                  ✕
                 </button>
+              </div>
+              
+              <div className="space-y-3 text-sm text-amber-800">
+                <p>Get access to premium AI voices with natural speech patterns and multiple language options.</p>
+                
+                <div className="bg-white rounded-lg p-3 border">
+                  <p className="font-medium mb-2">Annual Subscription: $49/year</p>
+                  <p className="text-xs mb-2">Send payment to our wallet address:</p>
+                  <div className="bg-gray-100 p-2 rounded text-xs font-mono break-all">
+                    0x742d35Cc6634C0532925a3b8D497cB2b4af27ab5
+                  </div>
+                  <p className="text-xs mt-2 text-gray-600">
+                    Supports ETH, USDC, USDT. Access granted within 24 hours after payment verification.
+                  </p>
+                </div>
+
+                <p className="text-xs">
+                  Contact support with your wallet address and transaction hash for faster verification.
+                </p>
               </div>
             </div>
           )}
