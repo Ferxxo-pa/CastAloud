@@ -122,6 +122,42 @@ export default function HomeSimple() {
               
               <div className="space-y-4">
                 <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Voice Type</label>
+                  <div className="space-y-2">
+                    <div className="flex items-center">
+                      <input
+                        type="radio"
+                        id="browser-voices"
+                        name="voiceType"
+                        value="browser"
+                        checked={true}
+                        readOnly
+                        className="mr-2"
+                      />
+                      <label htmlFor="browser-voices" className="text-sm">
+                        Browser Voices (Free)
+                      </label>
+                    </div>
+                    <div className="flex items-center opacity-50">
+                      <input
+                        type="radio"
+                        id="premium-voices"
+                        name="voiceType"
+                        value="openai"
+                        disabled
+                        className="mr-2"
+                      />
+                      <label htmlFor="premium-voices" className="text-sm flex items-center text-gray-400">
+                        Premium AI Voices
+                        <span className="ml-1 px-2 py-0.5 bg-gray-100 text-gray-500 text-xs rounded-full">
+                          Coming Soon
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Voice</label>
                   <select 
                     value={selectedVoice?.name || ''}
