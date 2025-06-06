@@ -28,8 +28,24 @@ export default function HomeSimple() {
     const loadVoices = () => {
       const availableVoices = speechSynthesis.getVoices();
       setVoices(availableVoices);
+      
       if (availableVoices.length > 0 && !selectedVoice) {
-        setSelectedVoice(availableVoices[0]);
+        // Try to restore saved voice
+        let voiceToSelect = null;
+        try {
+          const saved = localStorage.getItem('voiceSettings');
+          if (saved) {
+            const parsed = JSON.parse(saved);
+            if (parsed.voiceName) {
+              voiceToSelect = availableVoices.find(voice => voice.name === parsed.voiceName);
+            }
+          }
+        } catch (error) {
+          console.warn('Failed to restore saved voice:', error);
+        }
+        
+        // Use saved voice or default to first available
+        setSelectedVoice(voiceToSelect || availableVoices[0]);
       }
     };
 
@@ -40,6 +56,31 @@ export default function HomeSimple() {
       speechSynthesis.removeEventListener('voiceschanged', loadVoices);
     };
   }, [selectedVoice]);
+
+  // Save voice settings to localStorage
+  const saveVoiceSettings = (voice: SpeechSynthesisVoice | null, rate: number) => {
+    try {
+      const settings = {
+        voiceName: voice?.name || null,
+        speechRate: rate
+      };
+      localStorage.setItem('voiceSettings', JSON.stringify(settings));
+    } catch (error) {
+      console.warn('Failed to save voice settings:', error);
+    }
+  };
+
+  // Update voice selection with persistence
+  const handleVoiceChange = (voice: SpeechSynthesisVoice | null) => {
+    setSelectedVoice(voice);
+    saveVoiceSettings(voice, speechRate);
+  };
+
+  // Update speech rate with persistence
+  const handleRateChange = (rate: number) => {
+    setSpeechRate(rate);
+    saveVoiceSettings(selectedVoice, rate);
+  };
 
   const readPageAloud = () => {
     const textToRead = `
@@ -178,9 +219,9 @@ export default function HomeSimple() {
                     value={selectedVoice?.name || ''}
                     onChange={(e) => {
                       const voice = voices.find(v => v.name === e.target.value);
-                      setSelectedVoice(voice || null);
+                      handleVoiceChange(voice || null);
                     }}
-                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full p-2 border border-fc-gray-300 rounded-md focus:ring-2 focus:ring-fc-purple focus:border-transparent"
                   >
                     {voices.map((voice) => (
                       <option key={voice.name} value={voice.name}>
@@ -200,7 +241,7 @@ export default function HomeSimple() {
                     max="2"
                     step="0.1"
                     value={speechRate}
-                    onChange={(e) => setSpeechRate(parseFloat(e.target.value))}
+                    onChange={(e) => handleRateChange(parseFloat(e.target.value))}
                     className="w-full"
                   />
                 </div>
