@@ -188,13 +188,25 @@ export default function CastAloud() {
           {!castText && (
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 h-[320px]">
               <div className="space-y-4">
-                <input
-                  type="url"
-                  placeholder="Paste Farcaster post URL here..."
-                  value={castUrl}
-                  onChange={(e) => setCastUrl(e.target.value)}
-                  className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent text-base"
-                />
+                <div className="relative">
+                  <input
+                    type="url"
+                    placeholder="Paste Farcaster post URL here..."
+                    value={castUrl}
+                    onChange={(e) => setCastUrl(e.target.value)}
+                    className="w-full p-3 pr-12 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent text-lg"
+                  />
+                  <button
+                    onClick={() => {
+                      const testText = "Paste your Farcaster post link in this box";
+                      currentVoiceSystem.speak(testText);
+                    }}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 text-gray-400 hover:text-purple-600 rounded"
+                    title="Hear instructions"
+                  >
+                    🔊
+                  </button>
+                </div>
 
                 <div className="flex items-center">
                   <div className="flex-1 border-t border-gray-200"></div>
@@ -202,13 +214,25 @@ export default function CastAloud() {
                   <div className="flex-1 border-t border-gray-200"></div>
                 </div>
 
-                <textarea
-                  placeholder="Or paste the cast text directly here..."
-                  value={inputText}
-                  onChange={(e) => setInputText(e.target.value)}
-                  rows={3}
-                  className="w-full p-3 border border-gray-200 rounded-xl resize-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-base"
-                />
+                <div className="relative">
+                  <textarea
+                    placeholder="Or type your message here..."
+                    value={inputText}
+                    onChange={(e) => setInputText(e.target.value)}
+                    rows={3}
+                    className="w-full p-3 pr-12 border border-gray-200 rounded-xl resize-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-lg"
+                  />
+                  <button
+                    onClick={() => {
+                      const testText = "Type your message in this text box";
+                      currentVoiceSystem.speak(testText);
+                    }}
+                    className="absolute right-3 top-3 p-1 text-gray-400 hover:text-purple-600 rounded"
+                    title="Hear instructions"
+                  >
+                    🔊
+                  </button>
+                </div>
 
                 <button
                   onClick={() => {
@@ -220,9 +244,9 @@ export default function CastAloud() {
                     }
                   }}
                   disabled={!(castUrl.trim() || inputText.trim()) || extractCastMutation.isPending}
-                  className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-gray-300 text-white font-medium py-3 px-4 rounded-xl transition-colors duration-200"
+                  className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-gray-300 text-white font-bold py-4 px-6 rounded-xl transition-colors duration-200 text-xl"
                 >
-                  {extractCastMutation.isPending ? 'Loading...' : 'Continue →'}
+                  {extractCastMutation.isPending ? '⏳ Loading...' : '➡️ Continue'}
                 </button>
               </div>
             </div>
@@ -348,13 +372,13 @@ export default function CastAloud() {
               
               <button 
                 onClick={handleReadCast}
-                className={`w-full font-medium py-3 px-4 rounded-xl transition-colors duration-200 ${
+                className={`w-full font-bold py-4 px-6 rounded-xl transition-colors duration-200 text-xl ${
                   currentVoiceSystem.isSpeaking 
                     ? 'bg-red-500 hover:bg-red-600 text-white' 
                     : 'bg-purple-600 hover:bg-purple-700 text-white'
                 }`}
               >
-                {currentVoiceSystem.isSpeaking ? 'Stop Reading' : 'Read Aloud'}
+                {currentVoiceSystem.isSpeaking ? '🛑 Stop Reading' : '🔊 Read Aloud'}
               </button>
             </div>
           )}
@@ -364,29 +388,41 @@ export default function CastAloud() {
             <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-200">
               <h2 className="text-lg font-semibold text-gray-900 mb-3">Write a reply</h2>
             
-            <textarea
-              placeholder="What's your reply?"
-              value={reply}
-              onChange={(e) => setReply(e.target.value)}
-              rows={3}
-              className="w-full p-3 border border-gray-200 rounded-xl resize-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-base"
-            />
+            <div className="relative">
+              <textarea
+                placeholder="Type your reply here..."
+                value={reply}
+                onChange={(e) => setReply(e.target.value)}
+                rows={4}
+                className="w-full p-4 pr-12 border border-gray-200 rounded-xl resize-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-lg"
+              />
+              <button
+                onClick={() => {
+                  const testText = "Type your reply to this message in this text box";
+                  currentVoiceSystem.speak(testText);
+                }}
+                className="absolute right-3 top-3 p-1 text-gray-400 hover:text-purple-600 rounded"
+                title="Hear instructions"
+              >
+                🔊
+              </button>
+            </div>
             
             <div className="flex space-x-2 mt-3">
               <button
                 onClick={handleGetFeedback}
                 disabled={!reply.trim() || getFeedbackMutation.isPending}
-                className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 text-white font-medium py-2 px-4 rounded-xl transition-colors duration-200"
+                className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 text-white font-bold py-3 px-4 rounded-xl transition-colors duration-200 text-lg"
               >
-                {getFeedbackMutation.isPending ? 'Getting feedback...' : 'Get Feedback'}
+                {getFeedbackMutation.isPending ? '⏳ Getting...' : '💡 Get Help'}
               </button>
               
               <button
                 onClick={handlePolishReply}
                 disabled={!reply.trim() || polishReplyMutation.isPending}
-                className="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-gray-300 text-white font-medium py-2 px-4 rounded-xl transition-colors duration-200"
+                className="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-gray-300 text-white font-bold py-3 px-4 rounded-xl transition-colors duration-200 text-lg"
               >
-                {polishReplyMutation.isPending ? 'Polishing...' : 'Polish Reply'}
+                {polishReplyMutation.isPending ? '⏳ Fixing...' : '✨ Fix Text'}
               </button>
             </div>
             </div>
