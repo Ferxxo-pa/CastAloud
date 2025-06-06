@@ -330,33 +330,7 @@ export default function CastAloud() {
             </div>
           )}
 
-          {/* Cast URL Input */}
-          {!castText && (
-            <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-200">
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Paste Warpcast Post URL
-                  </label>
-                  <input
-                    type="url"
-                    placeholder="https://warpcast.com/username/0x..."
-                    value={castUrl}
-                    onChange={(e) => setCastUrl(e.target.value)}
-                    className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent text-base"
-                  />
-                </div>
-                
-                <button
-                  onClick={handleExtractCast}
-                  disabled={!castUrl.trim() || extractCastMutation.isPending}
-                  className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-gray-300 text-white font-medium py-3 px-4 rounded-xl transition-colors duration-200"
-                >
-                  {extractCastMutation.isPending ? 'Loading post...' : 'Load Post'}
-                </button>
-              </div>
-            </div>
-          )}
+
 
           {/* Cast Content */}
           {castText && (
