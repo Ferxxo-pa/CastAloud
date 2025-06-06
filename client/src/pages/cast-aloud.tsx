@@ -159,7 +159,7 @@ export default function CastAloud() {
             <p className="text-gray-600">Read casts aloud and write better replies</p>
           </div>
 
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 min-h-[280px]">
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 h-[280px]">
             <div className="space-y-4">
               <input
                 type="url"
