@@ -253,29 +253,20 @@ export default function CastAloud() {
                         Browser Voices (Free)
                       </label>
                     </div>
-                    <div className="flex items-center">
+                    <div className="flex items-center opacity-50">
                       <input
                         type="radio"
                         id="premium-voices"
                         name="voiceType"
                         value="openai"
-                        checked={voiceType === "openai"}
-                        onChange={(e) => {
-                          if (userTier === "premium") {
-                            setVoiceType(e.target.value as "openai");
-                          } else {
-                            setShowPaymentInfo(true);
-                          }
-                        }}
+                        disabled
                         className="mr-2"
                       />
-                      <label htmlFor="premium-voices" className="text-sm flex items-center">
-                        Premium AI Voices 
-                        {userTier === "free" && (
-                          <span className="ml-1 px-2 py-0.5 bg-amber-100 text-amber-800 text-xs rounded-full">
-                            Upgrade Required
-                          </span>
-                        )}
+                      <label htmlFor="premium-voices" className="text-sm flex items-center text-gray-400">
+                        Premium AI Voices
+                        <span className="ml-1 px-2 py-0.5 bg-gray-100 text-gray-500 text-xs rounded-full">
+                          Coming Soon
+                        </span>
                       </label>
                     </div>
                   </div>
@@ -377,39 +368,7 @@ export default function CastAloud() {
             </div>
           )}
 
-          {/* Payment Information Modal */}
-          {showPaymentInfo && (
-            <div className="bg-amber-50 rounded-2xl p-4 shadow-sm border border-amber-200">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="font-medium text-amber-900">Upgrade to Premium</h3>
-                <button
-                  onClick={() => setShowPaymentInfo(false)}
-                  className="text-amber-600 hover:text-amber-800"
-                >
-                  ✕
-                </button>
-              </div>
-              
-              <div className="space-y-3 text-sm text-amber-800">
-                <p>Get access to premium AI voices with natural speech patterns and multiple language options.</p>
-                
-                <div className="bg-white rounded-lg p-3 border">
-                  <p className="font-medium mb-2">Annual Subscription: $49/year</p>
-                  <p className="text-xs mb-2">Send payment to our wallet address:</p>
-                  <div className="bg-gray-100 p-2 rounded text-xs font-mono break-all">
-                    0x742d35Cc6634C0532925a3b8D497cB2b4af27ab5
-                  </div>
-                  <p className="text-xs mt-2 text-gray-600">
-                    Supports ETH, USDC, USDT. Access granted within 24 hours after payment verification.
-                  </p>
-                </div>
 
-                <p className="text-xs">
-                  Contact support with your wallet address and transaction hash for faster verification.
-                </p>
-              </div>
-            </div>
-          )}
 
 
 
