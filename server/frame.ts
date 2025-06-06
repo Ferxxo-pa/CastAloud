@@ -83,21 +83,30 @@ export async function handleFrameIndex(req: Request, res: Response) {
   const cast = await storage.getCurrentCast();
   
   if (!cast) {
-    return res.status(404).send('No cast found');
+    // Create a sample cast if none exists
+    const sampleCast = await storage.createCast({
+      hash: 'sample',
+      authorFid: 1,
+      authorUsername: 'demo',
+      content: 'Welcome to Cast Aloud - your voice-enabled accessibility tool for Farcaster! This demo shows how you can listen to casts and reply using your voice.',
+      timestamp: new Date()
+    });
   }
 
+  const currentCast = await storage.getCurrentCast();
   const image = generateFrameImage(baseUrl, 'initial', { 
-    castId: cast.id,
-    author: cast.authorUsername,
-    content: cast.content.substring(0, 100) + (cast.content.length > 100 ? '...' : '')
+    castId: currentCast?.id || 1,
+    author: currentCast?.authorUsername || 'demo',
+    content: (currentCast?.content.substring(0, 80) || 'Demo content') + (currentCast && currentCast.content.length > 80 ? '...' : '')
   });
 
   const html = generateFrameHTML(
-    'Farcaster Voice Assistant',
+    'Cast Aloud - Voice Accessibility for Farcaster',
     image,
     [
-      { text: '🔊 Read Aloud', action: 'post' },
-      { text: '🎤 Voice Reply', action: 'post' }
+      { text: '🔊 Listen', action: 'post' },
+      { text: '🎤 Voice Reply', action: 'post' },
+      { text: '⚙️ Open App', action: 'link', target: baseUrl }
     ],
     undefined,
     `${baseUrl}/api/frame/action`
@@ -184,6 +193,9 @@ export async function handleFrameAction(req: Request, res: Response) {
 
 export async function handleFrameImage(req: Request, res: Response) {
   const { state, castId, author, content, message } = req.query;
+  const contentStr = typeof content === 'string' ? content : 'Welcome to Cast Aloud! This accessibility app helps you listen to casts and reply using your voice.';
+  const authorStr = typeof author === 'string' ? author : 'demo';
+  const messageStr = typeof message === 'string' ? message : '';
 
   // Generate SVG image based on state
   let svg = '';
@@ -194,8 +206,8 @@ export async function handleFrameImage(req: Request, res: Response) {
         <svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" style="stop-color:#7C3AED;stop-opacity:1" />
-              <stop offset="100%" style="stop-color:#6D28D9;stop-opacity:1" />
+              <stop offset="0%" style="stop-color:#8A63D2;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#6D4BAA;stop-opacity:1" />
             </linearGradient>
           </defs>
           
@@ -203,31 +215,38 @@ export async function handleFrameImage(req: Request, res: Response) {
           
           <!-- Header -->
           <rect x="50" y="50" width="1100" height="120" rx="20" fill="white" fill-opacity="0.95"/>
-          <text x="70" y="100" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#171717">
-            🔊 Farcaster Voice Assistant
+          <text x="70" y="100" font-family="Arial, sans-serif" font-size="36" font-weight="bold" fill="#171717">
+            🔊 Cast Aloud
           </text>
-          <text x="70" y="135" font-family="Arial, sans-serif" font-size="20" fill="#6B7280">
-            Listen to casts and reply with your voice
+          <text x="70" y="135" font-family="Arial, sans-serif" font-size="22" fill="#6B7280">
+            Accessibility tools for reading and replying to casts
           </text>
           
           <!-- Cast Content -->
           <rect x="50" y="200" width="1100" height="280" rx="20" fill="white" fill-opacity="0.95"/>
-          <text x="70" y="240" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#7C3AED">
-            @${author || 'user'}
+          <text x="70" y="240" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#8A63D2">
+            @${authorStr}
           </text>
-          <text x="70" y="280" font-family="Arial, sans-serif" font-size="24" fill="#171717">
-            ${content || 'Sample cast content...'}
-          </text>
+          <foreignObject x="70" y="260" width="1060" height="180">
+            <div xmlns="http://www.w3.org/1999/xhtml" style="font-family: Arial, sans-serif; font-size: 24px; color: #171717; line-height: 1.4; padding: 10px; word-wrap: break-word;">
+              ${contentStr.substring(0, 120)}${contentStr.length > 120 ? '...' : ''}
+            </div>
+          </foreignObject>
           
           <!-- Action Buttons Preview -->
-          <rect x="70" y="420" width="200" height="50" rx="25" fill="#7C3AED"/>
-          <text x="130" y="450" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="white" text-anchor="middle">
-            🔊 Read Aloud
+          <rect x="70" y="520" width="180" height="50" rx="25" fill="#8A63D2"/>
+          <text x="160" y="550" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="white" text-anchor="middle">
+            🔊 Listen
           </text>
           
-          <rect x="300" y="420" width="200" height="50" rx="25" fill="#16A34A"/>
-          <text x="400" y="450" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="white" text-anchor="middle">
-            🎤 Voice Reply
+          <rect x="270" y="520" width="180" height="50" rx="25" fill="#16A34A"/>
+          <text x="360" y="550" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="white" text-anchor="middle">
+            🎤 Reply
+          </text>
+          
+          <rect x="470" y="520" width="180" height="50" rx="25" fill="#6B7280"/>
+          <text x="560" y="550" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="white" text-anchor="middle">
+            ⚙️ Open App
           </text>
         </svg>
       `;

@@ -85,6 +85,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/frame", handleFrameIndex);
   app.post("/api/frame/action", handleFrameAction);
   app.get("/api/frame/image", handleFrameImage);
+  
+  // Mini App manifest for Farcaster
+  app.get("/manifest.json", (req, res) => {
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
+    res.json({
+      "accountAssociation": {
+        "header": "eyJmaWQiOjEsInR5cGUiOiJjdXN0b2R5IiwibWFkZSI6MX0",
+        "payload": "eyJkb21haW4iOiJjYXN0YWxvdWQuY29tIn0",
+        "signature": "example_signature"
+      },
+      "frame": {
+        "version": "1",
+        "name": "Cast Aloud",
+        "iconUrl": `${baseUrl}/icon.png`,
+        "homeUrl": baseUrl,
+        "imageUrl": `${baseUrl}/api/frame/image?state=initial`,
+        "buttonTitle": "Open Cast Aloud",
+        "splashImageUrl": `${baseUrl}/api/frame/image?state=initial`,
+        "splashBackgroundColor": "#8A63D2",
+        "webhookUrl": `${baseUrl}/api/frame/action`
+      }
+    });
+  });
+  
+  // App icon for Mini App
+  app.get("/icon.png", (req, res) => {
+    // Generate SVG icon and convert to PNG response
+    const svg = `
+      <svg width="256" height="256" xmlns="http://www.w3.org/2000/svg">
+        <rect width="256" height="256" rx="32" fill="#8A63D2"/>
+        <circle cx="128" cy="128" r="60" fill="white" opacity="0.9"/>
+        <text x="128" y="145" font-family="Arial, sans-serif" font-size="48" fill="#8A63D2" text-anchor="middle">🔊</text>
+      </svg>
+    `;
+    res.setHeader('Content-Type', 'image/svg+xml');
+    res.send(svg);
+  });
 
   // Voice recorder page for complex interactions
   app.get("/voice-recorder", (req, res) => {
