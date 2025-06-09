@@ -5,7 +5,6 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import HomeSimple from "@/pages/home-simple";
 import CastAloud from "@/pages/cast-aloud";
-import PremiumDemo from "@/pages/premium-demo";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -13,7 +12,6 @@ function Router() {
     <Switch>
       <Route path="/" component={HomeSimple} />
       <Route path="/cast-aloud" component={CastAloud} />
-      <Route path="/premium" component={PremiumDemo} />
       <Route component={NotFound} />
     </Switch>
   );

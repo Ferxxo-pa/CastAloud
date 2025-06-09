@@ -38,7 +38,7 @@ export const voiceComments = pgTable("voice_comments", {
 
 export const payments = pgTable("payments", {
   id: serial("id").primaryKey(),
-  fid: integer("fid").notNull(), // Farcaster ID
+  userId: integer("user_id"),
   walletAddress: text("wallet_address").notNull(),
   amount: text("amount").notNull(), // Crypto amount as string
   currency: text("currency").notNull(), // ETH, USDC, etc.
@@ -46,9 +46,7 @@ export const payments = pgTable("payments", {
   blockNumber: integer("block_number"),
   verified: boolean("verified").default(false),
   subscriptionMonths: integer("subscription_months").default(12), // Default 1 year
-  paymentAddress: text("payment_address").notNull(), // Where payment was sent
   createdAt: timestamp("created_at").defaultNow(),
-  expiresAt: timestamp("expires_at"), // When subscription expires
 });
 
 export const insertUserSchema = createInsertSchema(users).pick({
