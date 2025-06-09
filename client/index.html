@@ -33,6 +33,17 @@
     <!-- Mini App manifest -->
     <link rel="manifest" href="/manifest.json" />
     
+    <!-- Service Worker for Mini App -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(registration => console.log('SW registered:', registration))
+            .catch(error => console.log('SW registration failed:', error));
+        });
+      }
+    </script>
+    
     <!-- Theme -->
     <meta name="theme-color" content="#8A63D2" />
   </head>

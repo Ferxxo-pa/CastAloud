@@ -240,9 +240,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Service Worker for Mini App
+  app.get("/sw.js", (req, res) => {
+    res.setHeader('Content-Type', 'application/javascript');
+    res.setHeader('Service-Worker-Allowed', '/');
+    res.sendFile('sw.js', { root: './client' });
+  });
+
   // App icon for Mini App
   app.get("/icon.png", (req, res) => {
-    // Generate SVG icon and convert to PNG response
     const svg = `
       <svg width="256" height="256" xmlns="http://www.w3.org/2000/svg">
         <rect width="256" height="256" rx="32" fill="#8A63D2"/>
@@ -251,6 +257,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       </svg>
     `;
     res.setHeader('Content-Type', 'image/svg+xml');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
     res.send(svg);
   });
 
