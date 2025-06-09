@@ -156,11 +156,12 @@ export async function handleFrameIndex(req: Request, res: Response) {
     'Cast Aloud - Voice Accessibility for Farcaster',
     image,
     [
-      { text: '🔊 Listen', action: 'post' },
+      { text: '🔊 Read Aloud', action: 'post' },
       { text: '🎤 Voice Reply', action: 'post' },
-      { text: '⚙️ Open App', action: 'link', target: baseUrl }
+      { text: '⚙️ Settings', action: 'post' },
+      { text: '📱 Open Full App', action: 'link', target: baseUrl }
     ],
-    undefined,
+    'Paste Farcaster post URL or text directly',
     `${baseUrl}/api/frame/action`
   );
 
@@ -265,33 +266,33 @@ export async function handleFrameAction(req: Request, res: Response) {
         }
         break;
 
-      case 3: // Back or other actions
+      case 3: // Settings - Voice speed and options
         {
-          if (inputText && inputText.trim()) {
-            // Process text input if provided
-            const polishedText = await polishReply(inputText.trim());
-            
-            const image = generateFrameImage(baseUrl, 'success', {
-              message: `Reply polished: "${polishedText.substring(0, 60)}..."`
-            });
+          const image = generateFrameImage(baseUrl, 'settings', {
+            message: 'Voice Settings - Adjust speed and preferences'
+          });
 
-            const html = generateFrameHTML(
-              'Cast Aloud - Reply Enhanced',
-              image,
-              [
-                { text: '📝 Use This Reply', action: 'link', target: `https://warpcast.com/~/compose?text=${encodeURIComponent(polishedText)}` },
-                { text: '✏️ Edit More', action: 'post' },
-                { text: '🔄 Start Over', action: 'post' }
-              ],
-              undefined,
-              `${baseUrl}/api/frame/action`
-            );
+          const html = generateFrameHTML(
+            'Cast Aloud - Voice Settings',
+            image,
+            [
+              { text: '🐌 Slow Speed', action: 'post' },
+              { text: '⚡ Fast Speed', action: 'post' },
+              { text: '🔄 Back to Main', action: 'post' }
+            ],
+            'Enter text to test voice settings...',
+            `${baseUrl}/api/frame/action`
+          );
 
-            res.setHeader('Content-Type', 'text/html');
-            res.send(html);
-          } else {
-            return handleFrameIndex(req, res);
-          }
+          res.setHeader('Content-Type', 'text/html');
+          res.send(html);
+        }
+        break;
+
+      case 4: // Open Full App
+        {
+          // Redirect to the main app
+          return res.redirect(302, baseUrl);
         }
         break;
 
@@ -508,10 +509,87 @@ export async function handleFrameImage(req: Request, res: Response) {
     default:
       svg = `
         <svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
-          <rect width="1200" height="630" fill="#8A63D2"/>
-          <text x="600" y="280" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="white" text-anchor="middle">Cast Aloud</text>
-          <text x="600" y="330" font-family="Arial, sans-serif" font-size="24" fill="white" text-anchor="middle" opacity="0.9">Voice Accessibility for Farcaster</text>
-          <text x="600" y="380" font-family="Arial, sans-serif" font-size="18" fill="white" text-anchor="middle" opacity="0.8">Enter cast text below and click Listen or Voice Reply</text>
+          <rect width="1200" height="630" fill="#F9FAFB"/>
+          
+          <!-- Main Container matching Mini App -->
+          <rect x="40" y="40" width="1120" height="550" rx="16" fill="white" stroke="#E5E7EB" stroke-width="2"/>
+          
+          <!-- Header matching Mini App design -->
+          <rect x="60" y="60" width="1080" height="70" rx="8" fill="#FFFFFF"/>
+          <text x="100" y="90" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#1F2937">
+            Cast Aloud
+          </text>
+          <text x="100" y="110" font-family="Arial, sans-serif" font-size="14" fill="#6B7280">
+            Accessibility tools for reading and replying to casts
+          </text>
+          
+          <!-- Text Input Area matching Mini App -->
+          <rect x="80" y="150" width="1040" height="120" rx="8" fill="#F9FAFB" stroke="#D1D5DB" stroke-width="1"/>
+          <text x="100" y="175" font-family="Arial, sans-serif" font-size="12" fill="#6B7280">
+            Paste Farcaster post URL or text directly:
+          </text>
+          <text x="100" y="200" font-family="Arial, sans-serif" font-size="14" fill="#9CA3AF">
+            Enter content here to use voice accessibility features...
+          </text>
+          <text x="100" y="220" font-family="Arial, sans-serif" font-size="12" fill="#6B7280">
+            This helps people who have difficulty reading or writing
+          </text>
+          <text x="100" y="240" font-family="Arial, sans-serif" font-size="12" fill="#6B7280">
+            Use the buttons below to listen to content or get help with replies
+          </text>
+          <text x="100" y="255" font-family="Arial, sans-serif" font-size="11" fill="#9CA3AF">
+            Input text using the Frame text field below this image
+          </text>
+          
+          <!-- Button Row matching Mini App -->
+          <rect x="100" y="290" width="200" height="45" rx="22" fill="#8A63D2"/>
+          <text x="200" y="315" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="white" text-anchor="middle">
+            🔊 Read Aloud
+          </text>
+          
+          <rect x="320" y="290" width="200" height="45" rx="22" fill="#16A34A"/>
+          <text x="420" y="315" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="white" text-anchor="middle">
+            🎤 Voice Reply
+          </text>
+          
+          <rect x="540" y="290" width="150" height="45" rx="22" fill="#6B7280"/>
+          <text x="615" y="315" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="white" text-anchor="middle">
+            ⚙️ Settings
+          </text>
+          
+          <rect x="710" y="290" width="180" height="45" rx="22" fill="#059669"/>
+          <text x="800" y="315" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="white" text-anchor="middle">
+            📱 Open Full App
+          </text>
+          
+          <!-- Features Description -->
+          <rect x="80" y="360" width="1040" height="180" rx="8" fill="#F3F4F6"/>
+          <text x="100" y="385" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#374151">
+            Voice Accessibility Features:
+          </text>
+          <text x="100" y="410" font-family="Arial, sans-serif" font-size="13" fill="#6B7280">
+            • Read Aloud: Hear any Farcaster cast with natural voice synthesis
+          </text>
+          <text x="100" y="430" font-family="Arial, sans-serif" font-size="13" fill="#6B7280">
+            • Voice Reply: Record your response and get AI-powered text enhancement
+          </text>
+          <text x="100" y="450" font-family="Arial, sans-serif" font-size="13" fill="#6B7280">
+            • Settings: Adjust speech rate, voice selection, and accessibility preferences
+          </text>
+          <text x="100" y="470" font-family="Arial, sans-serif" font-size="13" fill="#6B7280">
+            • Persistent settings that save between sessions for personalized experience
+          </text>
+          <text x="100" y="495" font-family="Arial, sans-serif" font-size="13" fill="#8A63D2" font-weight="bold">
+            Enter text in the Frame input field below to start using these features
+          </text>
+          <text x="100" y="515" font-family="Arial, sans-serif" font-size="12" fill="#9CA3AF">
+            Designed specifically for people with reading and writing difficulties
+          </text>
+          
+          <!-- Footer -->
+          <text x="600" y="570" font-family="Arial, sans-serif" font-size="10" fill="#9CA3AF" text-anchor="middle">
+            Frame interface matches the full Mini App experience
+          </text>
         </svg>
       `;
   }
