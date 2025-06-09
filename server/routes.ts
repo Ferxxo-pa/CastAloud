@@ -81,7 +81,8 @@ async function getFeedbackOnComment(text: string): Promise<{ feedback: string; p
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Frame routes
+  // Frame routes - serve Frame at root for Mini App compatibility
+  app.get("/", handleFrameIndex);
   app.get("/frame", handleFrameIndex);
   app.post("/api/frame/action", handleFrameAction);
   app.get("/api/frame/image", handleFrameImage);
@@ -125,7 +126,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       "homeUrl": baseUrl,
       "iconUrl": `${baseUrl}/icon.png`,
       "splashImageUrl": `${baseUrl}/api/frame/image?state=initial`,
-      "splashBackgroundColor": "#8A63D2"
+      "splashBackgroundColor": "#8A63D2",
+      "webhookUrl": `${baseUrl}/api/frame/action`
     });
   });
   
