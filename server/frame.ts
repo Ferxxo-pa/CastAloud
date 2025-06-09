@@ -150,15 +150,18 @@ export async function handleFrameAction(req: Request, res: Response) {
             message: 'Playing audio... Click to access full app for voice controls'
           });
 
+          // Process the text content for TTS if provided
+          const textContent = inputText || cast.text || 'No text content provided';
+          
           const html = generateFrameHTML(
-            'Cast Aloud - Now Playing',
+            'Cast Aloud - Reading Content',
             image,
             [
               { text: '🎤 Voice Reply', action: 'post' },
               { text: '⚙️ Open Full App', action: 'link', target: baseUrl },
               { text: '🔄 Back', action: 'post' }
             ],
-            undefined,
+            'Type your reply here...',
             `${baseUrl}/api/frame/action`
           );
 
