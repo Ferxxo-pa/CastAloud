@@ -37,6 +37,14 @@ function generateFrameHTML(
 
   const inputTag = inputText ? `<meta property="fc:frame:input:text" content="${inputText}" />` : '';
   const postUrlTag = postUrl ? `<meta property="fc:frame:post_url" content="${postUrl}" />` : '';
+  
+  // Add required OG tags for proper embed
+  const ogTags = `
+    <meta property="og:title" content="${title}" />
+    <meta property="og:description" content="Voice accessibility tools for Farcaster. Listen to casts aloud and reply using voice." />
+    <meta property="og:image" content="${image}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="${postUrl || ''}" />`;
 
   return `<!DOCTYPE html>
 <html>
@@ -53,11 +61,7 @@ function generateFrameHTML(
     ${buttonTags}
     ${inputTag}
     ${postUrlTag}
-    
-    <!-- Open Graph tags for fallback -->
-    <meta property="og:title" content="${title}" />
-    <meta property="og:image" content="${image}" />
-    <meta property="og:description" content="Listen to casts and reply with your voice" />
+    ${ogTags}
   </head>
   <body>
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">

@@ -99,18 +99,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Mini App manifest for Farcaster
   app.get("/manifest.json", (req, res) => {
     const baseUrl = `${req.protocol}://${req.get('host')}`;
-    const domain = req.get('host') || 'castaloud.replit.app';
     
     res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
     res.json({
       "name": "Cast Aloud",
-      "version": "1.0.0", 
+      "version": "1.0.0",
       "description": "Voice accessibility tools for Farcaster. Listen to casts aloud and reply using voice technology.",
       "homeUrl": baseUrl,
       "iconUrl": `${baseUrl}/icon.png`,
       "splashImageUrl": `${baseUrl}/api/frame/image?state=initial`,
-      "splashBackgroundColor": "#8A63D2",
-      "webhookUrl": `${baseUrl}/api/frame/action`
+      "splashBackgroundColor": "#8A63D2"
     });
   });
   
