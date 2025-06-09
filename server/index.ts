@@ -61,13 +61,18 @@ app.use((req, res, next) => {
     throw err;
   });
 
-  // importantly only setup vite in development and after
-  // setting up all the other routes so the catch-all route
-  // doesn't interfere with the other routes
-  if (app.get("env") === "development") {
+  // Setup vite in development, serve static files in production
+  // Check NODE_ENV instead of app.get("env") for better reliability
+  if (process.env.NODE_ENV === "development") {
     await setupVite(app, server);
   } else {
-    serveStatic(app);
+    // In production, serve the built static files
+    try {
+      serveStatic(app);
+    } catch (error) {
+      console.log("Static files not found, falling back to vite dev server");
+      await setupVite(app, server);
+    }
   }
 
   // ALWAYS serve the app on port 5000

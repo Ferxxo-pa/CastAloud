@@ -86,26 +86,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/frame/action", handleFrameAction);
   app.get("/api/frame/image", handleFrameImage);
   
-  // Mini App manifest for Farcaster - required for testing
+  // Mini App manifest for Farcaster
   app.get("/manifest.json", (req, res) => {
     const baseUrl = `${req.protocol}://${req.get('host')}`;
     
     res.json({
+      "name": "Cast Aloud",
+      "short_name": "Cast Aloud",
+      "description": "Voice accessibility tools for reading and replying to Farcaster casts",
+      "start_url": "/",
+      "display": "standalone",
+      "background_color": "#8A63D2",
+      "theme_color": "#8A63D2",
+      "orientation": "portrait",
+      "scope": "/",
+      "icons": [
+        {
+          "src": "/icon.png",
+          "sizes": "256x256",
+          "type": "image/svg+xml",
+          "purpose": "any maskable"
+        }
+      ],
+      "categories": ["accessibility", "social", "utilities"],
+      "lang": "en",
+      "dir": "ltr",
+      "farcaster": {
+        "version": "1",
+        "name": "Cast Aloud",
+        "description": "Voice accessibility tools for Farcaster",
+        "iconUrl": `${baseUrl}/icon.png`,
+        "splashImageUrl": `${baseUrl}/api/frame/image?state=initial`,
+        "homeUrl": `${baseUrl}/`,
+        "buttonTitle": "Open Cast Aloud",
+        "splashBackgroundColor": "#8A63D2",
+        "webhookUrl": `${baseUrl}/api/frame/action`,
+        "features": ["voice", "accessibility", "tts", "transcription"]
+      },
       "accountAssociation": {
         "header": "eyJmaWQiOjEsInR5cGUiOiJjdXN0b2R5IiwibWFkZSI6MX0",
         "payload": "eyJkb21haW4iOiJjYXN0YWxvdWQuY29tIn0",
         "signature": "0x..."
-      },
-      "frame": {
-        "version": "1",
-        "name": "Cast Aloud",
-        "iconUrl": `${baseUrl}/icon.png`,
-        "splashImageUrl": `${baseUrl}/api/frame/image?state=initial`,
-        "homeUrl": `${baseUrl}/`,
-        "imageUrl": `${baseUrl}/api/frame/image?state=initial`,
-        "buttonTitle": "Open Cast Aloud",
-        "splashBackgroundColor": "#8A63D2",
-        "webhookUrl": `${baseUrl}/api/frame/action`
       }
     });
   });

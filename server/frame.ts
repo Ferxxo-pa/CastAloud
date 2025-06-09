@@ -250,7 +250,8 @@ export async function handleFrameAction(req: Request, res: Response) {
 // Helper function for reply polishing
 async function polishReply(text: string): Promise<string> {
   try {
-    const response = await fetch('http://localhost:5000/api/polish-reply', {
+    // Use relative URL that works in both dev and production
+    const response = await fetch('/api/polish-reply', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ text })
@@ -269,13 +270,14 @@ async function polishReply(text: string): Promise<string> {
 }
 
 export async function handleFrameImage(req: Request, res: Response) {
-  const { state, castId, author, content, message } = req.query;
-  const contentStr = typeof content === 'string' ? content : 'Welcome to Cast Aloud! This accessibility app helps you listen to casts and reply using your voice.';
-  const authorStr = typeof author === 'string' ? author : 'demo';
-  const messageStr = typeof message === 'string' ? message : '';
+  try {
+    const { state, castId, author, content, message } = req.query;
+    const contentStr = typeof content === 'string' ? content : 'Welcome to Cast Aloud! This accessibility app helps you listen to casts and reply using your voice.';
+    const authorStr = typeof author === 'string' ? author : 'demo';
+    const messageStr = typeof message === 'string' ? message : '';
 
-  // Generate SVG image based on state
-  let svg = '';
+    // Generate SVG image based on state
+    let svg = '';
   
   switch (state) {
     case 'initial':
@@ -426,9 +428,27 @@ export async function handleFrameImage(req: Request, res: Response) {
       break;
       
     default:
-      svg = `<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg"><rect width="1200" height="630" fill="#7C3AED"/></svg>`;
+      svg = `<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg"><rect width="1200" height="630" fill="#8A63D2"/></svg>`;
   }
 
   res.setHeader('Content-Type', 'image/svg+xml');
+  res.setHeader('Cache-Control', 'public, max-age=300');
   res.send(svg);
+  
+  } catch (error) {
+    console.error('Frame image generation error:', error);
+    
+    // Return a fallback SVG image
+    const fallbackSvg = `
+      <svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+        <rect width="1200" height="630" fill="#8A63D2"/>
+        <text x="600" y="315" font-family="Arial, sans-serif" font-size="32" fill="white" text-anchor="middle">
+          Cast Aloud
+        </text>
+      </svg>
+    `;
+    
+    res.setHeader('Content-Type', 'image/svg+xml');
+    res.send(fallbackSvg);
+  }
 }
