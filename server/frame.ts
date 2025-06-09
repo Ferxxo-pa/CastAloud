@@ -306,11 +306,15 @@ export async function handleFrameImage(req: Request, res: Response) {
           <text x="70" y="240" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#8A63D2">
             @${authorStr}
           </text>
-          <foreignObject x="70" y="260" width="1060" height="180">
-            <div xmlns="http://www.w3.org/1999/xhtml" style="font-family: Arial, sans-serif; font-size: 24px; color: #171717; line-height: 1.4; padding: 10px; word-wrap: break-word;">
-              ${contentStr.substring(0, 120)}${contentStr.length > 120 ? '...' : ''}
-            </div>
-          </foreignObject>
+          <text x="70" y="290" font-family="Arial, sans-serif" font-size="22" fill="#171717">
+            ${contentStr.substring(0, 50)}${contentStr.length > 50 ? '...' : ''}
+          </text>
+          <text x="70" y="320" font-family="Arial, sans-serif" font-size="22" fill="#171717">
+            ${contentStr.substring(50, 100)}${contentStr.length > 100 ? '...' : ''}
+          </text>
+          <text x="70" y="350" font-family="Arial, sans-serif" font-size="22" fill="#171717">
+            ${contentStr.substring(100, 150)}${contentStr.length > 150 ? '...' : ''}
+          </text>
           
           <!-- Action Buttons Preview -->
           <rect x="70" y="520" width="180" height="50" rx="25" fill="#8A63D2"/>
@@ -428,7 +432,14 @@ export async function handleFrameImage(req: Request, res: Response) {
       break;
       
     default:
-      svg = `<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg"><rect width="1200" height="630" fill="#8A63D2"/></svg>`;
+      svg = `
+        <svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+          <rect width="1200" height="630" fill="#8A63D2"/>
+          <text x="600" y="280" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="white" text-anchor="middle">Cast Aloud</text>
+          <text x="600" y="330" font-family="Arial, sans-serif" font-size="24" fill="white" text-anchor="middle" opacity="0.9">Voice Accessibility for Farcaster</text>
+          <text x="600" y="380" font-family="Arial, sans-serif" font-size="18" fill="white" text-anchor="middle" opacity="0.8">Enter cast text below and click Listen or Voice Reply</text>
+        </svg>
+      `;
   }
 
   res.setHeader('Content-Type', 'image/svg+xml');
