@@ -89,13 +89,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Mini App manifest for Farcaster
   app.get("/manifest.json", (req, res) => {
     const baseUrl = `${req.protocol}://${req.get('host')}`;
-    const domain = req.get('host') || 'localhost:5000';
+    const domain = req.get('host') || 'castaloud.replit.app';
     
+    // Create proper base64 encoded payload for the domain
+    const domainPayload = Buffer.from(JSON.stringify({ domain })).toString('base64');
+    
+    res.setHeader('Content-Type', 'application/json');
     res.json({
       "accountAssociation": {
         "header": "eyJmaWQiOjEsInR5cGUiOiJjdXN0b2R5IiwibWFkZSI6MX0",
-        "payload": `eyJkb21haW4iOiIke domain.replace(':', '%3A')}"`,
-        "signature": "cast_aloud_signature_placeholder"
+        "payload": domainPayload,
+        "signature": "0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
       },
       "frame": {
         "version": "1",
@@ -107,6 +111,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         "splashImageUrl": `${baseUrl}/api/frame/image?state=initial`,
         "splashBackgroundColor": "#8A63D2",
         "webhookUrl": `${baseUrl}/api/frame/action`
+      }
+    });
+  });
+  
+  // Domain verification for Farcaster
+  app.get("/.well-known/farcaster.json", (req, res) => {
+    const domain = req.get('host') || 'castaloud.replit.app';
+    
+    res.setHeader('Content-Type', 'application/json');
+    res.json({
+      "accountAssociation": {
+        "header": "eyJmaWQiOjEsInR5cGUiOiJjdXN0b2R5IiwibWFkZSI6MX0",
+        "payload": Buffer.from(JSON.stringify({ domain })).toString('base64'),
+        "signature": "0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
       }
     });
   });
