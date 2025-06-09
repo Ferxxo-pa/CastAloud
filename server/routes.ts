@@ -86,6 +86,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/frame/action", handleFrameAction);
   app.get("/api/frame/image", handleFrameImage);
   
+  // Test deployment endpoint
+  app.get("/api/test", (req, res) => {
+    res.json({ 
+      status: "ok", 
+      timestamp: new Date().toISOString(),
+      domain: req.get('host'),
+      manifest: `${req.protocol}://${req.get('host')}/manifest.json`
+    });
+  });
+  
   // Mini App manifest for Farcaster
   app.get("/manifest.json", (req, res) => {
     const baseUrl = `${req.protocol}://${req.get('host')}`;
