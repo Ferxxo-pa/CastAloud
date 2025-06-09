@@ -23,17 +23,24 @@ interface AuthData {
   subscription?: any;
 }
 
+interface Voice {
+  id: string;
+  name: string;
+  description: string;
+  premium?: boolean;
+}
+
 const VOICES = {
   free: [
     { id: "alloy", name: "Alloy", description: "Neutral and clear" },
     { id: "echo", name: "Echo", description: "Warm and engaging" },
-  ],
+  ] as Voice[],
   premium: [
     { id: "nova", name: "Nova", description: "Bright and energetic", premium: true },
     { id: "shimmer", name: "Shimmer", description: "Soft and soothing", premium: true },
     { id: "fable", name: "Fable", description: "Expressive storytelling", premium: true },
     { id: "onyx", name: "Onyx", description: "Deep and resonant", premium: true },
-  ]
+  ] as Voice[]
 };
 
 export default function PremiumVoiceSelector({ 
