@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertVoiceCommentSchema } from "@shared/schema";
-import { handleFrameIndex, handleFrameAction, handleFrameImage } from "./frame-clean";
+import { handleFrameIndex, handleFrameAction, handleFrameImage } from "./frame";
 import OpenAI from "openai";
 import multer from "multer";
 import fs from "fs";
@@ -81,73 +81,33 @@ async function getFeedbackOnComment(text: string): Promise<{ feedback: string; p
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Frame routes - serve Frame at root for Mini App compatibility
-  app.get("/", handleFrameIndex);
+  // Frame routes
   app.get("/frame", handleFrameIndex);
   app.post("/api/frame/action", handleFrameAction);
   app.get("/api/frame/image", handleFrameImage);
   
-  // Test deployment endpoint
-  app.get("/api/test", (req, res) => {
-    res.json({ 
-      status: "ok", 
-      timestamp: new Date().toISOString(),
-      domain: req.get('host'),
-      manifest: `${req.protocol}://${req.get('host')}/manifest.json`
-    });
-  });
-  
-  // Icon for Mini App
-  app.get("/icon.png", (req, res) => {
-    const svg = `<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="512" height="512" rx="64" fill="#8A63D2"/>
-      <circle cx="256" cy="200" r="60" fill="white"/>
-      <path d="M196 280L316 280C327 280 336 289 336 300V340C336 351 327 360 316 360H196C185 360 176 351 176 340V300C176 289 185 280 196 280Z" fill="white"/>
-      <circle cx="220" cy="320" r="12" fill="#8A63D2"/>
-      <circle cx="256" cy="320" r="12" fill="#8A63D2"/>
-      <circle cx="292" cy="320" r="12" fill="#8A63D2"/>
-      <text x="256" y="450" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="36" font-weight="bold">CAST ALOUD</text>
-    </svg>`;
-    
-    res.setHeader('Content-Type', 'image/svg+xml');
-    res.send(svg);
-  });
-
   // Mini App manifest for Farcaster
   app.get("/manifest.json", (req, res) => {
     const baseUrl = `${req.protocol}://${req.get('host')}`;
+    const domain = req.get('host') || 'localhost:5000';
     
-    res.setHeader('Content-Type', 'application/json');
-    res.setHeader('Cache-Control', 'no-cache');
     res.json({
-      "name": "Cast Aloud",
-      "version": "1.0.0",
-      "description": "Voice accessibility tools for Farcaster. Listen to casts aloud and reply using voice technology.",
-      "homeUrl": baseUrl,
-      "iconUrl": `${baseUrl}/icon.png`,
-      "splashImageUrl": `${baseUrl}/api/frame/image?state=initial`,
-      "splashBackgroundColor": "#8A63D2",
-      "webhookUrl": `${baseUrl}/api/frame/action`
-    });
-  });
-  
-  // Domain verification endpoint for Farcaster account association
-  app.get("/.well-known/farcaster.json", (req, res) => {
-    // This endpoint will be populated with your signature after domain verification
-    res.status(404).json({ 
-      error: "Domain not yet verified",
-      message: "Complete domain verification through Farcaster's Mini App developer portal"
-    });
-  });
-  
-  // Temporary verification endpoint - will be replaced after claiming domain
-  app.post("/api/verify-domain", (req, res) => {
-    const { signature, header, payload } = req.body;
-    // This would store the verification data after Farcaster domain claiming process
-    res.json({ 
-      success: true, 
-      message: "Domain verification data received",
-      domain: req.get('host')
+      "accountAssociation": {
+        "header": "eyJmaWQiOjEsInR5cGUiOiJjdXN0b2R5IiwibWFkZSI6MX0",
+        "payload": `eyJkb21haW4iOiIke domain.replace(':', '%3A')}"`,
+        "signature": "cast_aloud_signature_placeholder"
+      },
+      "frame": {
+        "version": "1",
+        "name": "Cast Aloud",
+        "iconUrl": `${baseUrl}/icon.png`,
+        "homeUrl": baseUrl,
+        "imageUrl": `${baseUrl}/api/frame/image?state=initial`,
+        "buttonTitle": "Open Cast Aloud",
+        "splashImageUrl": `${baseUrl}/api/frame/image?state=initial`,
+        "splashBackgroundColor": "#8A63D2",
+        "webhookUrl": `${baseUrl}/api/frame/action`
+      }
     });
   });
   
