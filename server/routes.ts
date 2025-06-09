@@ -3,10 +3,12 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertVoiceCommentSchema } from "@shared/schema";
 import { handleFrameIndex, handleFrameAction, handleFrameImage } from "./frame";
+import { paymentStorage, verifyPayment, generatePaymentQR, validateFarcasterAuth, PAYMENT_CONFIG } from "./payment-service";
 import OpenAI from "openai";
 import multer from "multer";
 import fs from "fs";
 import path from "path";
+import QRCode from "qrcode";
 
 const openai = new OpenAI({ 
   apiKey: process.env.OPENAI_API_KEY || ""
@@ -129,13 +131,174 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // TTS endpoint for Frame interactions
+  // Authentication endpoints for Farcaster Sign-In
+  app.post("/api/auth/farcaster", async (req, res) => {
+    try {
+      const { fid, walletAddress, signature, message } = req.body;
+      
+      if (!fid || !walletAddress || !signature || !message) {
+        return res.status(400).json({ error: "Missing required authentication data" });
+      }
+      
+      // Validate Farcaster signature
+      const isValid = validateFarcasterAuth(signature, message, fid);
+      if (!isValid) {
+        return res.status(401).json({ error: "Invalid Farcaster signature" });
+      }
+      
+      // Check if user already has premium access
+      const isPremium = paymentStorage.isPremiumUser(fid, walletAddress);
+      const subscription = paymentStorage.getUserSubscription(fid, walletAddress);
+      
+      res.json({
+        authenticated: true,
+        fid,
+        walletAddress,
+        isPremium,
+        subscription,
+        paymentRequired: !isPremium
+      });
+      
+    } catch (error) {
+      console.error('Farcaster auth error:', error);
+      res.status(500).json({ error: 'Authentication failed' });
+    }
+  });
+  
+  // Get payment information
+  app.get("/api/payment/info", (req, res) => {
+    res.json({
+      paymentAddress: PAYMENT_CONFIG.PAYMENT_ADDRESS,
+      amounts: {
+        ETH: PAYMENT_CONFIG.REQUIRED_AMOUNT_ETH,
+        USDC: PAYMENT_CONFIG.REQUIRED_AMOUNT_USDC
+      },
+      subscriptionDuration: PAYMENT_CONFIG.SUBSCRIPTION_DURATION_MONTHS
+    });
+  });
+  
+  // Generate payment QR code
+  app.get("/api/payment/qr/:currency", async (req, res) => {
+    try {
+      const { currency } = req.params;
+      
+      if (!['ETH', 'USDC'].includes(currency.toUpperCase())) {
+        return res.status(400).json({ error: "Invalid currency" });
+      }
+      
+      const paymentUri = generatePaymentQR(currency.toUpperCase() as 'ETH' | 'USDC');
+      const qrCodeDataUrl = await QRCode.toDataURL(paymentUri);
+      
+      res.json({
+        qrCode: qrCodeDataUrl,
+        paymentUri,
+        address: PAYMENT_CONFIG.PAYMENT_ADDRESS,
+        amount: currency.toUpperCase() === 'ETH' ? PAYMENT_CONFIG.REQUIRED_AMOUNT_ETH : PAYMENT_CONFIG.REQUIRED_AMOUNT_USDC
+      });
+      
+    } catch (error) {
+      console.error('QR code generation error:', error);
+      res.status(500).json({ error: 'Failed to generate QR code' });
+    }
+  });
+  
+  // Verify payment
+  app.post("/api/payment/verify", async (req, res) => {
+    try {
+      const { fid, walletAddress, network = 'mainnet' } = req.body;
+      
+      if (!fid || !walletAddress) {
+        return res.status(400).json({ error: "FID and wallet address required" });
+      }
+      
+      // Check if already premium
+      if (paymentStorage.isPremiumUser(fid, walletAddress)) {
+        return res.json({ verified: true, message: "Already premium user" });
+      }
+      
+      // Verify payment on-chain
+      const verificationResult = await verifyPayment(walletAddress, network);
+      
+      if (verificationResult.verified && verificationResult.transaction) {
+        // Calculate expiration date
+        const expiresAt = new Date();
+        expiresAt.setMonth(expiresAt.getMonth() + PAYMENT_CONFIG.SUBSCRIPTION_DURATION_MONTHS);
+        
+        // Store premium user
+        paymentStorage.addPaidUser({
+          fid,
+          walletAddress,
+          txHash: verificationResult.transaction.hash,
+          amount: verificationResult.transaction.value,
+          currency: verificationResult.transaction.tokenSymbol || 'ETH',
+          paidAt: new Date().toISOString(),
+          expiresAt: expiresAt.toISOString()
+        });
+        
+        res.json({
+          verified: true,
+          message: "Payment verified and premium access granted",
+          expiresAt: expiresAt.toISOString(),
+          transaction: verificationResult.transaction
+        });
+      } else {
+        res.json({
+          verified: false,
+          message: verificationResult.error || "No valid payment found"
+        });
+      }
+      
+    } catch (error) {
+      console.error('Payment verification error:', error);
+      res.status(500).json({ error: 'Payment verification failed' });
+    }
+  });
+  
+  // Check premium status
+  app.get("/api/premium/status", (req, res) => {
+    const { fid, walletAddress } = req.query;
+    
+    if (!fid && !walletAddress) {
+      return res.status(400).json({ error: "FID or wallet address required" });
+    }
+    
+    const isPremium = paymentStorage.isPremiumUser(
+      fid ? parseInt(fid as string) : 0, 
+      walletAddress as string
+    );
+    const subscription = paymentStorage.getUserSubscription(
+      fid ? parseInt(fid as string) : 0, 
+      walletAddress as string
+    );
+    
+    res.json({
+      isPremium,
+      subscription
+    });
+  });
+
+  // TTS endpoint for Frame interactions (with premium gating)
   app.post("/api/tts", async (req, res) => {
     try {
-      const { text, voice = "alloy" } = req.body;
+      const { text, voice = "alloy", fid, walletAddress } = req.body;
       
       if (!text) {
         return res.status(400).json({ error: "Text is required" });
+      }
+
+      // Check for premium voices
+      const premiumVoices = ["nova", "shimmer", "echo", "fable", "onyx"];
+      const isPremiumVoice = premiumVoices.includes(voice);
+      
+      if (isPremiumVoice) {
+        // Require premium access for premium voices
+        const isPremium = fid ? paymentStorage.isPremiumUser(fid, walletAddress) : false;
+        if (!isPremium) {
+          return res.status(402).json({ 
+            error: "Premium voice requires subscription",
+            premiumRequired: true 
+          });
+        }
       }
 
       const mp3 = await openai.audio.speech.create({
