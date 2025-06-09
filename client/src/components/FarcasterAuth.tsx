@@ -37,8 +37,11 @@ export default function FarcasterAuth({ onAuthenticated }: FarcasterAuthProps) {
       const message = `Sign in to Cast Aloud with FID ${fid} at ${Date.now()}`;
       const signature = `fake_signature_${fid}_${Date.now()}`; // In real app, use wallet signing
 
-      const response = await apiRequest("/api/auth/farcaster", {
+      const response = await fetch("/api/auth/farcaster", {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
         body: JSON.stringify({
           fid: parseInt(fid),
           walletAddress,
@@ -68,9 +71,9 @@ export default function FarcasterAuth({ onAuthenticated }: FarcasterAuthProps) {
   };
 
   const connectWallet = async () => {
-    if (typeof window !== 'undefined' && window.ethereum) {
+    if (typeof window !== 'undefined' && (window as any).ethereum) {
       try {
-        const accounts = await window.ethereum.request({ 
+        const accounts = await (window as any).ethereum.request({ 
           method: 'eth_requestAccounts' 
         });
         if (accounts.length > 0) {
