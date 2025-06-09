@@ -104,32 +104,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.setHeader('Content-Type', 'application/json');
     res.json({
       "name": "Cast Aloud",
-      "version": "1.0.0",
+      "version": "1.0.0", 
       "description": "Voice accessibility tools for Farcaster. Listen to casts aloud and reply using voice technology.",
       "homeUrl": baseUrl,
       "iconUrl": `${baseUrl}/icon.png`,
       "splashImageUrl": `${baseUrl}/api/frame/image?state=initial`,
       "splashBackgroundColor": "#8A63D2",
-      "webhookUrl": `${baseUrl}/api/frame/action`,
-      "accountAssociation": {
-        "header": "eyJmaWQiOjEsInR5cGUiOiJjdXN0b2R5IiwibWFkZSI6MX0",
-        "payload": Buffer.from(JSON.stringify({ domain })).toString('base64'),
-        "signature": "0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
-      }
+      "webhookUrl": `${baseUrl}/api/frame/action`
     });
   });
   
-  // Domain verification for Farcaster
+  // Domain verification endpoint for Farcaster account association
   app.get("/.well-known/farcaster.json", (req, res) => {
-    const domain = req.get('host') || 'castaloud.replit.app';
-    
-    res.setHeader('Content-Type', 'application/json');
-    res.json({
-      "accountAssociation": {
-        "header": "eyJmaWQiOjEsInR5cGUiOiJjdXN0b2R5IiwibWFkZSI6MX0",
-        "payload": Buffer.from(JSON.stringify({ domain })).toString('base64'),
-        "signature": "0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
-      }
+    // This endpoint will be populated with your signature after domain verification
+    res.status(404).json({ 
+      error: "Domain not yet verified",
+      message: "Complete domain verification through Farcaster's Mini App developer portal"
+    });
+  });
+  
+  // Temporary verification endpoint - will be replaced after claiming domain
+  app.post("/api/verify-domain", (req, res) => {
+    const { signature, header, payload } = req.body;
+    // This would store the verification data after Farcaster domain claiming process
+    res.json({ 
+      success: true, 
+      message: "Domain verification data received",
+      domain: req.get('host')
     });
   });
   
