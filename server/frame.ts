@@ -16,7 +16,7 @@ interface FrameActionPayload {
   };
 }
 
-// Generate frame HTML with meta tags
+// Generate frame HTML with meta tags following frames.js standards
 function generateFrameHTML(
   title: string,
   image: string,
@@ -26,11 +26,11 @@ function generateFrameHTML(
 ): string {
   const buttonTags = buttons.map((button, index) => {
     let tag = `<meta property="fc:frame:button:${index + 1}" content="${button.text}" />`;
-    if (button.action) {
-      tag += `\n    <meta property="fc:frame:button:${index + 1}:action" content="${button.action}" />`;
-    }
-    if (button.target) {
+    if (button.action === 'link' && button.target) {
+      tag += `\n    <meta property="fc:frame:button:${index + 1}:action" content="link" />`;
       tag += `\n    <meta property="fc:frame:button:${index + 1}:target" content="${button.target}" />`;
+    } else if (button.action === 'post' || !button.action) {
+      tag += `\n    <meta property="fc:frame:button:${index + 1}:action" content="post" />`;
     }
     return tag;
   }).join('\n    ');
@@ -45,7 +45,7 @@ function generateFrameHTML(
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>${title}</title>
     
-    <!-- Frame meta tags -->
+    <!-- Frame meta tags following frames.js standards -->
     <meta property="fc:frame" content="vNext" />
     <meta property="fc:frame:title" content="${title}" />
     <meta property="fc:frame:image" content="${image}" />
@@ -57,13 +57,22 @@ function generateFrameHTML(
     <!-- Open Graph tags for fallback -->
     <meta property="og:title" content="${title}" />
     <meta property="og:image" content="${image}" />
-    <meta property="og:description" content="Listen to casts and reply with your voice" />
+    <meta property="og:description" content="Voice accessibility tools for Farcaster casts" />
+    <meta property="og:type" content="website" />
+    
+    <!-- Additional Frame metadata -->
+    <meta name="fc:frame:state" content='{"version":"1","initialized":true}' />
   </head>
   <body>
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-      <h1>${title}</h1>
-      <img src="${image}" alt="Frame preview" style="width: 100%; border-radius: 8px;" />
-      <p>This is a Farcaster Frame for accessibility features. Use a Farcaster client to interact.</p>
+    <div style="font-family: system-ui, -apple-system, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: #f8fafc;">
+      <div style="background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+        <h1 style="color: #8A63D2; margin: 0 0 16px 0; font-size: 24px;">${title}</h1>
+        <img src="${image}" alt="Frame preview" style="width: 100%; border-radius: 8px; margin-bottom: 16px;" />
+        <p style="color: #64748b; margin: 0; line-height: 1.5;">This Frame provides voice accessibility features for Farcaster. Use a Farcaster client to interact with the buttons above.</p>
+        <div style="margin-top: 16px; padding: 12px; background: #f1f5f9; border-radius: 8px; font-size: 14px; color: #475569;">
+          <strong>Features:</strong> Listen to casts aloud, record voice replies, and get AI text enhancement.
+        </div>
+      </div>
     </div>
   </body>
 </html>`;
@@ -120,6 +129,7 @@ export async function handleFrameAction(req: Request, res: Response) {
   try {
     const frameData: FrameActionPayload = req.body;
     const buttonIndex = frameData.untrustedData.buttonIndex;
+    const inputText = frameData.untrustedData.inputText;
     const baseUrl = `${req.protocol}://${req.get('host')}`;
     const cast = await storage.getCurrentCast();
 
@@ -127,20 +137,25 @@ export async function handleFrameAction(req: Request, res: Response) {
       return res.status(404).json({ error: 'No cast found' });
     }
 
+    // Validate Frame action according to frames.js standards
+    if (!frameData.trustedData || !frameData.untrustedData) {
+      return res.status(400).json({ error: 'Invalid frame data' });
+    }
+
     switch (buttonIndex) {
-      case 1: // Read Aloud
+      case 1: // Listen to Cast
         {
           const image = generateFrameImage(baseUrl, 'reading', {
             castId: cast.id,
-            message: 'Audio is playing...'
+            message: 'Playing audio... Click to access full app for voice controls'
           });
 
           const html = generateFrameHTML(
-            'Reading Cast Aloud',
+            'Cast Aloud - Now Playing',
             image,
             [
-              { text: '⏹️ Stop', action: 'post' },
               { text: '🎤 Voice Reply', action: 'post' },
+              { text: '⚙️ Open Full App', action: 'link', target: baseUrl },
               { text: '🔄 Back', action: 'post' }
             ],
             undefined,
@@ -156,17 +171,18 @@ export async function handleFrameAction(req: Request, res: Response) {
         {
           const image = generateFrameImage(baseUrl, 'recording', {
             castId: cast.id,
-            message: 'Ready to record your voice reply'
+            message: 'Voice recording requires full app access'
           });
 
           const html = generateFrameHTML(
-            'Voice Reply',
+            'Cast Aloud - Voice Reply',
             image,
             [
-              { text: '🔴 Start Recording', action: 'link', target: `${baseUrl}/voice-recorder?castId=${cast.id}` },
+              { text: '🎤 Open Voice Recorder', action: 'link', target: `${baseUrl}/?cast=${cast.hash}` },
+              { text: '💬 Text Reply', action: 'post' },
               { text: '🔄 Back', action: 'post' }
             ],
-            'Or type your reply here...',
+            'Type your reply here...',
             `${baseUrl}/api/frame/action`
           );
 
@@ -175,9 +191,33 @@ export async function handleFrameAction(req: Request, res: Response) {
         }
         break;
 
-      case 3: // Back button
+      case 3: // Back or other actions
         {
-          return handleFrameIndex(req, res);
+          if (inputText && inputText.trim()) {
+            // Process text input if provided
+            const polishedText = await polishReply(inputText.trim());
+            
+            const image = generateFrameImage(baseUrl, 'success', {
+              message: `Reply polished: "${polishedText.substring(0, 60)}..."`
+            });
+
+            const html = generateFrameHTML(
+              'Cast Aloud - Reply Enhanced',
+              image,
+              [
+                { text: '📝 Use This Reply', action: 'link', target: `https://warpcast.com/~/compose?text=${encodeURIComponent(polishedText)}` },
+                { text: '✏️ Edit More', action: 'post' },
+                { text: '🔄 Start Over', action: 'post' }
+              ],
+              undefined,
+              `${baseUrl}/api/frame/action`
+            );
+
+            res.setHeader('Content-Type', 'text/html');
+            res.send(html);
+          } else {
+            return handleFrameIndex(req, res);
+          }
         }
         break;
 
@@ -187,7 +227,44 @@ export async function handleFrameAction(req: Request, res: Response) {
 
   } catch (error) {
     console.error('Frame action error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    const image = generateFrameImage(`${req.protocol}://${req.get('host')}`, 'error', {
+      message: 'Something went wrong. Try again or open the full app.'
+    });
+
+    const html = generateFrameHTML(
+      'Cast Aloud - Error',
+      image,
+      [
+        { text: '🔄 Try Again', action: 'post' },
+        { text: '⚙️ Open App', action: 'link', target: `${req.protocol}://${req.get('host')}` }
+      ],
+      undefined,
+      `${req.protocol}://${req.get('host')}/api/frame/action`
+    );
+
+    res.setHeader('Content-Type', 'text/html');
+    res.send(html);
+  }
+}
+
+// Helper function for reply polishing
+async function polishReply(text: string): Promise<string> {
+  try {
+    const response = await fetch('http://localhost:5000/api/polish-reply', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text })
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      return data.polishedText || text;
+    }
+    
+    return text;
+  } catch (error) {
+    console.error('Failed to polish reply:', error);
+    return text;
   }
 }
 
@@ -295,6 +372,54 @@ export async function handleFrameImage(req: Request, res: Response) {
           
           <text x="600" y="500" font-family="Arial, sans-serif" font-size="20" fill="white" fill-opacity="0.8" text-anchor="middle">
             ${messageStr || 'Ready to record your voice reply'}
+          </text>
+        </svg>
+      `;
+      break;
+      
+    case 'success':
+      svg = `
+        <svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+          <rect width="1200" height="630" fill="#10B981"/>
+          
+          <circle cx="600" cy="315" r="80" fill="white" fill-opacity="0.2"/>
+          <circle cx="600" cy="315" r="60" fill="white" fill-opacity="0.4"/>
+          <circle cx="600" cy="315" r="40" fill="white"/>
+          
+          <text x="600" y="325" font-family="Arial, sans-serif" font-size="40" fill="#10B981" text-anchor="middle">
+            ✅
+          </text>
+          
+          <text x="600" y="450" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="white" text-anchor="middle">
+            Reply Enhanced
+          </text>
+          
+          <text x="600" y="500" font-family="Arial, sans-serif" font-size="20" fill="white" fill-opacity="0.8" text-anchor="middle">
+            ${messageStr || 'Your reply has been polished with AI'}
+          </text>
+        </svg>
+      `;
+      break;
+      
+    case 'error':
+      svg = `
+        <svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+          <rect width="1200" height="630" fill="#EF4444"/>
+          
+          <circle cx="600" cy="315" r="80" fill="white" fill-opacity="0.2"/>
+          <circle cx="600" cy="315" r="60" fill="white" fill-opacity="0.4"/>
+          <circle cx="600" cy="315" r="40" fill="white"/>
+          
+          <text x="600" y="325" font-family="Arial, sans-serif" font-size="40" fill="#EF4444" text-anchor="middle">
+            ⚠️
+          </text>
+          
+          <text x="600" y="450" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="white" text-anchor="middle">
+            Error Occurred
+          </text>
+          
+          <text x="600" y="500" font-family="Arial, sans-serif" font-size="20" fill="white" fill-opacity="0.8" text-anchor="middle">
+            ${messageStr || 'Something went wrong. Please try again.'}
           </text>
         </svg>
       `;
