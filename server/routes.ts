@@ -91,26 +91,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const baseUrl = `${req.protocol}://${req.get('host')}`;
     const domain = req.get('host') || 'castaloud.replit.app';
     
-    // Create proper base64 encoded payload for the domain
-    const domainPayload = Buffer.from(JSON.stringify({ domain })).toString('base64');
-    
     res.setHeader('Content-Type', 'application/json');
     res.json({
+      "name": "Cast Aloud",
+      "version": "1.0.0",
+      "description": "Voice accessibility tools for Farcaster. Listen to casts aloud and reply using voice technology.",
+      "homeUrl": baseUrl,
+      "iconUrl": `${baseUrl}/icon.png`,
+      "splashImageUrl": `${baseUrl}/api/frame/image?state=initial`,
+      "splashBackgroundColor": "#8A63D2",
+      "webhookUrl": `${baseUrl}/api/frame/action`,
       "accountAssociation": {
         "header": "eyJmaWQiOjEsInR5cGUiOiJjdXN0b2R5IiwibWFkZSI6MX0",
-        "payload": domainPayload,
+        "payload": Buffer.from(JSON.stringify({ domain })).toString('base64'),
         "signature": "0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
-      },
-      "frame": {
-        "version": "1",
-        "name": "Cast Aloud",
-        "iconUrl": `${baseUrl}/icon.png`,
-        "homeUrl": baseUrl,
-        "imageUrl": `${baseUrl}/api/frame/image?state=initial`,
-        "buttonTitle": "Open Cast Aloud",
-        "splashImageUrl": `${baseUrl}/api/frame/image?state=initial`,
-        "splashBackgroundColor": "#8A63D2",
-        "webhookUrl": `${baseUrl}/api/frame/action`
       }
     });
   });
