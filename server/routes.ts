@@ -794,6 +794,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // GET endpoint for Frame TTS accessibility
+  app.get('/api/tts', async (req, res) => {
+    try {
+      const { text, voice = 'alloy', speed = '0.9' } = req.query;
+
+      if (!text || typeof text !== 'string') {
+        return res.status(400).json({ error: 'Text parameter is required' });
+      }
+
+      const mp3 = await openai.audio.speech.create({
+        model: "tts-1",
+        voice: voice as any,
+        input: text,
+        speed: parseFloat(speed as string),
+      });
+
+      const buffer = Buffer.from(await mp3.arrayBuffer());
+      
+      res.setHeader('Content-Type', 'audio/mpeg');
+      res.setHeader('Content-Disposition', 'inline; filename="cast-audio.mp3"');
+      res.setHeader('Cache-Control', 'public, max-age=3600');
+      res.send(buffer);
+    } catch (error) {
+      console.error('TTS GET error:', error);
+      res.status(500).json({ error: 'TTS generation failed' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

@@ -57,23 +57,66 @@ function generateFrameHTML(
     <!-- Open Graph tags for fallback -->
     <meta property="og:title" content="${title}" />
     <meta property="og:image" content="${image}" />
-    <meta property="og:description" content="Voice accessibility tools for Farcaster casts" />
+    <meta property="og:description" content="Voice accessibility tools for people who struggle with reading or writing" />
     <meta property="og:type" content="website" />
     
     <!-- Additional Frame metadata -->
     <meta name="fc:frame:state" content='{"version":"1","initialized":true}' />
   </head>
   <body>
-    <div style="font-family: system-ui, -apple-system, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: #f8fafc;">
-      <div style="background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-        <h1 style="color: #8A63D2; margin: 0 0 16px 0; font-size: 24px;">${title}</h1>
-        <img src="${image}" alt="Frame preview" style="width: 100%; border-radius: 8px; margin-bottom: 16px;" />
-        <p style="color: #64748b; margin: 0; line-height: 1.5;">This Frame provides voice accessibility features for Farcaster. Use a Farcaster client to interact with the buttons above.</p>
-        <div style="margin-top: 16px; padding: 12px; background: #f1f5f9; border-radius: 8px; font-size: 14px; color: #475569;">
-          <strong>Features:</strong> Listen to casts aloud, record voice replies, and get AI text enhancement.
+    <div style="font-family: system-ui, -apple-system, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background: linear-gradient(135deg, #8A63D2, #6366F1); min-height: 100vh;">
+      <div style="background: white; border-radius: 16px; padding: 32px; box-shadow: 0 8px 32px rgba(0,0,0,0.2);">
+        <div style="text-align: center; margin-bottom: 24px;">
+          <div style="font-size: 48px; margin-bottom: 12px;">🔊</div>
+          <h1 style="color: #8A63D2; margin: 0; font-size: 32px; font-weight: bold;">Cast Aloud</h1>
+          <p style="color: #666; font-size: 18px; margin: 8px 0 0 0;">Accessibility tools for reading and writing</p>
+        </div>
+        
+        <img src="${image}" alt="Frame preview" style="width: 100%; border-radius: 12px; margin-bottom: 24px; border: 3px solid #8A63D2;" />
+        
+        <div style="background: #f8f9ff; padding: 24px; border-radius: 12px; margin-bottom: 24px;">
+          <h3 style="color: #8A63D2; margin: 0 0 16px 0; font-size: 20px;">For People with Reading/Writing Difficulties:</h3>
+          <div style="display: grid; gap: 12px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="background: #8A63D2; color: white; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-weight: bold;">1</div>
+              <span style="font-size: 16px;">🔊 <strong>Listen:</strong> Hear any Farcaster post read aloud with natural voice</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="background: #8A63D2; color: white; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-weight: bold;">2</div>
+              <span style="font-size: 16px;">🎤 <strong>Voice Reply:</strong> Speak your response instead of typing</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="background: #8A63D2; color: white; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-weight: bold;">3</div>
+              <span style="font-size: 16px;">✨ <strong>AI Polish:</strong> Improve your text automatically</span>
+            </div>
+          </div>
+        </div>
+        
+        <div style="text-align: center; padding: 20px; background: #e0f2fe; border-radius: 12px; margin-bottom: 16px;">
+          <p style="margin: 0; font-size: 16px; color: #0277bd; font-weight: 500;">
+            Click the buttons in your Farcaster client to use voice features
+          </p>
+        </div>
+        
+        <div style="text-align: center; font-size: 14px; color: #666;">
+          <p style="margin: 0;">Designed specifically for accessibility and inclusive communication</p>
         </div>
       </div>
     </div>
+    
+    <script>
+      // Auto-play functionality for accessibility
+      if ('speechSynthesis' in window) {
+        // Add keyboard shortcuts for accessibility
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter' && e.shiftKey) {
+            // Trigger first button (Listen) with Shift+Enter
+            const firstButton = document.querySelector('button');
+            if (firstButton) firstButton.click();
+          }
+        });
+      }
+    </script>
   </body>
 </html>`;
 }
@@ -143,25 +186,27 @@ export async function handleFrameAction(req: Request, res: Response) {
     }
 
     switch (buttonIndex) {
-      case 1: // Listen to Cast
+      case 1: // Listen to Cast - Generate audio and redirect to play it
         {
+          let textContent = inputText || cast.content || 'Welcome to Cast Aloud. This tool helps people who have difficulty reading or writing by providing voice accessibility features for Farcaster.';
+          
+          // Clean the text for better TTS
+          textContent = textContent.replace(/https?:\/\/[^\s]+/g, 'link').trim();
+          
           const image = generateFrameImage(baseUrl, 'reading', {
             castId: cast.id,
-            message: 'Playing audio... Click to access full app for voice controls'
+            message: 'Audio is being generated... This helps people who struggle with reading.'
           });
 
-          // Process the text content for TTS if provided
-          const textContent = inputText || cast.text || 'No text content provided';
-          
           const html = generateFrameHTML(
-            'Cast Aloud - Reading Content',
+            'Cast Aloud - Now Playing Audio',
             image,
             [
+              { text: '🔊 Play Audio', action: 'link', target: `${baseUrl}/api/tts?text=${encodeURIComponent(textContent)}&autoplay=true` },
               { text: '🎤 Voice Reply', action: 'post' },
-              { text: '⚙️ Open Full App', action: 'link', target: baseUrl },
-              { text: '🔄 Back', action: 'post' }
+              { text: '📱 Full App', action: 'link', target: baseUrl }
             ],
-            'Type your reply here...',
+            'Enter your reply text here...',
             `${baseUrl}/api/frame/action`
           );
 
@@ -170,27 +215,53 @@ export async function handleFrameAction(req: Request, res: Response) {
         }
         break;
 
-      case 2: // Voice Reply
+      case 2: // Voice Reply - Help with writing responses
         {
-          const image = generateFrameImage(baseUrl, 'recording', {
-            castId: cast.id,
-            message: 'Voice recording requires full app access'
-          });
+          if (inputText && inputText.trim()) {
+            // Polish the text using AI for accessibility
+            const polishedText = await polishReply(inputText);
+            
+            const image = generateFrameImage(baseUrl, 'polished', {
+              castId: cast.id,
+              message: 'Your reply has been improved with AI to help with writing difficulties'
+            });
 
-          const html = generateFrameHTML(
-            'Cast Aloud - Voice Reply',
-            image,
-            [
-              { text: '🎤 Open Voice Recorder', action: 'link', target: `${baseUrl}/?cast=${cast.hash}` },
-              { text: '💬 Text Reply', action: 'post' },
-              { text: '🔄 Back', action: 'post' }
-            ],
-            'Type your reply here...',
-            `${baseUrl}/api/frame/action`
-          );
+            const html = generateFrameHTML(
+              'Cast Aloud - Reply Enhanced',
+              image,
+              [
+                { text: '🔊 Hear My Reply', action: 'link', target: `${baseUrl}/api/tts?text=${encodeURIComponent(polishedText)}` },
+                { text: '📋 Copy Reply', action: 'link', target: `${baseUrl}/?action=copy&text=${encodeURIComponent(polishedText)}` },
+                { text: '✏️ Edit More', action: 'post' }
+              ],
+              polishedText,
+              `${baseUrl}/api/frame/action`
+            );
 
-          res.setHeader('Content-Type', 'text/html');
-          res.send(html);
+            res.setHeader('Content-Type', 'text/html');
+            res.send(html);
+          } else {
+            // Show interface for voice input assistance
+            const image = generateFrameImage(baseUrl, 'recording', {
+              castId: cast.id,
+              message: 'Voice recording helps people who struggle with writing'
+            });
+
+            const html = generateFrameHTML(
+              'Cast Aloud - Voice Reply Assistant',
+              image,
+              [
+                { text: '🎤 Open Voice Recorder', action: 'link', target: `${baseUrl}/?mode=voice&cast=${cast.hash}` },
+                { text: '✨ Polish Text', action: 'post' },
+                { text: '🔄 Back', action: 'post' }
+              ],
+              'Type your reply here for AI improvement...',
+              `${baseUrl}/api/frame/action`
+            );
+
+            res.setHeader('Content-Type', 'text/html');
+            res.send(html);
+          }
         }
         break;
 
