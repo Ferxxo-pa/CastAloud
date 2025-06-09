@@ -12,15 +12,18 @@
     <meta property="og:image" content="/api/frame/image?state=initial" />
     <meta property="og:type" content="website" />
     
-    <!-- Frame Discovery -->
-    <meta property="fc:frame" content="vNext" />
-    <meta property="fc:frame:title" content="Cast Aloud" />
-    <meta property="fc:frame:image" content="/api/frame/image?state=initial" />
-    <meta property="fc:frame:button:1" content="🔊 Listen" />
-    <meta property="fc:frame:button:2" content="🎤 Voice Reply" />
-    <meta property="fc:frame:button:3" content="⚙️ Open App" />
-    <meta property="fc:frame:button:3:action" content="link" />
-    <meta property="fc:frame:post_url" content="/api/frame/action" />
+    <!-- Farcaster Miniapp Meta Tags -->
+    <meta name="fc:frame" content="vNext" />
+    <meta name="fc:frame:title" content="Cast Aloud - Voice Accessibility" />
+    <meta name="fc:frame:image" content="/api/frame/image?state=initial" />
+    <meta name="fc:frame:button:1" content="🔊 Listen to Cast" />
+    <meta name="fc:frame:button:2" content="🎤 Voice Reply" />
+    <meta name="fc:frame:button:3" content="⚙️ Settings" />
+    <meta name="fc:frame:post_url" content="/api/frame/action" />
+    
+    <!-- Miniapp specific tags -->
+    <meta name="fc:frame:aspect_ratio" content="1.91:1" />
+    <link rel="manifest" href="/manifest.json" />
     
     <!-- Theme -->
     <meta name="theme-color" content="#8A63D2" />

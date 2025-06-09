@@ -86,31 +86,95 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/frame/action", handleFrameAction);
   app.get("/api/frame/image", handleFrameImage);
   
-  // Mini App manifest for Farcaster
+  // Mini App manifest for Farcaster - required for testing
   app.get("/manifest.json", (req, res) => {
     const baseUrl = `${req.protocol}://${req.get('host')}`;
-    const domain = req.get('host') || 'localhost:5000';
     
     res.json({
       "accountAssociation": {
         "header": "eyJmaWQiOjEsInR5cGUiOiJjdXN0b2R5IiwibWFkZSI6MX0",
-        "payload": `eyJkb21haW4iOiIke domain.replace(':', '%3A')}"`,
-        "signature": "cast_aloud_signature_placeholder"
+        "payload": "eyJkb21haW4iOiJjYXN0YWxvdWQuY29tIn0",
+        "signature": "0x..."
       },
       "frame": {
         "version": "1",
         "name": "Cast Aloud",
         "iconUrl": `${baseUrl}/icon.png`,
-        "homeUrl": baseUrl,
+        "splashImageUrl": `${baseUrl}/api/frame/image?state=initial`,
+        "homeUrl": `${baseUrl}/`,
         "imageUrl": `${baseUrl}/api/frame/image?state=initial`,
         "buttonTitle": "Open Cast Aloud",
-        "splashImageUrl": `${baseUrl}/api/frame/image?state=initial`,
         "splashBackgroundColor": "#8A63D2",
         "webhookUrl": `${baseUrl}/api/frame/action`
       }
     });
   });
   
+  // Farcaster API endpoints for miniapp testing
+  app.get("/api/farcaster/user/:fid", async (req, res) => {
+    try {
+      const { fid } = req.params;
+      
+      const response = await fetch(`https://api.neynar.com/v2/farcaster/user/bulk?fids=${fid}`, {
+        headers: {
+          'accept': 'application/json',
+          'api_key': process.env.NEYNAR_API_KEY || ''
+        }
+      });
+      
+      if (!response.ok) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+      
+      const data = await response.json();
+      const user = data.users[0];
+      
+      res.json({
+        fid: user.fid,
+        username: user.username,
+        displayName: user.display_name,
+        pfpUrl: user.pfp_url
+      });
+    } catch (error) {
+      console.error('Error fetching user:', error);
+      res.status(500).json({ error: 'Failed to fetch user' });
+    }
+  });
+
+  app.get("/api/farcaster/cast/:hash", async (req, res) => {
+    try {
+      const { hash } = req.params;
+      
+      const response = await fetch(`https://api.neynar.com/v2/farcaster/cast?identifier=${hash}&type=hash`, {
+        headers: {
+          'accept': 'application/json',
+          'api_key': process.env.NEYNAR_API_KEY || ''
+        }
+      });
+      
+      if (!response.ok) {
+        return res.status(404).json({ error: 'Cast not found' });
+      }
+      
+      const data = await response.json();
+      const cast = data.cast;
+      
+      res.json({
+        hash: cast.hash,
+        text: cast.text,
+        author: {
+          fid: cast.author.fid,
+          username: cast.author.username,
+          displayName: cast.author.display_name,
+          pfpUrl: cast.author.pfp_url
+        }
+      });
+    } catch (error) {
+      console.error('Error fetching cast:', error);
+      res.status(500).json({ error: 'Failed to fetch cast' });
+    }
+  });
+
   // Webhook for Farcaster Frame validation
   app.post("/webhook/farcaster", (req, res) => {
     const { type, data } = req.body;
