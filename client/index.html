@@ -12,37 +12,18 @@
     <meta property="og:image" content="/api/frame/image?state=initial" />
     <meta property="og:type" content="website" />
     
-    <!-- Farcaster Mini App Configuration -->
-    <meta name="farcaster:app" content="miniapp" />
-    <meta name="farcaster:title" content="Cast Aloud" />
-    <meta name="farcaster:description" content="Voice accessibility tools for Farcaster" />
-    <meta name="farcaster:icon" content="/icon.png" />
-    
-    <!-- Frame fallback for sharing -->
+    <!-- Farcaster Miniapp Meta Tags -->
     <meta name="fc:frame" content="vNext" />
     <meta name="fc:frame:title" content="Cast Aloud - Voice Accessibility" />
     <meta name="fc:frame:image" content="/api/frame/image?state=initial" />
     <meta name="fc:frame:button:1" content="🔊 Listen to Cast" />
     <meta name="fc:frame:button:2" content="🎤 Voice Reply" />
-    <meta name="fc:frame:button:3" content="⚙️ Open Mini App" />
-    <meta name="fc:frame:button:3:action" content="link" />
-    <meta name="fc:frame:button:3:target" content="https://castaloud.replit.app" />
+    <meta name="fc:frame:button:3" content="⚙️ Settings" />
     <meta name="fc:frame:post_url" content="/api/frame/action" />
+    
+    <!-- Miniapp specific tags -->
     <meta name="fc:frame:aspect_ratio" content="1.91:1" />
-    
-    <!-- Mini App manifest -->
     <link rel="manifest" href="/manifest.json" />
-    
-    <!-- Service Worker for Mini App -->
-    <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js')
-            .then(registration => console.log('SW registered:', registration))
-            .catch(error => console.log('SW registration failed:', error));
-        });
-      }
-    </script>
     
     <!-- Theme -->
     <meta name="theme-color" content="#8A63D2" />
