@@ -822,6 +822,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Mini App manifest endpoint for deployment
+  app.get('/manifest.json', (_req, res) => {
+    res.json({
+      "accountAssociation": {
+        "header": "eyJmaWQiOjEsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHgxMjM0NSJ9",
+        "payload": "eyJkb21haW4iOiJjYXN0YWxvdWQucmVwbGl0LmFwcCJ9", 
+        "signature": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+      },
+      "app": {
+        "name": "Cast Aloud",
+        "version": "1.0.0",
+        "iconUrl": "https://castaloud.replit.app/generated-icon.png",
+        "splashImageUrl": "https://castaloud.replit.app/generated-icon.png",
+        "homeUrl": "https://castaloud.replit.app"
+      },
+      "execution": {
+        "mode": "frame"
+      },
+      "frame": {
+        "version": "1",
+        "imageUrl": "https://castaloud.replit.app/api/frame/image",
+        "buttonUrl": "https://castaloud.replit.app/api/frame/action",
+        "homeUrl": "https://castaloud.replit.app/frame"
+      }
+    });
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
