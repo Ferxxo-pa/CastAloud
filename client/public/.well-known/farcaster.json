@@ -1,0 +1,24 @@
+{
+  "name": "Cast Aloud",
+  "version": "1.0.0",
+  "description": "Voice accessibility tools for reading and replying to Farcaster casts. Helps users with reading difficulties by providing text-to-speech and voice reply features.",
+  "iconUrl": "https://castaloud.replit.app/icon.png",
+  "homeUrl": "https://castaloud.replit.app/",
+  "author": {
+    "name": "Cast Aloud Team",
+    "url": "https://castaloud.replit.app"
+  },
+  "category": "accessibility",
+  "tags": ["accessibility", "voice", "tts", "speech", "a11y"],
+  "capabilities": ["read", "compose"],
+  "permissions": ["microphone"],
+  "frame": {
+    "version": "vNext",
+    "name": "Cast Aloud",
+    "homeUrl": "https://castaloud.replit.app/",
+    "iconUrl": "https://castaloud.replit.app/icon.png",
+    "splashImageUrl": "https://castaloud.replit.app/api/frame/image?state=initial",
+    "requiredChains": [],
+    "requiredCapabilities": []
+  }
+}
