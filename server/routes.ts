@@ -81,25 +81,32 @@ async function getFeedbackOnComment(text: string): Promise<{ feedback: string; p
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
-
-
   // Frame routes
   app.get("/frame", handleFrameIndex);
   app.post("/api/frame/action", handleFrameAction);
   app.get("/api/frame/image", handleFrameImage);
   
-  // Mini App manifest for Farcaster
+  // Mini App manifest for Farcaster - required for testing
   app.get("/manifest.json", (req, res) => {
     const baseUrl = `${req.protocol}://${req.get('host')}`;
     
     res.json({
-      "name": "Cast Aloud",
-      "version": "1.0.0",
-      "iconUrl": `${baseUrl}/icon.png`,
-      "homeUrl": `${baseUrl}/`,
-      "description": "Voice accessibility tools for reading and replying to Farcaster casts",
-      "splashBackgroundColor": "#8A63D2",
-      "splashImageUrl": `${baseUrl}/api/frame/image?state=initial`
+      "accountAssociation": {
+        "header": "eyJmaWQiOjEsInR5cGUiOiJjdXN0b2R5IiwibWFkZSI6MX0",
+        "payload": "eyJkb21haW4iOiJjYXN0YWxvdWQuY29tIn0",
+        "signature": "0x..."
+      },
+      "frame": {
+        "version": "1",
+        "name": "Cast Aloud",
+        "iconUrl": `${baseUrl}/icon.png`,
+        "splashImageUrl": `${baseUrl}/api/frame/image?state=initial`,
+        "homeUrl": `${baseUrl}/`,
+        "imageUrl": `${baseUrl}/api/frame/image?state=initial`,
+        "buttonTitle": "Open Cast Aloud",
+        "splashBackgroundColor": "#8A63D2",
+        "webhookUrl": `${baseUrl}/api/frame/action`
+      }
     });
   });
   

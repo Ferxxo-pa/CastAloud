@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
 import { Link } from "wouter";
+import { useState, useEffect } from "react";
 
 export default function HomeSimple() {
   const [isSpeaking, setIsSpeaking] = useState(false);
@@ -112,24 +112,24 @@ export default function HomeSimple() {
     }
   };
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-fc-gray-50">
       <div className="max-w-md mx-auto p-4">
         <header className="mb-6">
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-900">Cast Aloud</h1>
-            <p className="text-gray-600 mt-2">
+            <h1 className="text-2xl font-bold text-fc-gray-900">Cast Aloud</h1>
+            <p className="text-fc-gray-600 mt-2">
               Accessibility tools for reading and replying to casts
             </p>
           </div>
         </header>
 
-        <div className="bg-white rounded-lg p-6 border border-gray-200 relative">
+        <div className="bg-white rounded-lg p-6 border border-fc-gray-200 relative">
           <button
             onClick={readPageAloud}
             className={`absolute top-4 right-4 px-3 py-2 rounded-lg transition-colors duration-200 flex items-center gap-2 text-sm font-medium ${
               isSpeaking 
-                ? 'bg-red-100 hover:bg-red-200 text-red-600' 
-                : 'bg-purple-100 hover:bg-purple-200 text-purple-600'
+                ? 'bg-fc-error/10 hover:bg-fc-error/20 text-fc-error' 
+                : 'bg-fc-purple/10 hover:bg-fc-purple/20 text-fc-purple'
             }`}
             title={isSpeaking ? 'Stop reading' : 'Read page aloud'}
           >

@@ -6,37 +6,6 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Farcaster Mini App discovery endpoint - MUST be before all other middleware
-app.get("/.well-known/farcaster.json", (req, res) => {
-  const baseUrl = `${req.protocol}://${req.get('host')}`;
-  res.json({
-    "name": "Cast Aloud",
-    "version": "1.0.0",
-    "description": "Voice accessibility tools for reading and replying to Farcaster casts. Helps users with reading difficulties by providing text-to-speech and voice reply features.",
-    "iconUrl": `${baseUrl}/icon.png`,
-    "homeUrl": `${baseUrl}/`,
-    "author": {
-      "name": "Cast Aloud Team",
-      "url": `${baseUrl}`
-    },
-    "category": "accessibility",
-    "tags": ["accessibility", "voice", "tts", "speech", "a11y"],
-    "capabilities": ["read", "compose"],
-    "permissions": ["microphone"],
-    "frame": {
-      "version": "vNext",
-      "name": "Cast Aloud",
-      "homeUrl": `${baseUrl}/`,
-      "iconUrl": `${baseUrl}/icon.png`,
-      "splashImageUrl": `${baseUrl}/api/frame/image?state=initial`,
-      "requiredChains": [],
-      "requiredCapabilities": []
-    }
-  });
-});
-
-
-
 // CORS headers for Farcaster miniapp testing
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
@@ -82,8 +51,6 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-
-
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
