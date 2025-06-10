@@ -1,5 +1,5 @@
+import React, { useState, useEffect } from "react";
 import { Link } from "wouter";
-import { useState, useEffect } from "react";
 
 export default function HomeSimple() {
   const [isSpeaking, setIsSpeaking] = useState(false);

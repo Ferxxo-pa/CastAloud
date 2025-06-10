@@ -1,5 +1,5 @@
+import React, { useEffect, useState } from "react";
 import { Switch, Route } from "wouter";
-import { useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import HomeSimple from "@/pages/home-simple";
