@@ -6,21 +6,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Farcaster Mini App discovery endpoint - must be before Vite middleware
-app.get("/.well-known/farcaster.json", (req, res) => {
-  const baseUrl = `${req.protocol}://${req.get('host')}`;
-  res.json({
-    "frame": {
-      "version": "vNext",
-      "name": "Cast Aloud",
-      "homeUrl": `${baseUrl}/`,
-      "iconUrl": `${baseUrl}/icon.png`,
-      "splashImageUrl": `${baseUrl}/api/frame/image?state=initial`,
-      "requiredChains": [],
-      "requiredCapabilities": []
-    }
-  });
-});
+
 
 // CORS headers for Farcaster miniapp testing
 app.use((req, res, next) => {
@@ -67,6 +53,22 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // Add .well-known route before any other routes or middleware
+  app.get("/.well-known/farcaster.json", (req, res) => {
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
+    res.json({
+      "frame": {
+        "version": "vNext", 
+        "name": "Cast Aloud",
+        "homeUrl": `${baseUrl}/`,
+        "iconUrl": `${baseUrl}/icon.png`,
+        "splashImageUrl": `${baseUrl}/api/frame/image?state=initial`,
+        "requiredChains": [],
+        "requiredCapabilities": []
+      }
+    });
+  });
+
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
