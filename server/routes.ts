@@ -81,6 +81,22 @@ async function getFeedbackOnComment(text: string): Promise<{ feedback: string; p
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Farcaster Mini App discovery endpoint
+  app.get("/.well-known/farcaster.json", (req, res) => {
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
+    res.json({
+      "frame": {
+        "version": "vNext",
+        "name": "Cast Aloud",
+        "homeUrl": `${baseUrl}/`,
+        "iconUrl": `${baseUrl}/icon.png`,
+        "splashImageUrl": `${baseUrl}/api/frame/image?state=initial`,
+        "requiredChains": [],
+        "requiredCapabilities": []
+      }
+    });
+  });
+
   // Frame routes
   app.get("/frame", handleFrameIndex);
   app.post("/api/frame/action", handleFrameAction);
