@@ -1,6 +1,6 @@
 import { Switch, Route } from "wouter";
-import { queryClient } from "./lib/queryClient";
-import { QueryClientProvider } from "@tanstack/react-query";
+import { sdk } from "@farcaster/frame-sdk";
+import { useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import HomeSimple from "@/pages/home-simple";
@@ -18,13 +18,16 @@ function Router() {
 }
 
 function App() {
+  useEffect(() => {
+    // Signal that the mini app is ready to be displayed
+    sdk.actions.ready();
+  }, []);
+
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Router />
-      </TooltipProvider>
-    </QueryClientProvider>
+    <TooltipProvider>
+      <Toaster />
+      <Router />
+    </TooltipProvider>
   );
 }
 
