@@ -101,7 +101,7 @@ export async function handleFrameIndex(req: Request, res: Response) {
   });
 
   const html = generateFrameHTML(
-    'Cast Aloud - Voice Accessibility for Farcaster',
+    'Cast Aloud',
     image,
     [
       { text: '🔊 Listen', action: 'post' },
