@@ -1,0 +1,17 @@
+{
+  "name": "Cast Aloud",
+  "short_name": "Cast Aloud",
+  "description": "Voice accessibility tools for reading and replying to Farcaster casts",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#8A63D2",
+  "theme_color": "#8A63D2",
+  "icons": [
+    {
+      "src": "/icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
