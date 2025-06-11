@@ -729,11 +729,11 @@ export async function handleFrameImage(req: Request, res: Response) {
           </text>
           
           ${step5Original ? `
-          <rect x="100" y="170" width="1000" height="60" rx="8" fill="#FEF3C7" stroke="#F59E0B" stroke-width="1"/>
-          <text x="120" y="190" font-family="Arial, sans-serif" font-size="12" fill="#92400E">
+          <rect x="100" y="170" width="1000" height="60" rx="8" fill="#F3F4F6" stroke="#9CA3AF" stroke-width="1"/>
+          <text x="120" y="190" font-family="Arial, sans-serif" font-size="12" fill="#4B5563">
             Original: ${step5Original}
           </text>
-          <text x="120" y="210" font-family="Arial, sans-serif" font-size="12" fill="#92400E">
+          <text x="120" y="210" font-family="Arial, sans-serif" font-size="12" fill="#6B7280">
             ↓ Improved with AI ↓
           </text>
           ` : ''}
