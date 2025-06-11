@@ -1,11 +1,14 @@
-import React, { useState, useEffect } from "react";
 import { Link } from "wouter";
+import { useState, useEffect } from "react";
+import { farcasterSDK, type FarcasterContext } from '@/lib/farcaster-sdk';
 
 export default function HomeSimple() {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [showVoiceSettings, setShowVoiceSettings] = useState(false);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [selectedVoice, setSelectedVoice] = useState<SpeechSynthesisVoice | null>(null);
+  const [farcasterContext, setFarcasterContext] = useState<FarcasterContext | null>(null);
+  const [isMiniApp, setIsMiniApp] = useState(false);
   
   // Load speech rate from localStorage
   const [speechRate, setSpeechRate] = useState(() => {
