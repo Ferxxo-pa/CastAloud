@@ -34,7 +34,11 @@ export default function Home() {
   };
 
   const handleTestVoice = () => {
-    testVoice();
+    if (isSpeaking) {
+      stop();
+    } else {
+      speak("This is a test of your voice settings. How does this sound?");
+    }
   };
 
   if (isLoading) {
