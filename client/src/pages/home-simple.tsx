@@ -251,17 +251,37 @@ export default function HomeSimple() {
 
                 <button
                   onClick={() => {
-                    const testText = "This is a test of your voice settings. How does this sound?";
-                    const utterance = new SpeechSynthesisUtterance(testText);
-                    utterance.rate = speechRate;
-                    if (selectedVoice) {
-                      utterance.voice = selectedVoice;
+                    if (isSpeaking) {
+                      speechSynthesis.cancel();
+                      setIsSpeaking(false);
+                    } else {
+                      const testText = "This is a test of your voice settings. How does this sound?";
+                      const utterance = new SpeechSynthesisUtterance(testText);
+                      utterance.rate = speechRate;
+                      if (selectedVoice) {
+                        utterance.voice = selectedVoice;
+                      }
+                      
+                      utterance.onstart = () => setIsSpeaking(true);
+                      utterance.onend = () => setIsSpeaking(false);
+                      utterance.onerror = () => setIsSpeaking(false);
+                      
+                      speechSynthesis.speak(utterance);
                     }
-                    speechSynthesis.speak(utterance);
                   }}
-                  className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors duration-200"
+                  className={`w-full font-medium py-2 px-4 rounded-lg transition-colors duration-200 ${
+                    isSpeaking 
+                      ? 'bg-red-500 hover:bg-red-600 text-white' 
+                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                  }`}
                 >
-                  Test Voice
+                  <i 
+                    className={`mr-2 ${
+                      isSpeaking ? 'fas fa-stop' : 'fas fa-volume-up'
+                    }`} 
+                    aria-hidden="true"
+                  ></i>
+                  {isSpeaking ? 'Stop Test' : 'Test Voice'}
                 </button>
               </div>
             </div>
