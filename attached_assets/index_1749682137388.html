@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <title>Cast Aloud - Voice Accessibility for Farcaster</title>
+    <meta name="description" content="Accessibility tools for reading and replying to Farcaster casts using voice technology. Listen to casts aloud and reply using your voice." />
+    
+    <!-- Open Graph / Farcaster Meta Tags -->
+    <meta property="og:title" content="Cast Aloud - Voice Accessibility for Farcaster" />
+    <meta property="og:description" content="Accessibility tools for reading and replying to Farcaster casts using voice technology" />
+    <meta property="og:image" content="/api/frame/image?state=initial" />
+    <meta property="og:type" content="website" />
+    
+    <!-- Farcaster Mini App Configuration -->
+    <meta name="fc:frame" content='{
+      "version": "next",
+      "imageUrl": "/api/frame/image?state=initial",
+      "button": {
+        "title": "Open Castaloud",
+        "action": {
+          "type": "launch_frame",
+          "url": "https://castaloud.replit.app/",
+          "name": "Castaloud",
+          "splashImageUrl": "/logo.png",
+          "splashBackgroundColor": "#ffffff"
+        }
+      }
+    }' />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    
+    <!-- Mini App manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Service Worker for Mini App -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(registration => console.log('SW registered:', registration))
+            .catch(error => console.log('SW registration failed:', error));
+        });
+      }
+    </script>
+    
+    <!-- Theme -->
+    <meta name="theme-color" content="#FFFFFF" />
+    <meta name="msapplication-navbutton-color" content="#FFFFFF">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  </head>
+  <body style="background-color: white; margin: 0; padding: 0;">
+    <div id="root" style="background-color: white; min-height: 100vh;"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    <!-- Frame SDK -->
+    <script type="module">
+      import { sdk } from '@farcaster/frame-sdk'
+      // Initialize SDK once UI is ready
+      window.addEventListener('load', async () => {
+        try {
+          await sdk.actions.ready()
+          console.log('Frame SDK initialized successfully')
+        } catch (error) {
+          console.error('Failed to initialize Frame SDK:', error)
+        }
+      })
+    </script>
+  </body>
+</html>
