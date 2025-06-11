@@ -16,10 +16,11 @@
     <meta name="farcaster:app" content="miniapp" />
     <meta name="farcaster:title" content="Cast Aloud" />
     <meta name="farcaster:description" content="Voice accessibility tools for Farcaster" />
-    <meta name="farcaster:icon" content="/cast-aloud-logo.png" />
-    <link rel="icon" type="image/png" href="/cast-aloud-logo.png" />
-    <link rel="shortcut icon" type="image/png" href="/cast-aloud-logo.png" />
-    <link rel="apple-touch-icon" href="/cast-aloud-logo.png" />
+    <meta name="farcaster:icon" content="/favicon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png?t=1736624400" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png?t=1736624400" />
+    <link rel="shortcut icon" href="/favicon.ico?t=1736624400" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png?t=1736624400" />
     
     <!-- Frame fallback for sharing -->
     <meta name="fc:frame" content="vNext" />
@@ -53,7 +54,13 @@
     <meta name="theme-color" content="#8A63D2" />
   </head>
   <body style="background-color: white; margin: 0; padding: 0;">
-    <div id="root"></div>
+    <div id="root">
+      <div style="display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column; font-family: Arial, sans-serif;">
+        <img src="/favicon.png" alt="Cast Aloud" style="width: 64px; height: 64px; margin-bottom: 16px; border-radius: 8px;">
+        <h1 style="color: #8A63D2; margin: 0 0 8px 0; font-size: 24px;">Cast Aloud</h1>
+        <p style="color: #6B6B6B; margin: 0; font-size: 14px;">Loading voice accessibility tools...</p>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
     <!-- This is a replit script which adds a banner on the top of the page when opened in development mode outside the replit environment -->
     <script type="text/javascript" src="https://replit.com/public/js/replit-dev-banner.js"></script>

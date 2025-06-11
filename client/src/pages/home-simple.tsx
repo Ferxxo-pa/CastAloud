@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { farcasterSDK, type FarcasterContext } from '@/lib/farcaster-sdk';
 
 export default function HomeSimple() {
-  console.log("HomeSimple component rendering");
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [showVoiceSettings, setShowVoiceSettings] = useState(false);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
@@ -115,7 +114,6 @@ export default function HomeSimple() {
       speechSynthesis.speak(utterance);
     }
   };
-  console.log("HomeSimple about to render JSX");
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#FAFAFA', padding: '20px' }}>
       <div style={{ maxWidth: '400px', margin: '0 auto', backgroundColor: 'white', padding: '20px', borderRadius: '8px' }}>
