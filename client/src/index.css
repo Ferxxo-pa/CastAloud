@@ -31,7 +31,7 @@
   --fc-purple-light: 259 83% 71%; /* #9E76E0 - Lighter purple */
   --fc-warpcast-purple: 267 84% 58%; /* #855DCD - Warpcast variant */
   --fc-success: 142 71% 45%; /* #22C55E */
-  --fc-warning: 43 96% 56%; /* #F59E0B */
+  --fc-warning: 0 0% 100%; /* #FFFFFF */
   --fc-error: 0 84% 60%; /* #EF4444 */
   --fc-gray-50: 0 0% 98%; /* #FAFAFA */
   --fc-gray-100: 0 0% 96%; /* #F7F7F7 */
