@@ -386,10 +386,20 @@ async function polishReply(text: string): Promise<string> {
 
 export async function handleFrameImage(req: Request, res: Response) {
   try {
-    const { state, castId, author, content, message } = req.query;
+    const { state, castId, author, content, message, reply, original, feedback } = req.query;
     const contentStr = typeof content === 'string' ? content : 'Welcome to Cast Aloud! This accessibility app helps you listen to casts and reply using your voice.';
     const authorStr = typeof author === 'string' ? author : 'demo';
     const messageStr = typeof message === 'string' ? message : '';
+    
+    // Extract data object from query parameters
+    const data = {
+      content: contentStr,
+      author: authorStr,
+      message: messageStr,
+      reply: typeof reply === 'string' ? reply : '',
+      original: typeof original === 'string' ? original : '',
+      feedback: typeof feedback === 'string' ? feedback : ''
+    };
 
     // Generate SVG image based on state
     let svg = '';
@@ -570,7 +580,7 @@ export async function handleFrameImage(req: Request, res: Response) {
       break;
 
     case 'step2_read_aloud':
-      const step2Content = (data && typeof data === 'object' && 'content' in data) ? data.content : 'Sample cast content';
+      const step2Content = data.content || 'Sample cast content';
       svg = `
         <svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
           <rect width="1200" height="630" fill="#F9FAFB"/>
@@ -661,7 +671,7 @@ export async function handleFrameImage(req: Request, res: Response) {
       break;
 
     case 'step4_ai_feedback':
-      const step4Reply = data?.reply || 'Your reply';
+      const step4Reply = data.reply || 'Your reply';
       svg = `
         <svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
           <rect width="1200" height="630" fill="#F9FAFB"/>
@@ -714,8 +724,8 @@ export async function handleFrameImage(req: Request, res: Response) {
       break;
 
     case 'step5_copy':
-      const step5Reply = data?.reply || 'Your improved reply';
-      const step5Original = data?.original || '';
+      const step5Reply = data.reply || 'Your improved reply';
+      const step5Original = data.original || '';
       svg = `
         <svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
           <rect width="1200" height="630" fill="#F9FAFB"/>
