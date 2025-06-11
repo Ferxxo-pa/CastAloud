@@ -1,0 +1,30 @@
+{
+  "accountAssociation": {
+    "header": "REPLACE_WITH_YOUR_WARPCAST_GENERATED_HEADER",
+    "payload": "REPLACE_WITH_YOUR_WARPCAST_GENERATED_PAYLOAD",
+    "signature": "REPLACE_WITH_YOUR_WARPCAST_GENERATED_SIGNATURE"
+  },
+  "app": {
+    "name": "Cast Aloud",
+    "version": "1.0.0",
+    "iconUrl": "https://castaloud.replit.app/favicon.png",
+    "splashImageUrl": "https://castaloud.replit.app/favicon.png",
+    "homeUrl": "https://castaloud.replit.app"
+  },
+  "execution": {
+    "mode": "frame"
+  },
+  "frame": {
+    "version": "1",
+    "imageUrl": "https://castaloud.replit.app/api/frame/image",
+    "buttonUrl": "https://castaloud.replit.app/api/frame/action",
+    "homeUrl": "https://castaloud.replit.app/frame"
+  },
+  "metadata": {
+    "name": "Cast Aloud",
+    "description": "Voice accessibility tools for reading and replying to Farcaster casts using AI-powered text-to-speech and writing assistance",
+    "longDescription": "Cast Aloud revolutionizes Farcaster accessibility through advanced voice technologies. Users can listen to casts with natural text-to-speech, type replies with AI grammar assistance, and engage with social content through a guided 5-step workflow designed for people with reading and writing difficulties.",
+    "imageUrl": "https://castaloud.replit.app/favicon.png",
+    "url": "https://castaloud.replit.app"
+  }
+}

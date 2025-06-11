@@ -822,30 +822,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Mini App manifest endpoint for deployment
-  app.get('/manifest.json', (_req, res) => {
-    res.json({
-      "accountAssociation": {
-        "header": "eyJmaWQiOjEsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHgxMjM0NSJ9",
-        "payload": "eyJkb21haW4iOiJjYXN0YWxvdWQucmVwbGl0LmFwcCJ9", 
-        "signature": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
-      },
-      "app": {
-        "name": "Cast Aloud",
-        "version": "1.0.0",
-        "iconUrl": "https://castaloud.replit.app/generated-icon.png",
-        "splashImageUrl": "https://castaloud.replit.app/generated-icon.png",
-        "homeUrl": "https://castaloud.replit.app"
-      },
-      "execution": {
-        "mode": "frame"
-      },
-      "frame": {
-        "version": "1",
-        "imageUrl": "https://castaloud.replit.app/api/frame/image",
-        "buttonUrl": "https://castaloud.replit.app/api/frame/action",
-        "homeUrl": "https://castaloud.replit.app/frame"
+  // Webhook endpoint for Mini App notifications
+  app.post('/api/webhook', (req, res) => {
+    try {
+      const { event, data } = req.body;
+      
+      console.log('Farcaster webhook received:', { event, data });
+      
+      switch(event) {
+        case 'frame_button_clicked':
+          console.log('User clicked Frame button:', data);
+          break;
+        case 'app_opened':
+          console.log('User opened Mini App:', data);
+          break;
+        case 'frame_added':
+          console.log('Frame added to cast:', data);
+          break;
+        default:
+          console.log('Unknown webhook event:', event, data);
       }
+      
+      res.json({ success: true, received: true });
+    } catch (error) {
+      console.error('Webhook error:', error);
+      res.status(500).json({ error: 'Webhook processing failed' });
+    }
+  });
+
+  // Health check / keep-alive endpoint
+  app.get('/ping', (_req, res) => {
+    res.json({ 
+      status: 'alive', 
+      timestamp: new Date().toISOString(),
+      uptime: Math.floor(process.uptime()),
+      app: 'Cast Aloud'
     });
   });
 
