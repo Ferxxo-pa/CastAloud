@@ -1,6 +1,7 @@
 import { Link } from "wouter";
 import { useState, useEffect } from "react";
 import { farcasterSDK, type FarcasterContext } from '@/lib/farcaster-sdk';
+import LoadingScreen from '@/components/LoadingScreen';
 
 export default function HomeSimple() {
   const [isSpeaking, setIsSpeaking] = useState(false);
@@ -10,6 +11,7 @@ export default function HomeSimple() {
   const [farcasterContext, setFarcasterContext] = useState<FarcasterContext | null>(null);
   const [isMiniApp, setIsMiniApp] = useState(false);
   const [isTestVoicePlaying, setIsTestVoicePlaying] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   
   // Load speech rate from localStorage
   const [speechRate, setSpeechRate] = useState(() => {
@@ -115,8 +117,23 @@ export default function HomeSimple() {
       speechSynthesis.speak(utterance);
     }
   };
+
+  // Initialize app and hide loading screen
+  useEffect(() => {
+    const initializeApp = async () => {
+      // Wait for voices to load and app to be ready
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 2000);
+    };
+    
+    initializeApp();
+  }, []);
+
   return (
-    <div className="min-h-screen bg-fc-gray-50">
+    <div>
+      <LoadingScreen isVisible={isLoading} />
+      <div className="min-h-screen bg-fc-gray-50">
       <div className="max-w-md mx-auto p-4">
         <header className="mb-6">
           <div className="text-center">
@@ -295,5 +312,6 @@ export default function HomeSimple() {
         </div>
       </div>
     </div>
+    </>
   );
 }
