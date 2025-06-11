@@ -132,6 +132,9 @@ export default function useSpeechSynthesis(): UseSpeechSynthesisReturn {
     // Stop any current speech
     window.speechSynthesis.cancel();
     
+    // Set speaking state immediately
+    setIsSpeaking(true);
+    
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.rate = settings.rate;
     utterance.pitch = settings.pitch;
@@ -171,6 +174,22 @@ export default function useSpeechSynthesis(): UseSpeechSynthesisReturn {
       speak(testText);
     }
   }, [isSpeaking, stop, speak]);
+
+  // Monitor speechSynthesis state
+  useEffect(() => {
+    if (!isSupported) return;
+
+    const checkSpeechStatus = () => {
+      const actuallyPlaying = window.speechSynthesis.speaking;
+      if (isSpeaking !== actuallyPlaying) {
+        setIsSpeaking(actuallyPlaying);
+      }
+    };
+
+    const interval = setInterval(checkSpeechStatus, 100);
+    
+    return () => clearInterval(interval);
+  }, [isSupported, isSpeaking]);
 
   // Clean up on unmount
   useEffect(() => {
