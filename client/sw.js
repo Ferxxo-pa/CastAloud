@@ -3,13 +3,18 @@ const CACHE_NAME = 'cast-aloud-v1';
 const urlsToCache = [
   '/',
   '/manifest.json',
-  '/icon.png'
+  '/cast-aloud-logo.png'
 ];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(urlsToCache))
+      .then((cache) => {
+        return cache.addAll(urlsToCache).catch((error) => {
+          console.warn('Failed to cache some resources:', error);
+          // Continue installation even if some resources fail to cache
+        });
+      })
   );
 });
 
@@ -17,7 +22,17 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
-        return response || fetch(event.request);
+        if (response) {
+          return response;
+        }
+        return fetch(event.request).catch((error) => {
+          console.warn('Fetch failed for:', event.request.url, error);
+          // Return a basic fallback for navigation requests
+          if (event.request.mode === 'navigate') {
+            return caches.match('/');
+          }
+          throw error;
+        });
       })
   );
 });
