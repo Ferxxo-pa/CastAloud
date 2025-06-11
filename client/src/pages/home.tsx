@@ -9,7 +9,7 @@ import type { Cast } from "@shared/schema";
 
 export default function Home() {
   const [showVoiceInterface, setShowVoiceInterface] = useState<{ show: boolean; cast?: Cast }>({ show: false });
-  const { speak, isSpeaking, stop, testVoice, voices, settings, updateSettings } = useSpeechSynthesis();
+  const { speak, isSpeaking, stop, voices, settings, updateSettings } = useSpeechSynthesis();
 
   const { data: feed, isLoading, error } = useQuery<Cast[]>({
     queryKey: ["/api/feed"],
@@ -34,7 +34,7 @@ export default function Home() {
   };
 
   const handleTestVoice = () => {
-    testVoice();
+    speak("This is a test of your voice settings. How does this sound?");
   };
 
   if (isLoading) {
@@ -48,12 +48,11 @@ export default function Home() {
               </div>
               <h1 className="text-lg font-semibold text-fc-gray-900">Farcaster Feed</h1>
             </div>
-            <VoiceSettings
+            <OpenAIVoiceSettings
               voices={voices}
-              settings={settings}
-              updateSettings={updateSettings}
+              selectedVoice={selectedVoice}
+              setSelectedVoice={setSelectedVoice}
               onTestVoice={handleTestVoice}
-              isSpeaking={isSpeaking}
             />
           </div>
         </header>
@@ -90,12 +89,11 @@ export default function Home() {
               </div>
               <h1 className="text-lg font-semibold text-fc-gray-900">Farcaster Feed</h1>
             </div>
-            <VoiceSettings
+            <OpenAIVoiceSettings
               voices={voices}
-              settings={settings}
-              updateSettings={updateSettings}
+              selectedVoice={selectedVoice}
+              setSelectedVoice={setSelectedVoice}
               onTestVoice={handleTestVoice}
-              isSpeaking={isSpeaking}
             />
           </div>
         </header>
@@ -118,12 +116,11 @@ export default function Home() {
             </div>
             <h1 className="text-lg font-semibold text-fc-gray-900">Farcaster Feed</h1>
           </div>
-          <VoiceSettings
+          <OpenAIVoiceSettings
             voices={voices}
-            settings={settings}
-            updateSettings={updateSettings}
+            selectedVoice={selectedVoice}
+            setSelectedVoice={setSelectedVoice}
             onTestVoice={handleTestVoice}
-            isSpeaking={isSpeaking}
           />
         </div>
       </header>

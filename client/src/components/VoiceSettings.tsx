@@ -14,10 +14,9 @@ interface VoiceSettingsProps {
   };
   updateSettings: (newSettings: any) => void;
   onTestVoice: () => void;
-  isSpeaking?: boolean;
 }
 
-export default function VoiceSettings({ voices, settings, updateSettings, onTestVoice, isSpeaking }: VoiceSettingsProps) {
+export default function VoiceSettings({ voices, settings, updateSettings, onTestVoice }: VoiceSettingsProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   if (!isOpen) {
@@ -153,19 +152,10 @@ export default function VoiceSettings({ voices, settings, updateSettings, onTest
           {/* Test Voice */}
           <Button
             onClick={onTestVoice}
-            className={`w-full text-white ${
-              isSpeaking 
-                ? 'bg-red-500 hover:bg-red-600' 
-                : 'bg-fc-purple hover:bg-fc-purple-dark'
-            }`}
+            className="w-full bg-fc-purple hover:bg-fc-purple-dark text-white"
           >
-            <i 
-              className={`mr-2 ${
-                isSpeaking ? 'fas fa-stop' : 'fas fa-volume-up'
-              }`} 
-              aria-hidden="true"
-            ></i>
-            {isSpeaking ? 'Stop Test' : 'Test Voice'}
+            <i className="fas fa-volume-up mr-2" aria-hidden="true"></i>
+            Test Voice
           </Button>
 
           {/* Presets */}

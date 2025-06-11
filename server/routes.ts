@@ -251,24 +251,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/icon.png", (req, res) => {
     const svg = `
       <svg width="256" height="256" xmlns="http://www.w3.org/2000/svg">
-        <rect width="256" height="256" rx="48" fill="#8A63D2"/>
+        <rect width="256" height="256" rx="32" fill="#8A63D2"/>
         <circle cx="128" cy="128" r="60" fill="white" opacity="0.9"/>
         <text x="128" y="145" font-family="Arial, sans-serif" font-size="48" fill="#8A63D2" text-anchor="middle">🔊</text>
-      </svg>
-    `;
-    res.setHeader('Content-Type', 'image/svg+xml');
-    res.setHeader('Cache-Control', 'public, max-age=3600');
-    res.send(svg);
-  });
-
-  // Cast Aloud logo with rounded corners
-  app.get("/cast-aloud-logo.png", (req, res) => {
-    const svg = `
-      <svg width="256" height="256" xmlns="http://www.w3.org/2000/svg">
-        <rect width="256" height="256" rx="48" fill="#8A63D2"/>
-        <circle cx="128" cy="128" r="70" fill="white" opacity="0.95"/>
-        <text x="128" y="155" font-family="Arial, sans-serif" font-size="52" fill="#8A63D2" text-anchor="middle" font-weight="bold">🔊</text>
-        <text x="128" y="200" font-family="Arial, sans-serif" font-size="14" fill="#8A63D2" text-anchor="middle" font-weight="bold">CAST ALOUD</text>
       </svg>
     `;
     res.setHeader('Content-Type', 'image/svg+xml');
@@ -837,7 +822,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-
+  // Mini App manifest endpoint for deployment
+  app.get('/manifest.json', (_req, res) => {
+    res.json({
+      "accountAssociation": {
+        "header": "eyJmaWQiOjEsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHgxMjM0NSJ9",
+        "payload": "eyJkb21haW4iOiJjYXN0YWxvdWQucmVwbGl0LmFwcCJ9", 
+        "signature": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+      },
+      "app": {
+        "name": "Cast Aloud",
+        "version": "1.0.0",
+        "iconUrl": "https://castaloud.replit.app/generated-icon.png",
+        "splashImageUrl": "https://castaloud.replit.app/generated-icon.png",
+        "homeUrl": "https://castaloud.replit.app"
+      },
+      "execution": {
+        "mode": "frame"
+      },
+      "frame": {
+        "version": "1",
+        "imageUrl": "https://castaloud.replit.app/api/frame/image",
+        "buttonUrl": "https://castaloud.replit.app/api/frame/action",
+        "homeUrl": "https://castaloud.replit.app/frame"
+      }
+    });
+  });
 
   const httpServer = createServer(app);
   return httpServer;
