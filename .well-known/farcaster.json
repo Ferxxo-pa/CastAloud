@@ -1,0 +1,12 @@
+{
+  "name": "Cast Aloud",
+  "homeUrl": "https://castaloud.replit.app",
+  "iconUrl": "https://castaloud.replit.app/generated-icon.png",
+  "splashImageUrl": "https://castaloud.replit.app/splash-image.svg",
+  "splashBackgroundColor": "#8A63D2",
+  "accountAssociation": {
+    "header": "eyJmaWQiOjEyMzQ1LCJ0eXBlIjoiY3VzdG9keSIsImtleSI6IjB4MTIzNDUifQ",
+    "payload": "eyJkb21haW4iOiJjYXN0YWxvdWQucmVwbGl0LmFwcCJ9",
+    "signature": "MHhjMTIzNDU2Nzg5YWJjZGVmMTIzNDU2Nzg5YWJjZGVmMTIzNDU2Nzg5YWJjZGVmMTIzNDU2Nzg5YWJjZGVm"
+  }
+}

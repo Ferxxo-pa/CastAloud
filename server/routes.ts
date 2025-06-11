@@ -739,7 +739,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ text, apiUsed });
     } catch (error) {
       console.error("Error extracting cast:", error);
-      res.status(500).json({ error: "Failed to extract cast content: " + error.message });
+      res.status(500).json({ error: "Failed to extract cast content: " + (error instanceof Error ? error.message : 'Unknown error') });
     }
   });
 

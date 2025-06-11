@@ -6,6 +6,9 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+// Serve .well-known directory for Farcaster manifest
+app.use('/.well-known', express.static('.well-known'));
+
 // CORS headers for Farcaster miniapp testing
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
