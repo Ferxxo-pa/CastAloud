@@ -18,14 +18,27 @@ function Router() {
 }
 
 function App() {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Router />
-      </TooltipProvider>
-    </QueryClientProvider>
-  );
+  console.log("App component rendering");
+  
+  try {
+    return (
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Router />
+        </TooltipProvider>
+      </QueryClientProvider>
+    );
+  } catch (error) {
+    console.error("Error in App component:", error);
+    return (
+      <div style={{ padding: '20px', color: 'red', fontFamily: 'Arial, sans-serif' }}>
+        <h1>Application Error</h1>
+        <p>Error: {String(error)}</p>
+        <p>Please check the console for more details.</p>
+      </div>
+    );
+  }
 }
 
 export default App;

@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { farcasterSDK, type FarcasterContext } from '@/lib/farcaster-sdk';
 
 export default function HomeSimple() {
+  console.log("HomeSimple component rendering");
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [showVoiceSettings, setShowVoiceSettings] = useState(false);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
