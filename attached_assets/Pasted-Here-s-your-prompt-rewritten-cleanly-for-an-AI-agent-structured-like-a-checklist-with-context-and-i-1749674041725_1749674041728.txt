@@ -1,0 +1,69 @@
+Here’s your prompt rewritten cleanly for an AI agent, structured like a checklist with context and instructions:
+
+---
+
+**🎯 Prompt for AI Agent: Ship Castaloud as a Farcaster Mini App**
+
+You are helping me turn my app `https://castaloud.replit.app` into a functional Farcaster Mini App. Go step by step through the following checklist. At each step, verify if it's complete. If it is, double-check it. If it isn’t, implement it or tell me what you need. Once done, ask me to confirm before continuing to the next step. **Do not forget where you are in the checklist.**
+
+---
+
+**✅ Step-by-step checklist:**
+
+1️⃣ **Integrate the Frame SDK**
+
+* [ ] If not yet installed, install `@farcaster/frame-sdk` via npm/yarn.
+* [ ] OR import it via CDN in the HTML `<script type="module">`.
+* [ ] In your JavaScript, call `await sdk.actions.ready()` *once your UI has fully loaded* to signal readiness.
+
+2️⃣ **Add a Rich Embed Meta Tag**
+
+* [ ] Add the `fc:frame` meta tag inside the `<head>` of your main HTML (likely `index.html`).
+* [ ] Include fields: version, imageUrl (3:2 aspect), button.title, button.action.launch\_frame URL, splash image, background color.
+
+3️⃣ **Create Manifest File**
+
+* [ ] In the `.well-known/` folder, create a `farcaster.json` with the correct structure.
+* [ ] Include name, homeUrl, iconUrl (1024x1024), splashImageUrl (200x200), background color, and placeholder for `accountAssociation`.
+
+4️⃣ **Generate Domain Verification (accountAssociation)**
+
+* [ ] Use Warpcast Desktop → Developer → Mini App Manifest Tool.
+* [ ] Input `castaloud.replit.app`, generate association.
+* [ ] Copy the resulting JSON (header, payload, signature) into the `accountAssociation` section of `farcaster.json`.
+
+5️⃣ **Test via Warpcast Debug Tool**
+
+* [ ] Open the [Warpcast Debugger](https://warpcast.com/debug)
+* [ ] Paste the Replit app URL (`https://castaloud.replit.app/`)
+* [ ] Preview the app and verify:
+
+  * Meta tag loads
+  * Splash screen appears
+  * It disappears when `sdk.actions.ready()` is called
+  * Images load correctly
+
+6️⃣ **Fix & Iterate**
+
+* [ ] Confirm `sdk.actions.ready()` runs at the right time
+* [ ] Check that splash image and embed image URLs are working
+* [ ] Use console logs or network tab to debug and fix anything broken
+* [ ] Repeat tests until everything works smoothly
+
+7️⃣ **Final Deployment**
+
+* [ ] Ensure `/.well-known/farcaster.json` is publicly accessible
+* [ ] Confirm meta tags are live on the deployed site
+* [ ] Share a test cast on Warpcast to see the Mini App in-feed
+* [ ] Optionally submit the app to be officially listed in Farcaster docs
+
+---
+
+At each step:
+
+* ✅ If done, verify it’s working and move on
+* 🛠️ If not done, explain how you’ll do it
+* 🧩 If stuck or uncertain, ask me
+* 📍Always track your current step so we don’t lose place
+
+Let me know when ready to begin.
