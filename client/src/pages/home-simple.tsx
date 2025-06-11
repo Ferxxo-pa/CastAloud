@@ -5,55 +5,51 @@ import { farcasterSDK, type FarcasterContext } from '@/lib/farcaster-sdk';
 export default function HomeSimple() {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [showVoiceSettings, setShowVoiceSettings] = useState(false);
-  const [castText, setCastText] = useState('');
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [selectedVoice, setSelectedVoice] = useState<SpeechSynthesisVoice | null>(null);
   const [farcasterContext, setFarcasterContext] = useState<FarcasterContext | null>(null);
   const [isMiniApp, setIsMiniApp] = useState(false);
   const [isTestVoicePlaying, setIsTestVoicePlaying] = useState(false);
-
+  
   // Load speech rate from localStorage
   const [speechRate, setSpeechRate] = useState(() => {
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('speechRate');
-      return saved ? parseFloat(saved) : 1.0;
+      try {
+        const saved = localStorage.getItem('voiceSettings');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          return parsed.speechRate || 0.9;
+        }
+      } catch (error) {
+        console.warn('Failed to load voice settings:', error);
+      }
     }
-    return 1.0;
+    return 0.9;
   });
 
-  // Initialize Farcaster SDK
-  useEffect(() => {
-    const initSDK = async () => {
-      try {
-        const context = await farcasterSDK.initialize();
-        setFarcasterContext(context);
-        setIsMiniApp(context.isFrameContext);
-      } catch (error) {
-        console.error('Failed to initialize Farcaster SDK:', error);
-      }
-    };
-    
-    initSDK();
-  }, []);
-
-  // Save speech rate to localStorage when it changes
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('speechRate', speechRate.toString());
-    }
-  }, [speechRate]);
-
   // Load available voices
-  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
-  
   useEffect(() => {
     const loadVoices = () => {
       const availableVoices = speechSynthesis.getVoices();
       setVoices(availableVoices);
       
-      if (!selectedVoice && availableVoices.length > 0) {
-        // Try to find an English voice, otherwise use the first one
-        const englishVoice = availableVoices.find(voice => voice.lang.startsWith('en'));
-        setSelectedVoice(englishVoice || availableVoices[0]);
+      if (availableVoices.length > 0 && !selectedVoice) {
+        // Try to restore saved voice
+        let voiceToSelect = null;
+        try {
+          const saved = localStorage.getItem('voiceSettings');
+          if (saved) {
+            const parsed = JSON.parse(saved);
+            if (parsed.voiceName) {
+              voiceToSelect = availableVoices.find(voice => voice.name === parsed.voiceName);
+            }
+          }
+        } catch (error) {
+          console.warn('Failed to restore saved voice:', error);
+        }
+        
+        // Use saved voice or default to first available
+        setSelectedVoice(voiceToSelect || availableVoices[0]);
       }
     };
 
@@ -65,61 +61,60 @@ export default function HomeSimple() {
     };
   }, [selectedVoice]);
 
+  // Save voice settings to localStorage
+  const saveVoiceSettings = (voice: SpeechSynthesisVoice | null, rate: number) => {
+    try {
+      const settings = {
+        voiceName: voice?.name || null,
+        speechRate: rate
+      };
+      localStorage.setItem('voiceSettings', JSON.stringify(settings));
+    } catch (error) {
+      console.warn('Failed to save voice settings:', error);
+    }
+  };
+
+  // Update voice selection with persistence
+  const handleVoiceChange = (voice: SpeechSynthesisVoice | null) => {
+    setSelectedVoice(voice);
+    saveVoiceSettings(voice, speechRate);
+  };
+
+  // Update speech rate with persistence
+  const handleRateChange = (rate: number) => {
+    setSpeechRate(rate);
+    saveVoiceSettings(selectedVoice, rate);
+  };
+
   const readPageAloud = () => {
+    const textToRead = `
+      Cast Aloud. Accessibility tools for reading and replying to casts.
+      
+      Try the Mini App. The mini app helps you read casts aloud and create voice replies with AI assistance.
+      
+      How it works:
+      1. Paste a Farcaster post URL or text directly
+      2. Click "Read Aloud" to hear the content  
+      3. Type your reply in the text area
+      4. Get AI feedback or polish your reply
+      5. Copy the improved reply to post on Farcaster
+    `;
+
     if (isSpeaking) {
       speechSynthesis.cancel();
       setIsSpeaking(false);
-      return;
-    }
-
-    const textToRead = castText || 'Welcome to Cast Aloud! This is an accessibility tool for reading and replying to Farcaster posts. Paste a post URL or text, then click Read Aloud to hear the content. You can then type a reply and get AI feedback to polish it before posting.';
-    
-    if (textToRead) {
-      setIsSpeaking(true);
-      
+    } else {
       const utterance = new SpeechSynthesisUtterance(textToRead);
       utterance.rate = speechRate;
-      utterance.voice = selectedVoice;
-      
-      utterance.onend = () => {
-        setIsSpeaking(false);
-      };
-      
-      utterance.onerror = () => {
-        setIsSpeaking(false);
-      };
-      
+      if (selectedVoice) {
+        utterance.voice = selectedVoice;
+      }
+      utterance.onstart = () => setIsSpeaking(true);
+      utterance.onend = () => setIsSpeaking(false);
+      utterance.onerror = () => setIsSpeaking(false);
       speechSynthesis.speak(utterance);
     }
   };
-
-  const testVoice = () => {
-    if (isTestVoicePlaying) {
-      speechSynthesis.cancel();
-      setIsTestVoicePlaying(false);
-      return;
-    }
-
-    const testText = "This is a test of the selected voice and speed settings.";
-    setIsTestVoicePlaying(true);
-    
-    const utterance = new SpeechSynthesisUtterance(testText);
-    utterance.rate = speechRate;
-    utterance.voice = selectedVoice;
-    
-    utterance.onend = () => {
-      setIsTestVoicePlaying(false);
-    };
-    
-    utterance.onerror = () => {
-      setIsTestVoicePlaying(false);
-    };
-    
-    if (selectedVoice) {
-      speechSynthesis.speak(utterance);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-fc-gray-50">
       <div className="max-w-md mx-auto p-4">
@@ -161,99 +156,135 @@ export default function HomeSimple() {
               </>
             )}
           </button>
-
-          <div className="mb-6">
-            <h2 className="text-lg font-semibold text-fc-gray-900 mb-3">Step 1: Enter Cast Content</h2>
-            <textarea
-              value={castText}
-              onChange={(e) => setCastText(e.target.value)}
-              placeholder="Paste a Farcaster post URL or the cast text directly here..."
-              className="w-full h-32 p-3 border border-fc-gray-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-fc-purple focus:border-transparent"
-            />
-          </div>
-
-          <div className="mb-6">
-            <h2 className="text-lg font-semibold text-fc-gray-900 mb-3">Step 2: Voice Settings</h2>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-fc-gray-700 mb-2">
-                  Voice
-                </label>
-                <select
-                  value={selectedVoice?.name || ''}
-                  onChange={(e) => {
-                    const voice = voices.find(v => v.name === e.target.value);
-                    setSelectedVoice(voice || null);
-                  }}
-                  className="w-full p-2 border border-fc-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-fc-purple focus:border-transparent"
-                >
-                  {voices.map((voice) => (
-                    <option key={voice.name} value={voice.name}>
-                      {voice.name} ({voice.lang})
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-fc-gray-700 mb-2">
-                  Speech Rate: {speechRate.toFixed(1)}x
-                </label>
-                <input
-                  type="range"
-                  min="0.5"
-                  max="2.0"
-                  step="0.1"
-                  value={speechRate}
-                  onChange={(e) => setSpeechRate(parseFloat(e.target.value))}
-                  className="w-full"
-                />
-              </div>
-
-              <button
-                onClick={testVoice}
-                disabled={!selectedVoice}
-                className={`px-4 py-2 rounded-lg transition-colors duration-200 flex items-center gap-2 text-sm font-medium ${
-                  isTestVoicePlaying
-                    ? 'bg-fc-error/10 hover:bg-fc-error/20 text-fc-error'
-                    : 'bg-white hover:bg-fc-gray-50 text-fc-gray-700 border border-fc-gray-200'
-                }`}
-              >
-                {isTestVoicePlaying ? (
-                  <>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <rect x="6" y="4" width="4" height="16" rx="1"/>
-                      <rect x="14" y="4" width="4" height="16" rx="1"/>
-                    </svg>
-                    Stop Voice
-                  </>
-                ) : (
-                  <>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
-                    </svg>
-                    Test Voice
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
-
-          <div className="mb-6">
-            <h2 className="text-lg font-semibold text-fc-gray-900 mb-3">Step 3: Navigate to Full App</h2>
-            <p className="text-fc-gray-600 mb-4">
-              For the complete Cast Aloud experience with AI-powered reply features:
-            </p>
-            <Link href="/cast-aloud">
-              <button className="w-full bg-fc-purple hover:bg-fc-purple/90 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200">
-                Open Full Cast Aloud App
+          <h2 className="text-lg font-semibold mb-4 text-fc-gray-900">Try the Mini App</h2>
+          <p className="text-fc-gray-600 mb-4">
+            The mini app helps you read casts aloud and create voice replies with AI assistance.
+          </p>
+          
+          <div className="space-y-3">
+            <Link href="/cast-aloud?text=Hello%20world!%20This%20is%20a%20sample%20cast%20about%20the%20future%20of%20decentralized%20social%20networks.">
+              <button className="block w-full bg-fc-purple hover:bg-fc-purple-dark text-white py-3 px-4 rounded-lg text-center font-medium">
+                Read Cast Aloud
               </button>
             </Link>
+            
+            <button 
+              onClick={() => setShowVoiceSettings(!showVoiceSettings)}
+              className="block w-full bg-fc-gray-200 hover:bg-fc-gray-300 text-fc-gray-800 hover:text-fc-gray-900 py-3 px-4 rounded-lg text-center font-medium transition-colors duration-200"
+            >
+              Voice Settings
+            </button>
           </div>
 
-          <div className="text-center">
-            <h3 className="text-sm font-medium text-fc-gray-700 mb-2">How Cast Aloud Works:</h3>
-            <ol className="text-xs text-fc-gray-600 text-left space-y-1">
+          {showVoiceSettings && (
+            <div className="mt-4 p-4 bg-white border rounded-lg">
+              <h3 className="font-medium mb-3">Voice Settings</h3>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Voice Type</label>
+                  <div className="space-y-2">
+                    <div className="flex items-center">
+                      <input
+                        type="radio"
+                        id="browser-voices"
+                        name="voiceType"
+                        value="browser"
+                        checked={true}
+                        readOnly
+                        className="mr-2"
+                      />
+                      <label htmlFor="browser-voices" className="text-sm">
+                        Browser Voices (Free)
+                      </label>
+                    </div>
+                    <div className="flex items-center opacity-50">
+                      <input
+                        type="radio"
+                        id="premium-voices"
+                        name="voiceType"
+                        value="openai"
+                        disabled
+                        className="mr-2"
+                      />
+                      <label htmlFor="premium-voices" className="text-sm flex items-center text-gray-400">
+                        Premium AI Voices
+                        <span className="ml-1 px-2 py-0.5 bg-gray-100 text-gray-500 text-xs rounded-full">
+                          Coming Soon
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Voice</label>
+                  <select 
+                    value={selectedVoice?.name || ''}
+                    onChange={(e) => {
+                      const voice = voices.find(v => v.name === e.target.value);
+                      handleVoiceChange(voice || null);
+                    }}
+                    className="w-full p-2 border border-fc-gray-300 rounded-md focus:ring-2 focus:ring-fc-purple focus:border-transparent"
+                  >
+                    {voices.map((voice) => (
+                      <option key={voice.name} value={voice.name}>
+                        {voice.name} ({voice.lang})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Speed: {speechRate.toFixed(1)}x
+                  </label>
+                  <input
+                    type="range"
+                    min="0.5"
+                    max="2"
+                    step="0.1"
+                    value={speechRate}
+                    onChange={(e) => handleRateChange(parseFloat(e.target.value))}
+                    className="w-full"
+                  />
+                </div>
+
+                <button
+                  onClick={() => {
+                    if (isTestVoicePlaying) {
+                      speechSynthesis.cancel();
+                      setIsTestVoicePlaying(false);
+                    } else {
+                      const testText = "This is a test of your voice settings. How does this sound?";
+                      const utterance = new SpeechSynthesisUtterance(testText);
+                      utterance.rate = speechRate;
+                      if (selectedVoice) {
+                        utterance.voice = selectedVoice;
+                      }
+                      
+                      utterance.onstart = () => setIsTestVoicePlaying(true);
+                      utterance.onend = () => setIsTestVoicePlaying(false);
+                      utterance.onerror = () => setIsTestVoicePlaying(false);
+                      
+                      speechSynthesis.speak(utterance);
+                    }
+                  }}
+                  className={`w-full font-medium py-2 px-4 rounded-lg transition-colors duration-200 ${
+                    isTestVoicePlaying 
+                      ? 'bg-red-500 hover:bg-red-600 text-white' 
+                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                  }`}
+                >
+                  {isTestVoicePlaying ? 'Stop Voice' : 'Test Voice'}
+                </button>
+              </div>
+            </div>
+          )}
+
+          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+            <h3 className="font-medium mb-2">How it works:</h3>
+            <ol className="text-sm text-gray-600 space-y-1">
               <li>1. 📝 Paste a Farcaster post URL or text directly</li>
               <li>2. 🔊 Click "Read Aloud" to hear the content</li>
               <li>3. ✍️ Type your reply in the text area</li>
