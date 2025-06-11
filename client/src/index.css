@@ -204,13 +204,21 @@
   animation: spin 1s linear infinite;
 }
 
+/* Cast Aloud logo styling */
+.cast-aloud-logo {
+  border-radius: 32px;
+  overflow: hidden;
+}
+
+.cast-aloud-logo img {
+  border-radius: 32px;
+}
+
 /* Font Awesome icons support */
 .fas {
   font-family: "Font Awesome 6 Free";
   font-weight: 900;
 }
-
-/* Font Awesome icons support */
 
 /* Loading screen with Cast Aloud logo */
 html, body {
@@ -220,12 +228,14 @@ html, body {
 #root:empty::before {
   content: '';
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: white url('/cast-aloud-logo.png') no-repeat center center;
-  background-size: 200px 200px;
+  top: 50%;
+  left: 50%;
+  width: 200px;
+  height: 200px;
+  transform: translate(-50%, -50%);
+  background: url('/cast-aloud-logo.png') no-repeat center center;
+  background-size: cover;
+  border-radius: 32px;
   z-index: 9999;
 }
 
