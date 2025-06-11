@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <title>Cast Aloud - Voice Accessibility for Farcaster</title>
+    <meta name="description" content="Accessibility tools for reading and replying to Farcaster casts using voice technology. Listen to casts aloud and reply using your voice." />
+    
+    <!-- Open Graph / Farcaster Meta Tags -->
+    <meta property="og:title" content="Cast Aloud - Voice Accessibility for Farcaster" />
+    <meta property="og:description" content="Accessibility tools for reading and replying to Farcaster casts using voice technology" />
+    <meta property="og:image" content="/api/frame/image?state=initial" />
+    <meta property="og:type" content="website" />
+    
+    <!-- Farcaster Mini App Configuration -->
+    <meta name="farcaster:app" content="miniapp" />
+    <meta name="farcaster:title" content="Cast Aloud" />
+    <meta name="farcaster:description" content="Voice accessibility tools for Farcaster" />
+    <meta name="farcaster:icon" content="/cast-aloud-logo.png" />
+    <link rel="icon" type="image/png" href="/cast-aloud-logo.png" />
+    
+    <!-- Frame fallback for sharing -->
+    <meta name="fc:frame" content="vNext" />
+    <meta name="fc:frame:title" content="Cast Aloud - Voice Accessibility" />
+    <meta name="fc:frame:image" content="/api/frame/image?state=initial" />
+    <meta name="fc:frame:button:1" content="🔊 Listen to Cast" />
+    <meta name="fc:frame:button:2" content="🎤 Voice Reply" />
+    <meta name="fc:frame:button:3" content="⚙️ Open Mini App" />
+    <meta name="fc:frame:button:3:action" content="link" />
+    <meta name="fc:frame:button:3:target" content="https://castaloud.replit.app" />
+    <meta name="fc:frame:post_url" content="/api/frame/action" />
+    <meta name="fc:frame:aspect_ratio" content="1.91:1" />
+    
+    <!-- Mini App manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Service Worker for Mini App -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(registration => console.log('SW registered:', registration))
+            .catch(error => console.log('SW registration failed:', error));
+        });
+      }
+    </script>
+    
+    <!-- Theme -->
+    <meta name="theme-color" content="#8A63D2" />
+    <script type="module" crossorigin src="/assets/index-OaWCNgO9.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-BmSijZJp.css">
+  </head>
+  <body style="background-color: white; margin: 0; padding: 0;">
+    <div id="root"></div>
+    <!-- This is a replit script which adds a banner on the top of the page when opened in development mode outside the replit environment -->
+    <script type="text/javascript" src="https://replit.com/public/js/replit-dev-banner.js"></script>
+  </body>
+</html>
