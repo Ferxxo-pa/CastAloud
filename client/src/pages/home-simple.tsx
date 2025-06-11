@@ -272,7 +272,7 @@ export default function HomeSimple() {
                   }}
                   className={`w-full font-medium py-2 px-4 rounded-lg transition-colors duration-200 ${
                     isTestVoicePlaying 
-                      ? 'bg-red-100 hover:bg-red-200 text-red-700' 
+                      ? 'bg-red-500 hover:bg-red-600 text-white' 
                       : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
                   }`}
                 >
