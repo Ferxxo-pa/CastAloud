@@ -7,11 +7,29 @@
 /* Override default browser styling to ensure white background */
 html, body {
   background-color: white !important;
+  background: white !important;
 }
 
 #root {
   background-color: white;
   min-height: 100vh;
+}
+
+/* Override any potential loading states */
+*:before, *:after {
+  background-color: inherit;
+}
+
+/* Ensure body loads with white background immediately */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  z-index: -1;
 }
 
 :root {
