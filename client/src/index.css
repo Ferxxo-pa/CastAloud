@@ -4,6 +4,16 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Override default browser styling to ensure white background */
+html, body {
+  background-color: white !important;
+}
+
+#root {
+  background-color: white;
+  min-height: 100vh;
+}
+
 :root {
   /* Official Farcaster brand colors */
   --background: 255 255 255; /* #FFFFFF */
