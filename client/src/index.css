@@ -210,3 +210,21 @@
 
 /* Ensure Font Awesome is loaded */
 @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css");
+
+/* Loading screen with Cast Aloud logo */
+#root:empty {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: white;
+  background-image: url('/cast-aloud-logo.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 200px 200px;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
