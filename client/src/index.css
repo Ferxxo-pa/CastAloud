@@ -32,6 +32,19 @@ body::before {
   z-index: -1;
 }
 
+/* Override Replit preview iframe styling */
+html[data-replit-preview] body,
+iframe body,
+.replit-preview body {
+  background-color: white !important;
+  background: white !important;
+}
+
+/* Force white background for all possible containers */
+body, html, #root, .app, main, div {
+  background-color: white !important;
+}
+
 :root {
   /* Official Farcaster brand colors */
   --background: 255 255 255; /* #FFFFFF */
