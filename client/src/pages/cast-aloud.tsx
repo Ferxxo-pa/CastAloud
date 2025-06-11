@@ -409,13 +409,14 @@ export default function CastAloud() {
                       </div>
 
                       <button
-                        onClick={() => {
-                          const testText = "This is a test of your voice settings. How does this sound?";
-                          browserVoice.speak(testText);
-                        }}
-                        className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors duration-200"
+                        onClick={browserVoice.testVoice}
+                        className={`w-full font-medium py-2 px-4 rounded-lg transition-colors duration-200 ${
+                          browserVoice.isSpeaking 
+                            ? 'bg-red-500 hover:bg-red-600 text-white' 
+                            : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                        }`}
                       >
-                        Test Voice
+                        {browserVoice.isSpeaking ? 'Stop Test' : 'Test Voice'}
                       </button>
                     </>
                   )}

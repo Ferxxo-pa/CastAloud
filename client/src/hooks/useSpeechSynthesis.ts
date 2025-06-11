@@ -10,6 +10,7 @@ interface VoiceSettings {
 interface UseSpeechSynthesisReturn {
   speak: (text: string) => void;
   stop: () => void;
+  testVoice: () => void;
   isSpeaking: boolean;
   isSupported: boolean;
   voices: SpeechSynthesisVoice[];
@@ -162,6 +163,15 @@ export default function useSpeechSynthesis(): UseSpeechSynthesisReturn {
     }
   }, [isSupported]);
 
+  const testVoice = useCallback(() => {
+    if (isSpeaking) {
+      stop();
+    } else {
+      const testText = "This is a test of your voice settings. How does this sound?";
+      speak(testText);
+    }
+  }, [isSpeaking, stop, speak]);
+
   // Clean up on unmount
   useEffect(() => {
     return () => {
@@ -174,6 +184,7 @@ export default function useSpeechSynthesis(): UseSpeechSynthesisReturn {
   return {
     speak,
     stop,
+    testVoice,
     isSpeaking,
     isSupported,
     voices,
