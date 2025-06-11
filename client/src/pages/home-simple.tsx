@@ -9,6 +9,7 @@ export default function HomeSimple() {
   const [selectedVoice, setSelectedVoice] = useState<SpeechSynthesisVoice | null>(null);
   const [farcasterContext, setFarcasterContext] = useState<FarcasterContext | null>(null);
   const [isMiniApp, setIsMiniApp] = useState(false);
+  const [isTestVoicePlaying, setIsTestVoicePlaying] = useState(false);
   
   // Load speech rate from localStorage
   const [speechRate, setSpeechRate] = useState(() => {
@@ -251,17 +252,31 @@ export default function HomeSimple() {
 
                 <button
                   onClick={() => {
-                    const testText = "This is a test of your voice settings. How does this sound?";
-                    const utterance = new SpeechSynthesisUtterance(testText);
-                    utterance.rate = speechRate;
-                    if (selectedVoice) {
-                      utterance.voice = selectedVoice;
+                    if (isTestVoicePlaying) {
+                      speechSynthesis.cancel();
+                      setIsTestVoicePlaying(false);
+                    } else {
+                      const testText = "This is a test of your voice settings. How does this sound?";
+                      const utterance = new SpeechSynthesisUtterance(testText);
+                      utterance.rate = speechRate;
+                      if (selectedVoice) {
+                        utterance.voice = selectedVoice;
+                      }
+                      
+                      utterance.onstart = () => setIsTestVoicePlaying(true);
+                      utterance.onend = () => setIsTestVoicePlaying(false);
+                      utterance.onerror = () => setIsTestVoicePlaying(false);
+                      
+                      speechSynthesis.speak(utterance);
                     }
-                    speechSynthesis.speak(utterance);
                   }}
-                  className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors duration-200"
+                  className={`w-full font-medium py-2 px-4 rounded-lg transition-colors duration-200 ${
+                    isTestVoicePlaying 
+                      ? 'bg-red-100 hover:bg-red-200 text-red-700' 
+                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                  }`}
                 >
-                  Test Voice
+                  {isTestVoicePlaying ? 'Stop Voice' : 'Test Voice'}
                 </button>
               </div>
             </div>
