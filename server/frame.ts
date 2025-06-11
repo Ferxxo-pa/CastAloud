@@ -570,7 +570,7 @@ export async function handleFrameImage(req: Request, res: Response) {
       break;
 
     case 'step2_read_aloud':
-      const step2Content = (data && typeof data === 'object' && 'content' in data) ? data.content : 'Sample cast content';
+      const step2Content = contentStr;
       svg = `
         <svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
           <rect width="1200" height="630" fill="#F9FAFB"/>
@@ -661,7 +661,7 @@ export async function handleFrameImage(req: Request, res: Response) {
       break;
 
     case 'step4_ai_feedback':
-      const step4Reply = data?.reply || 'Your reply';
+      const step4Reply = messageStr || 'Your reply';
       svg = `
         <svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
           <rect width="1200" height="630" fill="#F9FAFB"/>
@@ -714,8 +714,8 @@ export async function handleFrameImage(req: Request, res: Response) {
       break;
 
     case 'step5_copy':
-      const step5Reply = data?.reply || 'Your improved reply';
-      const step5Original = data?.original || '';
+      const step5Reply = messageStr || 'Your improved reply';
+      const step5Original = contentStr || '';
       svg = `
         <svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
           <rect width="1200" height="630" fill="#F9FAFB"/>

@@ -565,7 +565,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         fs.unlinkSync(req.file.path);
       }
       
-      if (error.message.includes('API key')) {
+      if (error instanceof Error && error.message.includes('API key')) {
         res.status(500).json({ message: "OpenAI API key not configured properly" });
       } else {
         res.status(500).json({ message: "Failed to process voice recording" });
