@@ -1,23 +1,23 @@
 {
   "accountAssociation": {
     "header": "eyJmaWQiOjEyMzQ1LCJ0eXBlIjoiY3VzdG9keSIsImtleSI6IjB4MTIzNDUifQ",
-    "payload": "eyJkb21haW4iOiJjYXN0YWxvdWQucmVwbGl0LmFwcCJ9",
+    "payload": "eyJkb21haW4iOiI2MjI0ZmZhMi1kNDYzLTQzMmMtYTI2Mi1kMmQ0ZTRhMjI3NzUucmlrZXIucHJvZC5yZXBsLnJ1biJ9",
     "signature": "MHhjMTIzNDU2Nzg5YWJjZGVmMTIzNDU2Nzg5YWJjZGVmMTIzNDU2Nzg5YWJjZGVmMTIzNDU2Nzg5YWJjZGVm"
   },
   "app": {
     "name": "Cast Aloud",
     "version": "1.0.0",
-    "iconUrl": "https://castaloud.replit.app/generated-icon.png",
-    "splashImageUrl": "https://castaloud.replit.app/generated-icon.png",
-    "homeUrl": "https://castaloud.replit.app"
+    "iconUrl": "https://6224ffa2-d463-432c-a262-d2d4e4a22775.riker.prod.repl.run/generated-icon.png",
+    "splashImageUrl": "https://6224ffa2-d463-432c-a262-d2d4e4a22775.riker.prod.repl.run/generated-icon.png",
+    "homeUrl": "https://6224ffa2-d463-432c-a262-d2d4e4a22775.riker.prod.repl.run"
   },
   "execution": {
     "mode": "frame"
   },
   "frame": {
     "version": "1",
-    "imageUrl": "https://castaloud.replit.app/api/frame/image",
-    "buttonUrl": "https://castaloud.replit.app/api/frame/action",
-    "homeUrl": "https://castaloud.replit.app/frame"
+    "imageUrl": "https://6224ffa2-d463-432c-a262-d2d4e4a22775.riker.prod.repl.run/api/frame/image",
+    "buttonUrl": "https://6224ffa2-d463-432c-a262-d2d4e4a22775.riker.prod.repl.run/api/frame/action",
+    "homeUrl": "https://6224ffa2-d463-432c-a262-d2d4e4a22775.riker.prod.repl.run/frame"
   }
 }
