@@ -134,18 +134,18 @@ export default function HomeSimple() {
     <div>
       <LoadingScreen isVisible={isLoading} />
       <div className="min-h-screen bg-fc-gray-50">
-      <div className="max-w-md mx-auto p-4">
-        <header className="mb-6">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold text-fc-gray-900">Cast Aloud</h1>
-            <p className="text-fc-gray-600 mt-2">
-              Accessibility tools for reading and replying to casts
-            </p>
-          </div>
-        </header>
+        <div className="max-w-md mx-auto p-4">
+          <header className="mb-6">
+            <div className="text-center">
+              <h1 className="text-2xl font-bold text-fc-gray-900">Cast Aloud</h1>
+              <p className="text-fc-gray-600 mt-2">
+                Accessibility tools for reading and replying to casts
+              </p>
+            </div>
+          </header>
 
-        <div className="bg-white rounded-lg p-6 border border-fc-gray-200 relative">
-          <button
+          <div className="bg-white rounded-lg p-6 border border-fc-gray-200 relative">
+            <button
             onClick={readPageAloud}
             className={`absolute top-4 right-4 px-3 py-2 rounded-lg transition-colors duration-200 flex items-center gap-2 text-sm font-medium ${
               isSpeaking 
@@ -310,8 +310,8 @@ export default function HomeSimple() {
             </ol>
           </div>
         </div>
+        </div>
       </div>
     </div>
-    </>
   );
 }
