@@ -115,26 +115,36 @@ export default function HomeSimple() {
       speechSynthesis.speak(utterance);
     }
   };
+  console.log("HomeSimple about to render JSX");
   return (
-    <div className="min-h-screen bg-fc-gray-50">
-      <div className="max-w-md mx-auto p-4">
-        <header className="mb-6">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold text-fc-gray-900">Cast Aloud</h1>
-            <p className="text-fc-gray-600 mt-2">
-              Accessibility tools for reading and replying to casts
-            </p>
-          </div>
+    <div style={{ minHeight: '100vh', backgroundColor: '#FAFAFA', padding: '20px' }}>
+      <div style={{ maxWidth: '400px', margin: '0 auto', backgroundColor: 'white', padding: '20px', borderRadius: '8px' }}>
+        <header style={{ marginBottom: '24px', textAlign: 'center' }}>
+          <h1 style={{ fontSize: '24px', fontWeight: 'bold', color: '#242424', margin: '0 0 8px 0' }}>Cast Aloud</h1>
+          <p style={{ color: '#6B6B6B', margin: '0' }}>
+            Accessibility tools for reading and replying to casts
+          </p>
         </header>
 
-        <div className="bg-white rounded-lg p-6 border border-fc-gray-200 relative">
+        <div style={{ backgroundColor: 'white', borderRadius: '8px', padding: '24px', border: '1px solid #E8E8E8', position: 'relative' }}>
           <button
             onClick={readPageAloud}
-            className={`absolute top-4 right-4 px-3 py-2 rounded-lg transition-colors duration-200 flex items-center gap-2 text-sm font-medium ${
-              isSpeaking 
-                ? 'bg-fc-error/10 hover:bg-fc-error/20 text-fc-error' 
-                : 'bg-fc-purple/10 hover:bg-fc-purple/20 text-fc-purple'
-            }`}
+            style={{
+              position: 'absolute',
+              top: '16px',
+              right: '16px',
+              padding: '8px 12px',
+              borderRadius: '8px',
+              border: 'none',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              fontSize: '14px',
+              fontWeight: '500',
+              backgroundColor: isSpeaking ? '#FEF2F2' : '#F3F0FF',
+              color: isSpeaking ? '#EF4444' : '#8A63D2'
+            }}
             title={isSpeaking ? 'Stop reading' : 'Read page aloud'}
           >
             {isSpeaking ? (
@@ -156,35 +166,57 @@ export default function HomeSimple() {
               </>
             )}
           </button>
-          <h2 className="text-lg font-semibold mb-4 text-fc-gray-900">Try the Mini App</h2>
-          <p className="text-fc-gray-600 mb-4">
+          <h2 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '16px', color: '#242424' }}>Try the Mini App</h2>
+          <p style={{ color: '#6B6B6B', marginBottom: '16px' }}>
             The mini app helps you read casts aloud and create voice replies with AI assistance.
           </p>
           
-          <div className="space-y-3">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <Link href="/cast-aloud?text=Hello%20world!%20This%20is%20a%20sample%20cast%20about%20the%20future%20of%20decentralized%20social%20networks.">
-              <button className="block w-full bg-fc-purple hover:bg-fc-purple-dark text-white py-3 px-4 rounded-lg text-center font-medium">
+              <button style={{
+                display: 'block',
+                width: '100%',
+                backgroundColor: '#8A63D2',
+                color: 'white',
+                padding: '12px 16px',
+                borderRadius: '8px',
+                textAlign: 'center',
+                fontWeight: '500',
+                border: 'none',
+                cursor: 'pointer'
+              }}>
                 Read Cast Aloud
               </button>
             </Link>
             
             <button 
               onClick={() => setShowVoiceSettings(!showVoiceSettings)}
-              className="block w-full bg-fc-gray-200 hover:bg-fc-gray-300 text-fc-gray-800 hover:text-fc-gray-900 py-3 px-4 rounded-lg text-center font-medium transition-colors duration-200"
+              style={{
+                display: 'block',
+                width: '100%',
+                backgroundColor: '#E8E8E8',
+                color: '#383838',
+                padding: '12px 16px',
+                borderRadius: '8px',
+                textAlign: 'center',
+                fontWeight: '500',
+                border: 'none',
+                cursor: 'pointer'
+              }}
             >
               Voice Settings
             </button>
           </div>
 
           {showVoiceSettings && (
-            <div className="mt-4 p-4 bg-white border rounded-lg">
-              <h3 className="font-medium mb-3">Voice Settings</h3>
+            <div style={{ marginTop: '16px', padding: '16px', backgroundColor: 'white', border: '1px solid #E8E8E8', borderRadius: '8px' }}>
+              <h3 style={{ fontWeight: '500', marginBottom: '12px' }}>Voice Settings</h3>
               
-              <div className="space-y-4">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Voice Type</label>
-                  <div className="space-y-2">
-                    <div className="flex items-center">
+                  <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px' }}>Voice Type</label>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
                       <input
                         type="radio"
                         id="browser-voices"
@@ -192,24 +224,24 @@ export default function HomeSimple() {
                         value="browser"
                         checked={true}
                         readOnly
-                        className="mr-2"
+                        style={{ marginRight: '8px' }}
                       />
-                      <label htmlFor="browser-voices" className="text-sm">
+                      <label htmlFor="browser-voices" style={{ fontSize: '14px' }}>
                         Browser Voices (Free)
                       </label>
                     </div>
-                    <div className="flex items-center opacity-50">
+                    <div style={{ display: 'flex', alignItems: 'center', opacity: 0.5 }}>
                       <input
                         type="radio"
                         id="premium-voices"
                         name="voiceType"
                         value="openai"
                         disabled
-                        className="mr-2"
+                        style={{ marginRight: '8px' }}
                       />
-                      <label htmlFor="premium-voices" className="text-sm flex items-center text-gray-400">
+                      <label htmlFor="premium-voices" style={{ fontSize: '14px', display: 'flex', alignItems: 'center', color: '#9CA3AF' }}>
                         Premium AI Voices
-                        <span className="ml-1 px-2 py-0.5 bg-gray-100 text-gray-500 text-xs rounded-full">
+                        <span style={{ marginLeft: '4px', padding: '2px 8px', backgroundColor: '#F3F4F6', color: '#6B7280', fontSize: '12px', borderRadius: '16px' }}>
                           Coming Soon
                         </span>
                       </label>
@@ -218,14 +250,14 @@ export default function HomeSimple() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Voice</label>
+                  <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px' }}>Voice</label>
                   <select 
                     value={selectedVoice?.name || ''}
                     onChange={(e) => {
                       const voice = voices.find(v => v.name === e.target.value);
                       handleVoiceChange(voice || null);
                     }}
-                    className="w-full p-2 border border-fc-gray-300 rounded-md focus:ring-2 focus:ring-fc-purple focus:border-transparent"
+                    style={{ width: '100%', padding: '8px', border: '1px solid #D1D1D1', borderRadius: '6px' }}
                   >
                     {voices.map((voice) => (
                       <option key={voice.name} value={voice.name}>
@@ -236,7 +268,7 @@ export default function HomeSimple() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px' }}>
                     Speed: {speechRate.toFixed(1)}x
                   </label>
                   <input
@@ -246,7 +278,7 @@ export default function HomeSimple() {
                     step="0.1"
                     value={speechRate}
                     onChange={(e) => handleRateChange(parseFloat(e.target.value))}
-                    className="w-full"
+                    style={{ width: '100%' }}
                   />
                 </div>
 
@@ -270,32 +302,31 @@ export default function HomeSimple() {
                       speechSynthesis.speak(utterance);
                     }
                   }}
-                  className={`w-full font-medium py-2 px-4 rounded-lg transition-colors duration-200 ${
-                    isSpeaking 
-                      ? 'bg-red-500 hover:bg-red-600 text-white' 
-                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                  }`}
+                  style={{
+                    width: '100%',
+                    fontWeight: '500',
+                    padding: '8px 16px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    cursor: 'pointer',
+                    backgroundColor: isSpeaking ? '#EF4444' : '#F3F4F6',
+                    color: isSpeaking ? 'white' : '#374151'
+                  }}
                 >
-                  <i 
-                    className={`mr-2 ${
-                      isSpeaking ? 'fas fa-stop' : 'fas fa-volume-up'
-                    }`} 
-                    aria-hidden="true"
-                  ></i>
                   {isSpeaking ? 'Stop Test' : 'Test Voice'}
                 </button>
               </div>
             </div>
           )}
 
-          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-            <h3 className="font-medium mb-2">How it works:</h3>
-            <ol className="text-sm text-gray-600 space-y-1">
-              <li>1. 📝 Paste a Farcaster post URL or text directly</li>
-              <li>2. 🔊 Click "Read Aloud" to hear the content</li>
-              <li>3. ✍️ Type your reply in the text area</li>
-              <li>4. 🤖 Get AI feedback or polish your reply</li>
-              <li>5. 📋 Copy the improved reply to post on Farcaster</li>
+          <div style={{ marginTop: '24px', padding: '16px', backgroundColor: '#F9FAFB', borderRadius: '8px' }}>
+            <h3 style={{ fontWeight: '500', marginBottom: '8px' }}>How it works:</h3>
+            <ol style={{ fontSize: '14px', color: '#6B7280', margin: 0, paddingLeft: '20px' }}>
+              <li style={{ marginBottom: '4px' }}>Paste a Farcaster post URL or text directly</li>
+              <li style={{ marginBottom: '4px' }}>Click "Read Aloud" to hear the content</li>
+              <li style={{ marginBottom: '4px' }}>Type your reply in the text area</li>
+              <li style={{ marginBottom: '4px' }}>Get AI feedback or polish your reply</li>
+              <li style={{ marginBottom: '4px' }}>Copy the improved reply to post on Farcaster</li>
             </ol>
           </div>
         </div>
