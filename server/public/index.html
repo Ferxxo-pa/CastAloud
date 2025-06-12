@@ -9,30 +9,30 @@
     <!-- Open Graph / Farcaster Meta Tags -->
     <meta property="og:title" content="Cast Aloud - Voice Accessibility for Farcaster" />
     <meta property="og:description" content="Accessibility tools for reading and replying to Farcaster casts using voice technology" />
-    <meta property="og:image" content="/api/frame/image?state=initial" />
+    <meta property="og:image" content="https://castaloud.replit.app/og-image.png" />
     <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://castaloud.replit.app" />
     
-    <!-- Farcaster Mini App Configuration -->
-    <meta name="farcaster:app" content="miniapp" />
-    <meta name="farcaster:title" content="Cast Aloud" />
-    <meta name="farcaster:description" content="Voice accessibility tools for Farcaster" />
-    <meta name="farcaster:icon" content="/cast-aloud-logo.png" />
-    <link rel="icon" type="image/png" href="/cast-aloud-logo.png" />
-    
-    <!-- Frame fallback for sharing -->
+    <!-- Farcaster Frame Configuration -->
     <meta name="fc:frame" content="vNext" />
-    <meta name="fc:frame:title" content="Cast Aloud - Voice Accessibility" />
-    <meta name="fc:frame:image" content="/api/frame/image?state=initial" />
-    <meta name="fc:frame:button:1" content="🔊 Listen to Cast" />
-    <meta name="fc:frame:button:2" content="🎤 Voice Reply" />
-    <meta name="fc:frame:button:3" content="⚙️ Open Mini App" />
-    <meta name="fc:frame:button:3:action" content="link" />
-    <meta name="fc:frame:button:3:target" content="https://castaloud.replit.app" />
-    <meta name="fc:frame:post_url" content="/api/frame/action" />
-    <meta name="fc:frame:aspect_ratio" content="1.91:1" />
+    <meta name="fc:frame:image" content="https://castaloud.replit.app/og-image.png" />
+    <meta name="fc:frame:button:1" content="🔊 Open Cast Aloud" />
+    <meta name="fc:frame:button:1:action" content="link" />
+    <meta name="fc:frame:button:1:target" content="https://castaloud.replit.app" />
+    
+    <!-- Open Frames Protocol -->
+    <meta name="of:version" content="vNext" />
+    <meta name="of:accepts:farcaster" content="vNext" />
+    <meta name="of:image" content="https://castaloud.replit.app/og-image.png" />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/favicon.png" />
     
     <!-- Mini App manifest -->
     <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Farcaster Mini App manifest link -->
+    <link rel="farcaster-manifest" href="/.well-known/farcaster.json" />
     
     <!-- Service Worker for Mini App -->
     <script>
