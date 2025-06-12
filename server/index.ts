@@ -14,14 +14,17 @@ app.get('/test-manifest', (req, res) => {
   });
 });
 
-// Direct manifest serving to bypass all caching layers
+// Direct manifest serving with CORS headers for Farcaster validation
 app.all('/.well-known/farcaster.json', (req, res) => {
   res.writeHead(200, {
     'Content-Type': 'application/json',
     'Cache-Control': 'no-cache, no-store, must-revalidate',
     'Pragma': 'no-cache',
     'Expires': '0',
-    'X-No-Cache': 'true'
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Accept, User-Agent',
+    'X-Content-Type-Options': 'nosniff'
   });
   
   const manifest = JSON.stringify({
@@ -46,7 +49,10 @@ app.all('/.well-known/farcaster.json', (req, res) => {
     "requiredCapabilities": [
       "actions.composeCast",
       "actions.ready"
-    ]
+    ],
+    "frame": {
+      "version": "1"
+    }
   });
   
   res.end(manifest);
