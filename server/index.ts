@@ -5,10 +5,14 @@ import path from "path";
 
 const app = express();
 
-// Priority routes for Farcaster manifest - must be before any middleware
-// Generate fresh manifest data to avoid caching issues
-function getFarcasterManifest() {
-  return {
+// Priority manifest route - must be before Vite middleware to avoid interception
+app.get('/.well-known/farcaster.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  
+  const manifest = {
     "version": "1",
     "name": "Cast Aloud",
     "iconUrl": "https://castaloud.replit.app/icon.png",
@@ -34,18 +38,8 @@ function getFarcasterManifest() {
       ]
     }
   };
-}
-
-
-
-// Priority route with timestamp to force cache refresh
-app.get('/.well-known/farcaster.json', (req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-  res.setHeader('Pragma', 'no-cache');
-  res.setHeader('Expires', '0');
-  res.setHeader('X-Timestamp', Date.now().toString());
-  res.json(getFarcasterManifest());
+  
+  res.json(manifest);
 });
 
 // Serve static files from public directory
