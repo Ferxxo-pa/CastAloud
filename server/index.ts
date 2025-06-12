@@ -88,6 +88,41 @@ app.use((req, res, next) => {
     }
   }
 
+  // Override Vite's catch-all handler for Farcaster manifest
+  app.get("/.well-known/farcaster.json", (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    
+    res.json({
+      "version": "1",
+      "name": "Cast Aloud",
+      "iconUrl": "https://castaloud.replit.app/icon.png",
+      "homeUrl": "https://castaloud.replit.app",
+      "splashImageUrl": "https://castaloud.replit.app/icon.png",
+      "splashBackgroundColor": "#8A63D2",
+      "subtitle": "Voice accessibility for casts",
+      "description": "Read casts aloud with AI-powered voice technology and get intelligent feedback on your replies",
+      "primaryCategory": "utility",
+      "tags": [
+        "voice",
+        "accessibility",
+        "tts",
+        "ai",
+        "transcription"
+      ],
+      "tagline": "Make Farcaster voice accessible",
+      "frame": {
+        "requiredChains": [],
+        "requiredCapabilities": [
+          "actions.composeCast",
+          "actions.ready"
+        ]
+      }
+    });
+  });
+
   // ALWAYS serve the app on port 5000
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
