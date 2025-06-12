@@ -1,12 +1,7 @@
 {
-  "accountAssociation": {
-    "header": "",
-    "payload": "",
-    "signature": ""
-  },
   "frame": {
     "version": "1",
-    "name": "Castaloud",
+    "name": "Cast Aloud",
     "homeUrl": "https://castaloud.replit.app/",
     "iconUrl": "https://castaloud.replit.app/logo-1024.png",
     "splashImageUrl": "https://castaloud.replit.app/logo.png",
