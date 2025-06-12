@@ -4,7 +4,7 @@ import CastDisplay from "@/components/CastDisplay";
 import VoiceInterface from "@/components/VoiceInterface";
 import VoiceSettings from "@/components/VoiceSettings";
 import useSpeechSynthesis from "@/hooks/useSpeechSynthesis";
-import { useState } from "react";
+import React, { useState } from "react";
 import type { Cast } from "@shared/schema";
 
 export default function Home() {
