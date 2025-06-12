@@ -4,12 +4,11 @@
     "payload": "eyJkb21haW4iOiJjYXN0YWxvdWQucmVwbGl0LmFwcCJ9",
     "signature": "MHhhMDI5OGYwYTc5ZjA3MmQ4OTFkMzE1YmMwMTkxZDgzMDBjMTBhMjM1OThjMjRiZDI4ZjRmMmViZDAwZGJiZGE0MWUyM2MzNzJjZGQzYjIzOWNlYmMyM2U2ZDZiMmFiNzg2ZDg0MDUyMWJkZGI0NGJlNWFjNTVlNDg1MjVhMGJkMjFj"
   },
-  "frame": {
-    "version": "1",
-    "name": "Castaloud",
-    "homeUrl": "https://castaloud.replit.app/",
+  "app": {
+    "name": "Cast Aloud",
+    "version": "1.0.0",
     "iconUrl": "https://castaloud.replit.app/logo-1024.png",
     "splashImageUrl": "https://castaloud.replit.app/logo.png",
-    "splashBackgroundColor": "#ffffff"
+    "homeUrl": "https://castaloud.replit.app/"
   }
 }
