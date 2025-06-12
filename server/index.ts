@@ -5,25 +5,30 @@ import path from "path";
 
 const app = express();
 
-// Intercept ALL requests to manifest before any other middleware
+// Force complete cache bypass for manifest
 app.use((req, res, next) => {
-  if (req.path === '/.well-known/farcaster.json') {
+  if (req.path === '/.well-known/farcaster.json' || req.path === '/manifest-v2.json' || req.path === '/farcaster.json') {
+    const timestamp = Date.now();
     const manifest = {
-      "name": "Cast Aloud",
+      "name": "Castaloud",
       "description": "Voice accessibility for Farcaster casts using AI-powered voice technology",
       "homeUrl": "https://castaloud.replit.app",
-      "iconUrl": "https://castaloud.replit.app/icon.png",
-      "splashImageUrl": "https://castaloud.replit.app/splash.png", 
-      "backgroundColor": "#8A63D2"
+      "iconUrl": "https://castaloud.replit.app/castaloud-logo.png",
+      "splashImageUrl": "https://castaloud.replit.app/castaloud-logo.png", 
+      "backgroundColor": "#8A63D2",
+      "_timestamp": timestamp
     };
     
     res.writeHead(200, {
       'Content-Type': 'application/json',
-      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
       'Pragma': 'no-cache',
       'Expires': '0',
+      'Last-Modified': new Date().toUTCString(),
+      'ETag': `"${timestamp}"`,
       'Access-Control-Allow-Origin': '*',
-      'X-Manifest-Version': Date.now().toString()
+      'X-Manifest-Source': 'server-override',
+      'X-Timestamp': timestamp.toString()
     });
     
     return res.end(JSON.stringify(manifest, null, 2));
