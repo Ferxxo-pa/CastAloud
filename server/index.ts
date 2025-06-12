@@ -5,6 +5,32 @@ import path from "path";
 
 const app = express();
 
+// Intercept ALL requests to manifest before any other middleware
+app.use((req, res, next) => {
+  if (req.path === '/.well-known/farcaster.json') {
+    const manifest = {
+      "name": "Cast Aloud",
+      "description": "Voice accessibility for Farcaster casts using AI-powered voice technology",
+      "homeUrl": "https://castaloud.replit.app",
+      "iconUrl": "https://castaloud.replit.app/icon.png",
+      "splashImageUrl": "https://castaloud.replit.app/splash.png", 
+      "backgroundColor": "#8A63D2"
+    };
+    
+    res.writeHead(200, {
+      'Content-Type': 'application/json',
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+      'Access-Control-Allow-Origin': '*',
+      'X-Manifest-Version': Date.now().toString()
+    });
+    
+    return res.end(JSON.stringify(manifest, null, 2));
+  }
+  next();
+});
+
 // Fix asset serving with proper content types
 app.get('/icon.png', (req, res) => {
   res.setHeader('Content-Type', 'image/png');
@@ -22,94 +48,9 @@ app.get('/splash.png', (req, res) => {
 app.get('/test-manifest', (req, res) => {
   res.json({
     message: "Server code is updated",
-    tagline: "Voice-powered Farcaster",
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    manifestPath: "/.well-known/farcaster.json intercepted"
   });
-});
-
-// Priority manifest route - must be first to override all other handlers
-app.get('/.well-known/farcaster.json', (req, res) => {
-  const manifest = {
-    "version": "1",
-    "name": "Cast Aloud",
-    "iconUrl": "https://castaloud.replit.app/icon.png",
-    "homeUrl": "https://castaloud.replit.app",
-    "splashImageUrl": "https://castaloud.replit.app/icon.png",
-    "splashBackgroundColor": "#8A63D2",
-    "subtitle": "Voice accessibility for casts",
-    "description": "Read casts aloud with AI-powered voice technology and get intelligent feedback on your replies",
-    "primaryCategory": "utility",
-    "tags": [
-      "voice",
-      "accessibility", 
-      "tts",
-      "ai",
-      "transcription"
-    ],
-    "tagline": "Voice-powered Farcaster",
-    "requiredChains": [],
-    "requiredCapabilities": [
-      "actions.composeCast",
-      "actions.ready"
-    ],
-    "frame": {
-      "version": "1"
-    }
-  };
-  
-  res.setHeader('Content-Type', 'application/json');
-  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-  res.setHeader('Pragma', 'no-cache');
-  res.setHeader('Expires', '0');
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, HEAD, OPTIONS');
-  res.setHeader('X-Content-Type-Options', 'nosniff');
-  
-  return res.json(manifest);
-});
-
-// Fallback route for manifest
-app.all('/.well-known/farcaster.json', (req, res) => {
-  res.writeHead(200, {
-    'Content-Type': 'application/json',
-    'Cache-Control': 'no-cache, no-store, must-revalidate',
-    'Pragma': 'no-cache',
-    'Expires': '0',
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Accept, User-Agent',
-    'X-Content-Type-Options': 'nosniff'
-  });
-  
-  const manifest = JSON.stringify({
-    "version": "1",
-    "name": "Cast Aloud",
-    "iconUrl": "https://castaloud.replit.app/icon.png",
-    "homeUrl": "https://castaloud.replit.app",
-    "splashImageUrl": "https://castaloud.replit.app/icon.png",
-    "splashBackgroundColor": "#8A63D2",
-    "subtitle": "Voice accessibility for casts",
-    "description": "Read casts aloud with AI-powered voice technology and get intelligent feedback on your replies",
-    "primaryCategory": "utility",
-    "tags": [
-      "voice",
-      "accessibility", 
-      "tts",
-      "ai",
-      "transcription"
-    ],
-    "tagline": "Voice-powered Farcaster",
-    "requiredChains": [],
-    "requiredCapabilities": [
-      "actions.composeCast",
-      "actions.ready"
-    ],
-    "frame": {
-      "version": "1"
-    }
-  });
-  
-  res.end(manifest);
 });
 
 // Configure static file serving with proper MIME types

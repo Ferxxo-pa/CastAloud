@@ -1,27 +1,8 @@
 {
-  "version": "1",
   "name": "Cast Aloud",
-  "iconUrl": "https://castaloud.replit.app/icon.png",
+  "description": "Voice accessibility for Farcaster casts using AI-powered voice technology",
   "homeUrl": "https://castaloud.replit.app",
-  "splashImageUrl": "https://castaloud.replit.app/icon.png",
-  "splashBackgroundColor": "#8A63D2",
-  "subtitle": "Voice accessibility for casts",
-  "description": "Read casts aloud with AI-powered voice technology and get intelligent feedback on your replies",
-  "primaryCategory": "utility",
-  "tags": [
-    "voice",
-    "accessibility", 
-    "tts",
-    "ai",
-    "transcription"
-  ],
-  "tagline": "Voice-powered Farcaster",
-  "requiredChains": [],
-  "requiredCapabilities": [
-    "actions.composeCast",
-    "actions.ready"
-  ],
-  "frame": {
-    "version": "1"
-  }
+  "iconUrl": "https://castaloud.replit.app/icon.png",
+  "splashImageUrl": "https://castaloud.replit.app/splash.png",
+  "backgroundColor": "#8A63D2"
 }
