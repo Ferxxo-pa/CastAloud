@@ -9,30 +9,28 @@ const app = express();
 // Generate fresh manifest data to avoid caching issues
 function getFarcasterManifest() {
   return {
-    "frame": {
-      "version": "1",
-      "name": "Cast Aloud",
-      "iconUrl": "https://castaloud.replit.app/icon.png",
-      "homeUrl": "https://castaloud.replit.app",
-      "splashImageUrl": "https://castaloud.replit.app/icon.png",
-      "splashBackgroundColor": "#8A63D2",
-      "subtitle": "Voice accessibility for casts",
-      "description": "Read casts aloud with AI-powered voice technology and get intelligent feedback on your replies",
-      "primaryCategory": "social",
-      "tags": [
-        "voice",
-        "accessibility", 
-        "tts",
-        "ai",
-        "transcription"
-      ],
-      "tagline": "Make Farcaster voice accessible",
-      "requiredChains": [],
-      "requiredCapabilities": [
-        "actions.composeCast",
-        "actions.ready"
-      ]
-    }
+    "version": "1",
+    "name": "Cast Aloud",
+    "iconUrl": "https://castaloud.replit.app/icon.png",
+    "homeUrl": "https://castaloud.replit.app",
+    "splashImageUrl": "https://castaloud.replit.app/icon.png",
+    "splashBackgroundColor": "#8A63D2",
+    "subtitle": "Voice accessibility for casts",
+    "description": "Read casts aloud with AI-powered voice technology and get intelligent feedback on your replies",
+    "primaryCategory": "social",
+    "tags": [
+      "voice",
+      "accessibility", 
+      "tts",
+      "ai",
+      "transcription"
+    ],
+    "tagline": "Make Farcaster voice accessible",
+    "requiredChains": [],
+    "requiredCapabilities": [
+      "actions.composeCast",
+      "actions.ready"
+    ]
   };
 }
 
