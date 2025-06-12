@@ -9,7 +9,26 @@ app.use(express.urlencoded({ extended: false }));
 
 // Serve static files from server/public directory (includes .well-known, logos, etc.)
 const serverPublicPath = path.join(process.cwd(), "server", "public");
-app.use(express.static(serverPublicPath));
+app.use(express.static(serverPublicPath, {
+  setHeaders: (res, path) => {
+    // Set proper CORS headers for all static files
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, HEAD, OPTIONS');
+    
+    // Set proper Content-Type for JSON files
+    if (path.endsWith('.json')) {
+      res.header('Content-Type', 'application/json');
+    }
+    
+    // Set proper Content-Type for PNG images
+    if (path.endsWith('.png')) {
+      res.header('Content-Type', 'image/png');
+    }
+    
+    // Cache control for better performance
+    res.header('Cache-Control', 'public, max-age=3600');
+  }
+}));
 
 // Also serve client/public for any additional static assets
 const clientPublicPath = path.join(process.cwd(), "client", "public");
