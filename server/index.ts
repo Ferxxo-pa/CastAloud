@@ -44,6 +44,24 @@ app.get('/splash.png', (req, res) => {
   res.sendFile(path.resolve('./public/splash.png'));
 });
 
+// Alternative manifest endpoint to bypass caching
+app.get('/farcaster-manifest', (req, res) => {
+  const manifest = {
+    "name": "Cast Aloud",
+    "description": "Voice accessibility for Farcaster casts using AI-powered voice technology",
+    "homeUrl": "https://castaloud.replit.app",
+    "iconUrl": "https://castaloud.replit.app/icon.png",
+    "splashImageUrl": "https://castaloud.replit.app/splash.png",
+    "backgroundColor": "#8A63D2"
+  };
+  
+  res.setHeader('Content-Type', 'application/json');
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  
+  return res.json(manifest);
+});
+
 // Test endpoint to verify server changes are working
 app.get('/test-manifest', (req, res) => {
   res.json({
@@ -130,6 +148,24 @@ app.use((req, res, next) => {
 
     res.status(status).json({ message });
     throw err;
+  });
+
+  // Add manifest route before Vite to override catch-all routing
+  app.get('/.well-known/farcaster.json', (req, res) => {
+    const manifest = {
+      "name": "Cast Aloud",
+      "description": "Voice accessibility for Farcaster casts using AI-powered voice technology",
+      "homeUrl": "https://castaloud.replit.app",
+      "iconUrl": "https://castaloud.replit.app/icon.png",
+      "splashImageUrl": "https://castaloud.replit.app/splash.png",
+      "backgroundColor": "#8A63D2"
+    };
+    
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    
+    return res.json(manifest);
   });
 
   // Setup vite in development, serve static files in production

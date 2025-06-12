@@ -1,40 +1,49 @@
-#!/usr/bin/env node
-
 import https from 'https';
 
-function testNewManifest() {
-  console.log('Testing new Farcaster manifest format...\n');
-  
-  https.get('https://castaloud.replit.app/.well-known/farcaster.json', (res) => {
-    let data = '';
-    res.on('data', chunk => data += chunk);
-    res.on('end', () => {
-      try {
-        const manifest = JSON.parse(data);
-        
-        console.log('Response status:', res.statusCode);
-        console.log('Content-Type:', res.headers['content-type']);
-        
-        if (manifest.frame) {
-          console.log('✅ New format detected');
-          console.log('Frame version:', manifest.frame.version);
-          console.log('Frame name:', manifest.frame.name);
-          console.log('Frame homeUrl:', manifest.frame.homeUrl);
-          console.log('Required capabilities:', manifest.frame.requiredCapabilities?.join(', '));
-          console.log('Primary category:', manifest.frame.primaryCategory);
-        } else {
-          console.log('❌ Old format still cached');
-          console.log('Top-level keys:', Object.keys(manifest));
-        }
-        
-      } catch (e) {
-        console.log('❌ JSON Parse Error:', e.message);
-        console.log('Raw response (first 200 chars):', data.substring(0, 200));
+async function testNewManifest() {
+  return new Promise((resolve, reject) => {
+    const options = {
+      hostname: 'castaloud.replit.app',
+      path: '/farcaster-manifest',
+      method: 'GET',
+      headers: {
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache'
       }
+    };
+    
+    const req = https.request(options, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        console.log('New Manifest Endpoint Response:');
+        console.log(data);
+        
+        try {
+          const manifest = JSON.parse(data);
+          console.log('\nValidation Check:');
+          console.log('name:', manifest.name ? '✅' : '❌ MISSING');
+          console.log('iconUrl:', manifest.iconUrl ? '✅' : '❌ MISSING'); 
+          console.log('homeUrl:', manifest.homeUrl ? '✅' : '❌ MISSING');
+          console.log('description:', manifest.description ? '✅' : '❌ MISSING');
+          console.log('splashImageUrl:', manifest.splashImageUrl ? '✅' : '❌ MISSING');
+          console.log('backgroundColor:', manifest.backgroundColor ? '✅' : '❌ MISSING');
+          
+          console.log('\nSimplified Format Check:');
+          console.log('- No version field:', !manifest.version ? '✅' : '❌');
+          console.log('- No tagline field:', !manifest.tagline ? '✅' : '❌');
+          console.log('- No primaryCategory field:', !manifest.primaryCategory ? '✅' : '❌');
+          
+        } catch (e) {
+          console.log('JSON Parse Error:', e.message);
+        }
+        resolve();
+      });
     });
-  }).on('error', err => {
-    console.log('❌ Request failed:', err.message);
+    
+    req.on('error', reject);
+    req.end();
   });
 }
 
-testNewManifest();
+testNewManifest().catch(console.error);
