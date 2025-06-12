@@ -5,31 +5,6 @@ import path from "path";
 
 const app = express();
 
-// Force complete cache bypass for manifest
-app.use((req, res, next) => {
-  if (req.path === '/.well-known/farcaster.json' || req.path === '/manifest-v2.json' || req.path === '/farcaster.json') {
-    const manifest = {
-      "name": "Castaloud",
-      "description": "Voice accessibility for Farcaster casts using AI-powered voice technology",
-      "homeUrl": "https://castaloud.replit.app",
-      "iconUrl": "https://castaloud.replit.app/castaloud-logo.png",
-      "splashImageUrl": "https://castaloud.replit.app/castaloud-logo.png", 
-      "backgroundColor": "#8A63D2"
-    };
-    
-    res.writeHead(200, {
-      'Content-Type': 'application/json',
-      'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
-      'Pragma': 'no-cache',
-      'Expires': '0',
-      'Access-Control-Allow-Origin': '*'
-    });
-    
-    return res.end(JSON.stringify(manifest, null, 2));
-  }
-  next();
-});
-
 // Fix asset serving with proper content types
 app.get('/icon.png', (req, res) => {
   res.setHeader('Content-Type', 'image/png');
@@ -50,25 +25,7 @@ app.get('/castaloud-logo.png', (req, res) => {
   res.sendFile(path.resolve('./public/castaloud-logo.png'));
 });
 
-// Override static file serving for manifest path
-app.use('/.well-known/farcaster.json', (req, res) => {
-  const manifest = {
-    "name": "Castaloud",
-    "description": "Voice accessibility for Farcaster casts using AI-powered voice technology",
-    "homeUrl": "https://castaloud.replit.app",
-    "iconUrl": "https://castaloud.replit.app/castaloud-logo.png",
-    "splashImageUrl": "https://castaloud.replit.app/castaloud-logo.png",
-    "backgroundColor": "#8A63D2"
-  };
-  
-  res.setHeader('Content-Type', 'application/json');
-  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-  res.setHeader('Pragma', 'no-cache');
-  res.setHeader('Expires', '0');
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  
-  return res.json(manifest);
-});
+
 
 // Alternative manifest endpoint to bypass caching
 app.get('/farcaster-manifest', (req, res) => {
@@ -131,29 +88,14 @@ app.use((req, res, next) => {
   }
 });
 
+// Simple logging without JSON interception
 app.use((req, res, next) => {
   const start = Date.now();
-  const path = req.path;
-  let capturedJsonResponse: Record<string, any> | undefined = undefined;
-
-  const originalResJson = res.json;
-  res.json = function (bodyJson, ...args) {
-    capturedJsonResponse = bodyJson;
-    return originalResJson.apply(res, [bodyJson, ...args]);
-  };
-
+  
   res.on("finish", () => {
     const duration = Date.now() - start;
-    if (path.startsWith("/api")) {
-      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
-      if (capturedJsonResponse) {
-        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
-      }
-
-      if (logLine.length > 80) {
-        logLine = logLine.slice(0, 79) + "…";
-      }
-
+    if (req.path.startsWith("/api")) {
+      const logLine = `${req.method} ${req.path} ${res.statusCode} in ${duration}ms`;
       log(logLine);
     }
   });
@@ -176,23 +118,7 @@ app.use((req, res, next) => {
     throw err;
   });
 
-  // Add manifest route before Vite to override catch-all routing
-  app.get('/.well-known/farcaster.json', (req, res) => {
-    const manifest = {
-      "name": "Castaloud",
-      "description": "Voice accessibility for Farcaster casts using AI-powered voice technology",
-      "homeUrl": "https://castaloud.replit.app",
-      "iconUrl": "https://castaloud.replit.app/castaloud-logo.png",
-      "splashImageUrl": "https://castaloud.replit.app/castaloud-logo.png",
-      "backgroundColor": "#8A63D2"
-    };
-    
-    res.setHeader('Content-Type', 'application/json');
-    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    
-    return res.json(manifest);
-  });
+
 
   // Setup vite in development, serve static files in production
   // Check NODE_ENV instead of app.get("env") for better reliability
