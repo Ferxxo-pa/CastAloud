@@ -5,53 +5,26 @@ import path from "path";
 
 const app = express();
 
-// Bypass ALL middleware for manifest requests
-app.use((req, res, next) => {
-  if (req.path === '/.well-known/farcaster.json') {
-    res.setHeader('Content-Type', 'application/json');
-    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-    res.setHeader('Pragma', 'no-cache');
-    res.setHeader('Expires', '0');
-    
-    const manifest = {
-      "version": "1",
-      "name": "Cast Aloud",
-      "iconUrl": "https://castaloud.replit.app/icon.png",
-      "homeUrl": "https://castaloud.replit.app",
-      "splashImageUrl": "https://castaloud.replit.app/icon.png",
-      "splashBackgroundColor": "#8A63D2",
-      "subtitle": "Voice accessibility for casts",
-      "description": "Read casts aloud with AI-powered voice technology and get intelligent feedback on your replies",
-      "primaryCategory": "utility",
-      "tags": [
-        "voice",
-        "accessibility", 
-        "tts",
-        "ai",
-        "transcription"
-      ],
-      "tagline": "Voice-powered Farcaster",
-      "requiredChains": [],
-      "requiredCapabilities": [
-        "actions.composeCast",
-        "actions.ready"
-      ]
-    };
-    
-    return res.json(manifest);
-  }
-  next();
+// Test endpoint to verify server changes are working
+app.get('/test-manifest', (req, res) => {
+  res.json({
+    message: "Server code is updated",
+    tagline: "Voice-powered Farcaster",
+    timestamp: new Date().toISOString()
+  });
 });
 
-// CRITICAL: Manifest route MUST be first to override Vite caching
-app.get('/.well-known/farcaster.json', (req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-  res.setHeader('Pragma', 'no-cache');
-  res.setHeader('Expires', '0');
+// Direct manifest serving to bypass all caching layers
+app.all('/.well-known/farcaster.json', (req, res) => {
+  res.writeHead(200, {
+    'Content-Type': 'application/json',
+    'Cache-Control': 'no-cache, no-store, must-revalidate',
+    'Pragma': 'no-cache',
+    'Expires': '0',
+    'X-No-Cache': 'true'
+  });
   
-  // Directly return the correct manifest to bypass all caching
-  const manifest = {
+  const manifest = JSON.stringify({
     "version": "1",
     "name": "Cast Aloud",
     "iconUrl": "https://castaloud.replit.app/icon.png",
@@ -74,15 +47,10 @@ app.get('/.well-known/farcaster.json', (req, res) => {
       "actions.composeCast",
       "actions.ready"
     ]
-  };
+  });
   
-  res.json(manifest);
+  res.end(manifest);
 });
-
-
-
-// Serve static files from public directory (includes .well-known/farcaster.json)
-app.use(express.static('public'));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
