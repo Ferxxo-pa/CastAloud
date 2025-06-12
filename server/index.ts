@@ -44,6 +44,26 @@ app.get('/splash.png', (req, res) => {
   res.sendFile(path.resolve('./public/splash.png'));
 });
 
+// Override static file serving for manifest path
+app.use('/.well-known/farcaster.json', (req, res) => {
+  const manifest = {
+    "name": "Cast Aloud",
+    "description": "Voice accessibility for Farcaster casts using AI-powered voice technology",
+    "homeUrl": "https://castaloud.replit.app",
+    "iconUrl": "https://castaloud.replit.app/icon.png",
+    "splashImageUrl": "https://castaloud.replit.app/splash.png",
+    "backgroundColor": "#8A63D2"
+  };
+  
+  res.setHeader('Content-Type', 'application/json');
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  
+  return res.json(manifest);
+});
+
 // Alternative manifest endpoint to bypass caching
 app.get('/farcaster-manifest', (req, res) => {
   const manifest = {
