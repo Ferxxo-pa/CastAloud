@@ -58,7 +58,14 @@ app.get('/manifest.json', (_req, res) => {
       "buttonTitle": "Open Cast Aloud",
       "splashBackgroundColor": "#FFFFFF",
       "webhookUrl": "https://castaloud.replit.app/api/frame/action",
-      "features": ["voice", "accessibility", "tts", "transcription"]
+      "features": ["voice", "accessibility", "tts", "transcription"],
+      "requiredCapabilities": ["actions.ready"],
+      "frame": {
+        "version": "1",
+        "imageUrl": "https://castaloud.replit.app/api/frame/image?state=initial",
+        "buttonUrl": "https://castaloud.replit.app/api/frame/action",
+        "homeUrl": "https://castaloud.replit.app/"
+      }
     },
     "accountAssociation": {
       "header": "eyJmaWQiOjEsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHgxMjM0NSJ9",
