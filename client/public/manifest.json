@@ -4,14 +4,14 @@
   "description": "Voice accessibility tools for reading and replying to Farcaster casts",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#FFFFFF",
+  "background_color": "#8A63D2",
   "theme_color": "#8A63D2",
   "orientation": "portrait",
   "scope": "/",
   "icons": [
     {
-      "src": "/favicon.png",
-      "sizes": "1024x1024",
+      "src": "/icon.png",
+      "sizes": "256x256",
       "type": "image/png",
       "purpose": "any maskable"
     }
@@ -19,21 +19,16 @@
   "categories": ["accessibility", "social", "utilities"],
   "lang": "en",
   "dir": "ltr",
-  "farcaster": {
-    "version": "1",
-    "name": "Cast Aloud",
-    "description": "Voice accessibility tools for Farcaster",
-    "iconUrl": "https://castaloud.replit.app/favicon.png",
-    "splashImageUrl": "https://castaloud.replit.app/api/frame/image?state=initial",
-    "homeUrl": "https://castaloud.replit.app/",
-    "buttonTitle": "Open Cast Aloud",
-    "splashBackgroundColor": "#FFFFFF",
-    "webhookUrl": "https://castaloud.replit.app/api/frame/action",
-    "features": ["voice", "accessibility", "tts", "transcription"]
+  "frame": {
+    "requiredChains": [],
+    "requiredCapabilities": [
+      "actions.composeCast",
+      "actions.ready"
+    ]
   },
   "accountAssociation": {
-    "header": "eyJmaWQiOjEsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHgxMjM0NSJ9",
-    "payload": "eyJkb21haW4iOiJjYXN0YWxvdWQucmVwbGl0LmFwcCJ9",
-    "signature": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+    "header": "eyJmaWQiOjEsInR5cGUiOiJjdXN0b2R5IiwibWFkZSI6MX0",
+    "payload": "eyJkb21haW4iOiJjYXN0YWxvdWQuY29tIn0",
+    "signature": "0x..."
   }
 }
