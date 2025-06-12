@@ -99,8 +99,20 @@ app.all('/.well-known/farcaster.json', (req, res) => {
   res.end(manifest);
 });
 
-// Serve static files (including manifest) before other middleware
-app.use(express.static('public'));
+// Configure static file serving with proper MIME types
+app.use(express.static('public', {
+  setHeaders: (res, path) => {
+    if (path.endsWith('.png')) {
+      res.setHeader('Content-Type', 'image/png');
+    } else if (path.endsWith('.jpg') || path.endsWith('.jpeg')) {
+      res.setHeader('Content-Type', 'image/jpeg');
+    } else if (path.endsWith('.svg')) {
+      res.setHeader('Content-Type', 'image/svg+xml');
+    } else if (path.endsWith('.json')) {
+      res.setHeader('Content-Type', 'application/json');
+    }
+  }
+}));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
