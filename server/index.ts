@@ -1,10 +1,15 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import path from "path";
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+// Serve static files from server/public (for .well-known, icons, etc.)
+const serverPublicPath = path.resolve(import.meta.dirname, "public");
+app.use(express.static(serverPublicPath));
 
 // CORS headers for Farcaster miniapp testing
 app.use((req, res, next) => {
