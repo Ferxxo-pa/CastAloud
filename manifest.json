@@ -1,23 +1,21 @@
 {
-  "accountAssociation": {
-    "header": "eyJmaWQiOjEyMzQ1LCJ0eXBlIjoiY3VzdG9keSIsImtleSI6IjB4MTIzNDUifQ",
-    "payload": "eyJkb21haW4iOiJjYXN0YWxvdWQucmVwbGl0LmFwcCJ9",
-    "signature": "MHhjMTIzNDU2Nzg5YWJjZGVmMTIzNDU2Nzg5YWJjZGVmMTIzNDU2Nzg5YWJjZGVmMTIzNDU2Nzg5YWJjZGVm"
-  },
-  "app": {
-    "name": "Cast Aloud",
-    "version": "1.0.0",
-    "iconUrl": "https://castaloud.replit.app/generated-icon.png",
-    "splashImageUrl": "https://castaloud.replit.app/generated-icon.png",
-    "homeUrl": "https://castaloud.replit.app"
-  },
-  "execution": {
-    "mode": "frame"
-  },
-  "frame": {
-    "version": "1",
-    "imageUrl": "https://castaloud.replit.app/api/frame/image",
-    "buttonUrl": "https://castaloud.replit.app/api/frame/action",
-    "homeUrl": "https://castaloud.replit.app/frame"
-  }
+  "name": "Cast Aloud",
+  "short_name": "CastAloud",
+  "description": "Voice accessibility tools for Farcaster - listen to casts and reply using voice technology",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#8A63D2",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo-1024.png", 
+      "sizes": "1024x1024",
+      "type": "image/png"
+    }
+  ]
 }
