@@ -27,14 +27,20 @@ const farcasterManifest = {
   }
 };
 
+// Create multiple endpoints to ensure Farcaster can find the manifest
 app.get('/.well-known/farcaster.json', (req, res) => {
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('Cache-Control', 'no-cache');
   res.json(farcasterManifest);
 });
 
-// Override any static manifest.json with our Farcaster-compatible version
 app.get('/manifest.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.json(farcasterManifest);
+});
+
+app.get('/farcaster.json', (req, res) => {
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('Cache-Control', 'no-cache');
   res.json(farcasterManifest);
