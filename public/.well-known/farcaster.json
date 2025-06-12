@@ -20,5 +20,8 @@
   "requiredCapabilities": [
     "actions.composeCast",
     "actions.ready"
-  ]
+  ],
+  "frame": {
+    "version": "1"
+  }
 }

@@ -14,7 +14,48 @@ app.get('/test-manifest', (req, res) => {
   });
 });
 
-// Direct manifest serving with CORS headers for Farcaster validation
+// Priority manifest route - must be first to override all other handlers
+app.get('/.well-known/farcaster.json', (req, res) => {
+  const manifest = {
+    "version": "1",
+    "name": "Cast Aloud",
+    "iconUrl": "https://castaloud.replit.app/icon.png",
+    "homeUrl": "https://castaloud.replit.app",
+    "splashImageUrl": "https://castaloud.replit.app/icon.png",
+    "splashBackgroundColor": "#8A63D2",
+    "subtitle": "Voice accessibility for casts",
+    "description": "Read casts aloud with AI-powered voice technology and get intelligent feedback on your replies",
+    "primaryCategory": "utility",
+    "tags": [
+      "voice",
+      "accessibility", 
+      "tts",
+      "ai",
+      "transcription"
+    ],
+    "tagline": "Voice-powered Farcaster",
+    "requiredChains": [],
+    "requiredCapabilities": [
+      "actions.composeCast",
+      "actions.ready"
+    ],
+    "frame": {
+      "version": "1"
+    }
+  };
+  
+  res.setHeader('Content-Type', 'application/json');
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, HEAD, OPTIONS');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  
+  return res.json(manifest);
+});
+
+// Fallback route for manifest
 app.all('/.well-known/farcaster.json', (req, res) => {
   res.writeHead(200, {
     'Content-Type': 'application/json',
@@ -57,6 +98,9 @@ app.all('/.well-known/farcaster.json', (req, res) => {
   
   res.end(manifest);
 });
+
+// Serve static files (including manifest) before other middleware
+app.use(express.static('public'));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
