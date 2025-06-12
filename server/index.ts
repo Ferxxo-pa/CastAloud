@@ -26,11 +26,13 @@ function getFarcasterManifest() {
       "transcription"
     ],
     "tagline": "Make Farcaster voice accessible",
-    "requiredChains": [],
-    "requiredCapabilities": [
-      "actions.composeCast",
-      "actions.ready"
-    ]
+    "frame": {
+      "requiredChains": [],
+      "requiredCapabilities": [
+        "actions.composeCast",
+        "actions.ready"
+      ]
+    }
   };
 }
 

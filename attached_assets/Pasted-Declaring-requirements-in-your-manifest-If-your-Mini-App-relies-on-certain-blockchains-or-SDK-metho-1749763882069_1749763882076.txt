@@ -1,0 +1,44 @@
+Declaring requirements in your manifest
+If your Mini App relies on certain blockchains or SDK methods, you can declare those in your manifest via the properties requiredChains and requiredCapabilities.
+
+requiredChains
+frame.requiredChains is an optional manifest property that contains an array of CAIP-2 identifiers. If the host does not support all of the chains declared here, it will know not to try rendering your Mini App.
+
+Note that only the chains listed in chainList here are supported. If your manifest omits requiredChains, then the frame host will assume that no chains are required.
+
+requiredCapabilities
+frame.requiredCapabilities is an optional manifest property that contains an array of paths to SDK methods, such as wallet.getEthereumProvider or actions.composeCast. If the host does not support all of the capabilities declared here, it will know not to try rendering your Mini App.
+
+The full list of supported SDK methods can be found in miniAppHostCapabilityList here. If your manifest omits requiredCapabilities, then the frame host will assume that no capabilities are required.
+
+Runtime detection
+If your Mini App optionally supports certain blockchains or SDK methods, you can detect whether they are supported at runtime via SDK calls.
+
+getChains
+This SDK method returns a list of supported blockchains as an array of CAIP-2 identifiers.
+
+getCapabilities
+This SDK method returns a list of supported SDK methods as an array of paths to those SDK methods. The full list of supported SDK methods can be found in miniAppHostCapabilityList here.
+
+Example
+
+import { sdk } from '@farcaster/frame-sdk'
+ 
+// Get all supported capabilities
+const capabilities = await sdk.getCapabilities()
+ 
+// Check for specific capabilities
+const supportsCompose = capabilities.includes('actions.composeCast')
+const supportsWallet = capabilities.includes('wallet.getEthereumProvider')
+ 
+// Check for haptics support
+const supportsHaptics = {
+  impact: capabilities.includes('haptics.impactOccurred'),
+  notification: capabilities.includes('haptics.notificationOccurred'),
+  selection: capabilities.includes('haptics.selectionChanged')
+}
+ 
+// Use capabilities conditionally
+if (supportsHaptics.impact) {
+  await sdk.haptics.impactOccurred('medium')
+}
