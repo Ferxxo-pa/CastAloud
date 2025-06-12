@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
 import { Link } from "wouter";
+import { useState, useEffect } from "react";
 import { farcasterSDK, type FarcasterContext } from '@/lib/farcaster-sdk';
 
 export default function HomeSimple() {
@@ -116,7 +116,7 @@ export default function HomeSimple() {
     }
   };
   return (
-    <div className="min-h-screen bg-white" style={{ backgroundColor: 'white' }}>
+    <div className="min-h-screen bg-fc-gray-50">
       <div className="max-w-md mx-auto p-4">
         <header className="mb-6">
           <div className="text-center">

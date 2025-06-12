@@ -61,28 +61,6 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        // Farcaster brand colors
-        "fc-purple": {
-          DEFAULT: "hsl(var(--fc-purple))",
-          dark: "hsl(var(--fc-purple-dark))",
-          light: "hsl(var(--fc-purple-light))",
-        },
-        "fc-warpcast-purple": "hsl(var(--fc-warpcast-purple))",
-        "fc-success": "hsl(var(--fc-success))",
-        "fc-warning": "hsl(var(--fc-warning))",
-        "fc-error": "hsl(var(--fc-error))",
-        "fc-gray": {
-          50: "hsl(var(--fc-gray-50))",
-          100: "hsl(var(--fc-gray-100))",
-          200: "hsl(var(--fc-gray-200))",
-          300: "hsl(var(--fc-gray-300))",
-          400: "hsl(var(--fc-gray-400))",
-          500: "hsl(var(--fc-gray-500))",
-          600: "hsl(var(--fc-gray-600))",
-          700: "hsl(var(--fc-gray-700))",
-          800: "hsl(var(--fc-gray-800))",
-          900: "hsl(var(--fc-gray-900))",
-        },
       },
       keyframes: {
         "accordion-down": {

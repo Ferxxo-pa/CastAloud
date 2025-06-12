@@ -1,10 +1,10 @@
-import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import CastDisplay from "@/components/CastDisplay";
 import VoiceInterface from "@/components/VoiceInterface";
 import OpenAIVoiceSettings from "@/components/OpenAIVoiceSettings";
 import useOpenAITTS from "@/hooks/useOpenAITTS";
+import { useState } from "react";
 import type { Cast } from "@shared/schema";
 
 export default function Home() {
