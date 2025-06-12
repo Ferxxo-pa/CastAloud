@@ -17,7 +17,7 @@ function getFarcasterManifest() {
     "splashBackgroundColor": "#8A63D2",
     "subtitle": "Voice accessibility for casts",
     "description": "Read casts aloud with AI-powered voice technology and get intelligent feedback on your replies",
-    "primaryCategory": "social",
+    "primaryCategory": "utility",
     "tags": [
       "voice",
       "accessibility", 
