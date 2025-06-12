@@ -52,7 +52,7 @@ export default function FarcasterMiniApp() {
 
   const handleFarcasterMessage = (event: MessageEvent) => {
     if (event.data.type === 'farcaster_context') {
-      setFarcasterContext(prev => ({
+      setFarcasterContext((prev: any) => ({
         ...prev,
         ...event.data.data
       }));
