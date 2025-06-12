@@ -61,12 +61,12 @@ app.use((req, res, next) => {
   next();
 });
 
-(async () => {
-  const server = await registerRoutes(app);
-
-  // Serve static files from server/public (for .well-known, icons, etc.)
+  // Serve static files FIRST to ensure they take precedence
   const serverPublicPath = path.resolve(import.meta.dirname, "public");
   app.use(express.static(serverPublicPath));
+
+(async () => {
+  const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
