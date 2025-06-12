@@ -16,9 +16,9 @@ function getFarcasterManifest() {
       "homeUrl": "https://castaloud.replit.app",
       "splashImageUrl": "https://castaloud.replit.app/icon.png",
       "splashBackgroundColor": "#8A63D2",
-      "subtitle": "Voice accessibility for Farcaster",
+      "subtitle": "Voice accessibility for casts",
       "description": "Read casts aloud with AI-powered voice technology and get intelligent feedback on your replies",
-      "primaryCategory": "accessibility",
+      "primaryCategory": "social",
       "tags": [
         "voice",
         "accessibility", 
@@ -26,7 +26,7 @@ function getFarcasterManifest() {
         "ai",
         "transcription"
       ],
-      "tagline": "Make Farcaster accessible through voice",
+      "tagline": "Make Farcaster voice accessible",
       "requiredChains": [],
       "requiredCapabilities": [
         "actions.composeCast",
@@ -45,32 +45,7 @@ app.get('/.well-known/farcaster.json', (req, res) => {
   res.setHeader('Pragma', 'no-cache');
   res.setHeader('Expires', '0');
   res.setHeader('X-Timestamp', Date.now().toString());
-  res.json({
-    "frame": {
-      "version": "1",
-      "name": "Cast Aloud",
-      "iconUrl": "https://castaloud.replit.app/icon.png",
-      "homeUrl": "https://castaloud.replit.app",
-      "splashImageUrl": "https://castaloud.replit.app/icon.png", 
-      "splashBackgroundColor": "#8A63D2",
-      "subtitle": "Voice accessibility for Farcaster",
-      "description": "Read casts aloud with AI-powered voice technology and get intelligent feedback on your replies",
-      "primaryCategory": "accessibility",
-      "tags": [
-        "voice",
-        "accessibility", 
-        "tts",
-        "ai",
-        "transcription"
-      ],
-      "tagline": "Make Farcaster accessible through voice",
-      "requiredChains": [],
-      "requiredCapabilities": [
-        "actions.composeCast",
-        "actions.ready"
-      ]
-    }
-  });
+  res.json(getFarcasterManifest());
 });
 
 // Serve static files from public directory
