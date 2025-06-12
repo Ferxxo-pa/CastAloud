@@ -94,7 +94,7 @@ export default function MiniApp() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <div className="text-center">
-          <h1 className="text-xl font-semibold mb-4">Cast Aloud</h1>
+          <h1 className="text-xl font-semibold mb-4">Castaloud</h1>
           <p className="text-gray-600 mb-4">No cast content found. Add text with ?text= parameter.</p>
           <p className="text-sm text-gray-500">Example: /mini-app?text=Your cast content here</p>
         </div>
@@ -106,7 +106,7 @@ export default function MiniApp() {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-md mx-auto p-4">
         <header className="mb-6">
-          <h1 className="text-xl font-semibold text-center">Cast Aloud</h1>
+          <h1 className="text-xl font-semibold text-center">Castaloud</h1>
           <p className="text-sm text-gray-600 text-center mt-1">Read and reply to casts with voice</p>
         </header>
 
