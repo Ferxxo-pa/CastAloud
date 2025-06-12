@@ -6,33 +6,6 @@ import path from "path";
 const app = express();
 
 // Priority routes for Farcaster manifest - must be before any middleware
-// Generate fresh manifest data to avoid caching issues
-function getFarcasterManifest() {
-  return {
-    "version": "1",
-    "name": "Cast Aloud",
-    "iconUrl": "https://castaloud.replit.app/icon.png",
-    "homeUrl": "https://castaloud.replit.app",
-    "splashImageUrl": "https://castaloud.replit.app/icon.png",
-    "splashBackgroundColor": "#8A63D2",
-    "subtitle": "Voice accessibility for casts",
-    "description": "Read casts aloud with AI-powered voice technology and get intelligent feedback on your replies",
-    "primaryCategory": "utility",
-    "tags": [
-      "voice",
-      "accessibility", 
-      "tts",
-      "ai",
-      "transcription"
-    ],
-    "tagline": "Voice-accessible Farcaster",
-    "requiredChains": [],
-    "requiredCapabilities": [
-      "actions.composeCast",
-      "actions.ready"
-    ]
-  };
-}
 
 
 
@@ -62,7 +35,7 @@ app.get('/.well-known/farcaster.json', (req, res) => {
       "ai",
       "transcription"
     ],
-    "tagline": "Voice-accessible Farcaster",
+    "tagline": "Voice-powered Farcaster",
     "requiredChains": [],
     "requiredCapabilities": [
       "actions.composeCast",
