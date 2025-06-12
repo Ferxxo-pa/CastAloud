@@ -40,25 +40,11 @@ app.get('/manifest.json', (_req, res) => {
   res.setHeader('Content-Type', 'application/json');
   res.json({
     "name": "Cast Aloud",
-    "short_name": "Cast Aloud", 
     "description": "Voice accessibility tools for reading and replying to Farcaster casts",
-    "start_url": "/",
-    "display": "standalone",
-    "background_color": "#8A63D2",
-    "theme_color": "#8A63D2",
-    "orientation": "portrait",
-    "scope": "/",
-    "icons": [
-      {
-        "src": "/icon.png",
-        "sizes": "256x256",
-        "type": "image/png",
-        "purpose": "any maskable"
-      }
-    ],
-    "categories": ["accessibility", "social", "utilities"],
-    "lang": "en",
-    "dir": "ltr",
+    "homeUrl": "https://castaloud.replit.app",
+    "iconUrl": "https://castaloud.replit.app/icon.png",
+    "splashImageUrl": "https://castaloud.replit.app/api/frame/image?state=initial",
+    "backgroundColor": "#8A63D2",
     "frame": {
       "requiredChains": [],
       "requiredCapabilities": [
