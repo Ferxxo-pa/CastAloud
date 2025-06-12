@@ -5,6 +5,21 @@ import path from "path";
 
 const app = express();
 
+// CRITICAL: Serve Farcaster manifest as plain text to bypass cartographer JSON interception
+app.get('/.well-known/farcaster.json', (req, res) => {
+  const manifest = '{"name":"Castaloud","description":"Voice accessibility for Farcaster casts using AI-powered voice technology","homeUrl":"https://castaloud.replit.app","iconUrl":"https://castaloud.replit.app/castaloud-logo.png","splashImageUrl":"https://castaloud.replit.app/castaloud-logo.png","backgroundColor":"#8A63D2"}';
+  
+  // Serve as plain text first, then set content type to bypass JSON middleware
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  res.setHeader('Content-Type', 'application/json');
+  
+  // Send as text to avoid JSON parsing middleware
+  res.send(manifest);
+});
+
 // Fix asset serving with proper content types
 app.get('/icon.png', (req, res) => {
   res.setHeader('Content-Type', 'image/png');
