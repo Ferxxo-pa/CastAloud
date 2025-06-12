@@ -45,6 +45,37 @@ body, html, #root, .app, main, div {
   background-color: white !important;
 }
 
+/* Aggressive anti-yellow screen overrides */
+* {
+  background-color: white !important;
+}
+
+/* Target specific Replit elements that cause yellow screens */
+.replit-ui-kit, .replit-ui-kit *, 
+[class*="replit"], [id*="replit"],
+iframe[src*="replit"], 
+.loading, .loading *,
+[data-loading], [data-loading] * {
+  background-color: white !important;
+  background: white !important;
+}
+
+/* Override any potential yellow/colored backgrounds */
+[style*="background"] {
+  background-color: white !important;
+}
+
+/* Ensure immediate white background on page load */
+html {
+  background: white !important;
+}
+
+body {
+  background: white !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
 :root {
   /* Official Farcaster brand colors */
   --background: 255 255 255; /* #FFFFFF */

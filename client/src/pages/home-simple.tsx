@@ -116,7 +116,7 @@ export default function HomeSimple() {
     }
   };
   return (
-    <div className="min-h-screen bg-fc-gray-50">
+    <div className="min-h-screen bg-white" style={{ backgroundColor: 'white' }}>
       <div className="max-w-md mx-auto p-4">
         <header className="mb-6">
           <div className="text-center">

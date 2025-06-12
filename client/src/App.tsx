@@ -19,12 +19,16 @@ function Router() {
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Router />
-      </TooltipProvider>
-    </QueryClientProvider>
+    <div className="min-h-screen bg-white" style={{ backgroundColor: 'white' }}>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <div className="bg-white min-h-screen" style={{ backgroundColor: 'white' }}>
+            <Toaster />
+            <Router />
+          </div>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </div>
   );
 }
 
