@@ -5,6 +5,19 @@ import path from "path";
 
 const app = express();
 
+// Fix asset serving with proper content types
+app.get('/icon.png', (req, res) => {
+  res.setHeader('Content-Type', 'image/png');
+  res.setHeader('Cache-Control', 'public, max-age=31536000');
+  res.sendFile(path.resolve('./public/icon.png'));
+});
+
+app.get('/splash.png', (req, res) => {
+  res.setHeader('Content-Type', 'image/png');
+  res.setHeader('Cache-Control', 'public, max-age=31536000');
+  res.sendFile(path.resolve('./public/splash.png'));
+});
+
 // Test endpoint to verify server changes are working
 app.get('/test-manifest', (req, res) => {
   res.json({
