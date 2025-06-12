@@ -25,7 +25,7 @@ function getFarcasterManifest() {
       "ai",
       "transcription"
     ],
-    "tagline": "Make Farcaster voice accessible",
+    "tagline": "Voice-accessible Farcaster",
     "requiredChains": [],
     "requiredCapabilities": [
       "actions.composeCast",
