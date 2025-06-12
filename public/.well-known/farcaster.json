@@ -1,8 +1,8 @@
 {
-  "name": "Cast Aloud",
+  "name": "Castaloud",
   "description": "Voice accessibility for Farcaster casts using AI-powered voice technology",
   "homeUrl": "https://castaloud.replit.app",
-  "iconUrl": "https://castaloud.replit.app/icon.png",
-  "splashImageUrl": "https://castaloud.replit.app/splash.png",
+  "iconUrl": "https://castaloud.replit.app/castaloud-logo.png",
+  "splashImageUrl": "https://castaloud.replit.app/castaloud-logo.png",
   "backgroundColor": "#8A63D2"
 }

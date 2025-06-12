@@ -44,14 +44,21 @@ app.get('/splash.png', (req, res) => {
   res.sendFile(path.resolve('./public/splash.png'));
 });
 
+// Serve Castaloud logo with proper headers
+app.get('/castaloud-logo.png', (req, res) => {
+  res.setHeader('Content-Type', 'image/png');
+  res.setHeader('Cache-Control', 'public, max-age=31536000');
+  res.sendFile(path.resolve('./public/castaloud-logo.png'));
+});
+
 // Override static file serving for manifest path
 app.use('/.well-known/farcaster.json', (req, res) => {
   const manifest = {
-    "name": "Cast Aloud",
+    "name": "Castaloud",
     "description": "Voice accessibility for Farcaster casts using AI-powered voice technology",
     "homeUrl": "https://castaloud.replit.app",
-    "iconUrl": "https://castaloud.replit.app/icon.png",
-    "splashImageUrl": "https://castaloud.replit.app/splash.png",
+    "iconUrl": "https://castaloud.replit.app/castaloud-logo.png",
+    "splashImageUrl": "https://castaloud.replit.app/castaloud-logo.png",
     "backgroundColor": "#8A63D2"
   };
   
@@ -67,11 +74,11 @@ app.use('/.well-known/farcaster.json', (req, res) => {
 // Alternative manifest endpoint to bypass caching
 app.get('/farcaster-manifest', (req, res) => {
   const manifest = {
-    "name": "Cast Aloud",
+    "name": "Castaloud",
     "description": "Voice accessibility for Farcaster casts using AI-powered voice technology",
     "homeUrl": "https://castaloud.replit.app",
-    "iconUrl": "https://castaloud.replit.app/icon.png",
-    "splashImageUrl": "https://castaloud.replit.app/splash.png",
+    "iconUrl": "https://castaloud.replit.app/castaloud-logo.png",
+    "splashImageUrl": "https://castaloud.replit.app/castaloud-logo.png",
     "backgroundColor": "#8A63D2"
   };
   
@@ -173,11 +180,11 @@ app.use((req, res, next) => {
   // Add manifest route before Vite to override catch-all routing
   app.get('/.well-known/farcaster.json', (req, res) => {
     const manifest = {
-      "name": "Cast Aloud",
+      "name": "Castaloud",
       "description": "Voice accessibility for Farcaster casts using AI-powered voice technology",
       "homeUrl": "https://castaloud.replit.app",
-      "iconUrl": "https://castaloud.replit.app/icon.png",
-      "splashImageUrl": "https://castaloud.replit.app/splash.png",
+      "iconUrl": "https://castaloud.replit.app/castaloud-logo.png",
+      "splashImageUrl": "https://castaloud.replit.app/castaloud-logo.png",
       "backgroundColor": "#8A63D2"
     };
     
