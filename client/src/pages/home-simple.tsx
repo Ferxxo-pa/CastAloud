@@ -1,5 +1,5 @@
+import React, { useState, useEffect } from "react";
 import { Link } from "wouter";
-import { useState, useEffect } from "react";
 import { farcasterSDK, type FarcasterContext } from '@/lib/farcaster-sdk';
 
 export default function HomeSimple() {
