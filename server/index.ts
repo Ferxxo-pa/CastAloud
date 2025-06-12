@@ -36,43 +36,44 @@ function getFarcasterManifest() {
   };
 }
 
-// Create multiple endpoints to ensure Farcaster can find the manifest
+
+
+// Priority route to force correct manifest format
 app.get('/.well-known/farcaster.json', (req, res) => {
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
   res.setHeader('Pragma', 'no-cache');
   res.setHeader('Expires', '0');
-  res.json(getFarcasterManifest());
-});
-
-app.get('/manifest.json', (req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-  res.setHeader('Pragma', 'no-cache');
-  res.setHeader('Expires', '0');
-  res.json(getFarcasterManifest());
-});
-
-app.get('/farcaster.json', (req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-  res.setHeader('Pragma', 'no-cache');
-  res.setHeader('Expires', '0');
-  res.json(getFarcasterManifest());
-});
-
-// Serve static files from public directory, but exclude manifest files
-app.use(express.static('public', {
-  setHeaders: (res, path) => {
-    if (path.endsWith('manifest.json') || path.endsWith('farcaster.json')) {
-      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-      res.setHeader('Pragma', 'no-cache');
-      res.setHeader('Expires', '0');
+  res.json({
+    "frame": {
+      "version": "1",
+      "name": "Cast Aloud",
+      "iconUrl": "https://castaloud.replit.app/icon.png",
+      "homeUrl": "https://castaloud.replit.app",
+      "splashImageUrl": "https://castaloud.replit.app/icon.png",
+      "splashBackgroundColor": "#8A63D2",
+      "subtitle": "Voice accessibility for Farcaster",
+      "description": "Read casts aloud with AI-powered voice technology and get intelligent feedback on your replies",
+      "primaryCategory": "accessibility",
+      "tags": [
+        "voice",
+        "accessibility", 
+        "tts",
+        "ai",
+        "transcription"
+      ],
+      "tagline": "Make Farcaster accessible through voice",
+      "requiredChains": [],
+      "requiredCapabilities": [
+        "actions.composeCast",
+        "actions.ready"
+      ]
     }
-  },
-  // Skip serving manifest files statically - use dynamic routes instead
-  index: false
-}));
+  });
+});
+
+// Serve static files from public directory
+app.use(express.static('public'));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
