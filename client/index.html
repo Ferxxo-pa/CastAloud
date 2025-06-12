@@ -9,30 +9,28 @@
     <!-- Open Graph / Farcaster Meta Tags -->
     <meta property="og:title" content="Cast Aloud - Voice Accessibility for Farcaster" />
     <meta property="og:description" content="Accessibility tools for reading and replying to Farcaster casts using voice technology" />
-    <meta property="og:image" content="https://castaloud.replit.app/og-image.png" />
+    <meta property="og:image" content="/api/frame/image?state=initial" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://castaloud.replit.app" />
     
-    <!-- Farcaster Frame Configuration -->
+    <!-- Farcaster Mini App Configuration -->
+    <meta name="farcaster:app" content="miniapp" />
+    <meta name="farcaster:title" content="Cast Aloud" />
+    <meta name="farcaster:description" content="Voice accessibility tools for Farcaster" />
+    <meta name="farcaster:icon" content="/icon.png" />
+    
+    <!-- Frame fallback for sharing -->
     <meta name="fc:frame" content="vNext" />
     <meta name="fc:frame:image" content="https://castaloud.replit.app/og-image.png" />
-    <meta name="fc:frame:button:1" content="🔊 Open Cast Aloud" />
+    <meta name="fc:frame:button:1" content="Open Cast Aloud" />
     <meta name="fc:frame:button:1:action" content="link" />
     <meta name="fc:frame:button:1:target" content="https://castaloud.replit.app" />
-    
-    <!-- Open Frames Protocol -->
-    <meta name="of:version" content="vNext" />
-    <meta name="of:accepts:farcaster" content="vNext" />
-    <meta name="of:image" content="https://castaloud.replit.app/og-image.png" />
+    <meta name="fc:frame:post_url" content="https://castaloud.replit.app/api/frame/action" />
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="/favicon.png" />
     
     <!-- Mini App manifest -->
     <link rel="manifest" href="/manifest.json" />
-    
-    <!-- Farcaster Mini App manifest link -->
-    <link rel="farcaster-manifest" href="/.well-known/farcaster.json" />
     
     <!-- Service Worker for Mini App -->
     <script>
@@ -53,30 +51,6 @@
   <body style="background-color: white; margin: 0; padding: 0;">
     <div id="root" style="background-color: white; min-height: 100vh;"></div>
     <script type="module" src="/src/main.tsx"></script>
-    
-    <!-- Frame SDK initialization -->
-    <script type="module">
-      import { sdk } from '@farcaster/frame-sdk'
-      
-      window.addEventListener('DOMContentLoaded', async () => {
-        try {
-          const context = await sdk.context
-          console.log('Farcaster context:', context)
-          
-          // Initialize SDK
-          await sdk.actions.ready()
-          console.log('Frame SDK initialized successfully')
-          
-          // Store context globally for the app
-          window.farcasterContext = context
-        } catch (error) {
-          console.error('Frame SDK initialization failed:', error)
-          // App should still work without Frame context
-          window.farcasterContext = null
-        }
-      })
-    </script>
-    
     <!-- Replit banner disabled to prevent yellow screen flash -->
     <!-- <script type="text/javascript" src="https://replit.com/public/js/replit-dev-banner.js"></script> -->
   </body>
