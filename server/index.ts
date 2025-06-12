@@ -5,37 +5,33 @@ import path from "path";
 
 const app = express();
 
-// Serve .well-known manifest BEFORE any other middleware
-app.use('/.well-known', (req, res, next) => {
-  if (req.path === '/farcaster.json') {
-    res.setHeader('Content-Type', 'application/json');
-    res.setHeader('Cache-Control', 'no-cache');
-    
-    const manifest = {
-      "name": "Cast Aloud",
-      "description": "Voice accessibility tools for reading and replying to Farcaster casts",
-      "homeUrl": "https://castaloud.replit.app",
-      "iconUrl": "https://castaloud.replit.app/icon.png",
-      "splashImageUrl": "https://castaloud.replit.app/api/frame/image?state=initial",
-      "backgroundColor": "#8A63D2",
-      "frame": {
-        "requiredChains": [],
-        "requiredCapabilities": [
-          "actions.composeCast",
-          "actions.ready"
-        ]
-      },
-      "accountAssociation": {
-        "header": "eyJmaWQiOjEsInR5cGUiOiJjdXN0b2R5IiwibWFkZSI6MX0",
-        "payload": "eyJkb21haW4iOiJjYXN0YWxvdWQuY29tIn0",
-        "signature": "0x..."
-      }
-    };
-    
-    return res.json(manifest);
+// Priority route for Farcaster manifest - must be before any middleware
+app.get('/.well-known/farcaster.json', (req, res) => {
+  res.type('application/json');
+  res.send(`{
+  "name": "Cast Aloud",
+  "description": "Voice accessibility tools for reading and replying to Farcaster casts",
+  "homeUrl": "https://castaloud.replit.app",
+  "iconUrl": "https://castaloud.replit.app/icon.png",
+  "splashImageUrl": "https://castaloud.replit.app/api/frame/image?state=initial",
+  "backgroundColor": "#8A63D2",
+  "frame": {
+    "requiredChains": [],
+    "requiredCapabilities": [
+      "actions.composeCast",
+      "actions.ready"
+    ]
+  },
+  "accountAssociation": {
+    "header": "eyJmaWQiOjEsInR5cGUiOiJjdXN0b2R5IiwibWFkZSI6MX0",
+    "payload": "eyJkb21haW4iOiJjYXN0YWxvdWQuY29tIn0",
+    "signature": "0x..."
   }
-  next();
+}`);
 });
+
+// Serve static files from public directory
+app.use(express.static('public'));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
