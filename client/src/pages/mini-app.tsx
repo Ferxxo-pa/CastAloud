@@ -5,7 +5,6 @@ import useSpeechSynthesis from "@/hooks/useSpeechSynthesis";
 import useVoiceRecording from "@/hooks/useVoiceRecording";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { farcasterSDK } from "@/lib/farcaster-sdk";
 
 export default function MiniApp() {
   const [castText, setCastText] = useState("");
@@ -16,38 +15,13 @@ export default function MiniApp() {
   const { speak, isSpeaking, stop } = useSpeechSynthesis();
   const { startRecording, stopRecording, isRecording, isSupported } = useVoiceRecording();
 
-  // Initialize Farcaster SDK and get cast context
+  // Get cast text from URL parameters
   useEffect(() => {
-    const initializeFarcaster = async () => {
-      try {
-        const context = await farcasterSDK.initialize();
-        if (context.cast) {
-          setCastText(context.cast.text);
-        } else {
-          // Fallback to URL parameters
-          const urlParams = new URLSearchParams(window.location.search);
-          const text = urlParams.get('text');
-          if (text) {
-            setCastText(decodeURIComponent(text));
-          } else {
-            // Default sample cast for testing
-            setCastText("Welcome to Cast Aloud! This accessibility app helps you listen to Farcaster casts and reply using your voice. Perfect for users who need reading or writing assistance.");
-          }
-        }
-      } catch (error) {
-        console.error('Failed to initialize Farcaster SDK:', error);
-        // Fallback to URL parameters
-        const urlParams = new URLSearchParams(window.location.search);
-        const text = urlParams.get('text');
-        if (text) {
-          setCastText(decodeURIComponent(text));
-        } else {
-          setCastText("Welcome to Cast Aloud! This accessibility app helps you listen to Farcaster casts and reply using your voice.");
-        }
-      }
-    };
-
-    initializeFarcaster();
+    const urlParams = new URLSearchParams(window.location.search);
+    const text = urlParams.get('text');
+    if (text) {
+      setCastText(decodeURIComponent(text));
+    }
   }, []);
 
   const polishReplyMutation = useMutation({

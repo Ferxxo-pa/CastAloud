@@ -1,21 +1,23 @@
 {
-  "name": "Cast Aloud",
-  "short_name": "Castaloud",
-  "start_url": "/",
-  "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#8B5CF6",
-  "description": "Voice accessibility tools for reading and replying to Farcaster casts",
-  "icons": [
-    {
-      "src": "/logo.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    },
-    {
-      "src": "/logo-1024.png", 
-      "sizes": "1024x1024",
-      "type": "image/png"
-    }
-  ]
+  "accountAssociation": {
+    "header": "eyJmaWQiOjEyMzQ1LCJ0eXBlIjoiY3VzdG9keSIsImtleSI6IjB4MTIzNDUifQ",
+    "payload": "eyJkb21haW4iOiJjYXN0YWxvdWQucmVwbGl0LmFwcCJ9",
+    "signature": "MHhjMTIzNDU2Nzg5YWJjZGVmMTIzNDU2Nzg5YWJjZGVmMTIzNDU2Nzg5YWJjZGVmMTIzNDU2Nzg5YWJjZGVm"
+  },
+  "app": {
+    "name": "Cast Aloud",
+    "version": "1.0.0",
+    "iconUrl": "https://castaloud.replit.app/generated-icon.png",
+    "splashImageUrl": "https://castaloud.replit.app/generated-icon.png",
+    "homeUrl": "https://castaloud.replit.app"
+  },
+  "execution": {
+    "mode": "frame"
+  },
+  "frame": {
+    "version": "1",
+    "imageUrl": "https://castaloud.replit.app/api/frame/image",
+    "buttonUrl": "https://castaloud.replit.app/api/frame/action",
+    "homeUrl": "https://castaloud.replit.app/frame"
+  }
 }

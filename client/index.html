@@ -12,8 +12,19 @@
     <meta property="og:image" content="/api/frame/image?state=initial" />
     <meta property="og:type" content="website" />
     
-    <!-- Farcaster Mini App Embed Configuration -->
-    <meta name="fc:frame" content='{"version":"next","imageUrl":"https://castaloud.replit.app/og-image.png","button":{"title":"🔊 Open Cast Aloud","action":{"type":"launch_frame","url":"https://castaloud.replit.app/mini-app","name":"Cast Aloud","splashImageUrl":"https://castaloud.replit.app/logo.png","splashBackgroundColor":"#ffffff"}}}' />
+    <!-- Farcaster Mini App Configuration -->
+    <meta name="farcaster:app" content="miniapp" />
+    <meta name="farcaster:title" content="Cast Aloud" />
+    <meta name="farcaster:description" content="Voice accessibility tools for Farcaster" />
+    <meta name="farcaster:icon" content="/icon.png" />
+    
+    <!-- Frame fallback for sharing -->
+    <meta name="fc:frame" content="vNext" />
+    <meta name="fc:frame:image" content="https://castaloud.replit.app/og-image.png" />
+    <meta name="fc:frame:button:1" content="Open Cast Aloud" />
+    <meta name="fc:frame:button:1:action" content="link" />
+    <meta name="fc:frame:button:1:target" content="https://castaloud.replit.app" />
+    <meta name="fc:frame:post_url" content="https://castaloud.replit.app/api/frame/action" />
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="/favicon.png" />
