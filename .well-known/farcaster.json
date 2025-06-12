@@ -1,0 +1,13 @@
+{
+  "name": "Cast Aloud",
+  "description": "Voice Accessibility for Farcaster",
+  "homeUrl": "https://castaloud.replit.app",
+  "iconUrl": "https://castaloud.replit.app/favicon.png",
+  "splashImageUrl": "https://castaloud.replit.app/favicon.png",
+  "backgroundColor": "#FFFFFF",
+  "accountAssociation": {
+    "header": "",
+    "payload": "",
+    "signature": ""
+  }
+}

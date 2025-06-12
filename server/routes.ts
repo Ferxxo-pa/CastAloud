@@ -822,6 +822,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Serve .well-known/farcaster.json for Farcaster Mini App integration
+  app.get('/.well-known/farcaster.json', (_req, res) => {
+    res.json({
+      "name": "Cast Aloud",
+      "description": "Voice Accessibility for Farcaster",
+      "homeUrl": "https://castaloud.replit.app",
+      "iconUrl": "https://castaloud.replit.app/favicon.png",
+      "splashImageUrl": "https://castaloud.replit.app/favicon.png",
+      "backgroundColor": "#FFFFFF",
+      "accountAssociation": {
+        "header": "",
+        "payload": "",
+        "signature": ""
+      }
+    });
+  });
+
+  // Serve og-image.png for social sharing
+  app.get('/og-image.png', (_req, res) => {
+    res.redirect('/favicon.png');
+  });
+
   // Mini App manifest endpoint for deployment
   app.get('/manifest.json', (_req, res) => {
     res.json({
