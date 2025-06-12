@@ -21,9 +21,9 @@ const farcasterManifest = {
     ]
   },
   "accountAssociation": {
-    "header": "eyJmaWQiOjEyMzQ1LCJ0eXBlIjoiY3VzdG9keSIsImtleSI6IjB4MTIzNDU2Nzg5YWJjZGVmIn0",
+    "header": "eyJmaWQiOjU0MzIxLCJ0eXBlIjoiY3VzdG9keSIsImtleSI6IjB4YWJjZGVmMTIzNDU2Nzg5MCJ9",
     "payload": "eyJkb21haW4iOiJjYXN0YWxvdWQucmVwbGl0LmFwcCJ9",
-    "signature": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+    "signature": "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890"
   }
 };
 
