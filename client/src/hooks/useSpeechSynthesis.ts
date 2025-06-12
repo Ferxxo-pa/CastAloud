@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 
 interface VoiceSettings {
   rate: number;     // 0.1 to 10 (speed)
