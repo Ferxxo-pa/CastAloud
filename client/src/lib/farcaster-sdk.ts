@@ -23,32 +23,47 @@ class FarcasterSDK {
   };
 
   async initialize(): Promise<FarcasterContext> {
-    // Check if running in Farcaster client
-    const isFrameContext = this.detectFrameContext();
-    
-    if (isFrameContext) {
-      // Get user context from Farcaster
-      const user = await this.getUserContext();
-      const cast = await this.getCastContext();
+    try {
+      // Check if running in Farcaster client
+      const isFrameContext = this.detectFrameContext();
       
-      this.context = {
-        user,
-        isFrameContext: true,
-        cast
+      if (isFrameContext) {
+        // Get user context from Farcaster
+        const user = await this.getUserContext();
+        const cast = await this.getCastContext();
+        
+        this.context = {
+          user,
+          isFrameContext: true,
+          cast
+        };
+      }
+      
+      return this.context;
+    } catch (error) {
+      console.error('Error initializing Farcaster SDK:', error);
+      return {
+        user: null,
+        isFrameContext: false
       };
     }
-    
-    return this.context;
   }
 
   private detectFrameContext(): boolean {
-    // Check for Farcaster-specific headers or URL parameters
-    const urlParams = new URLSearchParams(window.location.search);
-    const hasFrameParams = urlParams.has('fc_frame') || 
-                          urlParams.has('fid') ||
-                          window.parent !== window;
-    
-    return hasFrameParams;
+    try {
+      // Check for Farcaster-specific headers or URL parameters
+      if (typeof window === 'undefined') return false;
+      
+      const urlParams = new URLSearchParams(window.location.search);
+      const hasFrameParams = urlParams.has('fc_frame') || 
+                            urlParams.has('fid') ||
+                            (window.parent && window.parent !== window);
+      
+      return hasFrameParams;
+    } catch (error) {
+      console.error('Error detecting frame context:', error);
+      return false;
+    }
   }
 
   private async getUserContext(): Promise<FarcasterUser | null> {
