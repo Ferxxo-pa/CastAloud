@@ -23,20 +23,10 @@ class FarcasterSDK {
   };
 
   async initialize(): Promise<FarcasterContext> {
-    console.log('Initializing Farcaster SDK...');
-    
-    // Send ready message to parent frame
-    this.sendReadyMessage();
-    
     // Check if running in Farcaster client
     const isFrameContext = this.detectFrameContext();
     
     if (isFrameContext) {
-      console.log('Detected Farcaster frame context');
-      
-      // Request context from parent frame
-      await this.requestFarcasterContext();
-      
       // Get user context from Farcaster
       const user = await this.getUserContext();
       const cast = await this.getCastContext();
@@ -46,52 +36,9 @@ class FarcasterSDK {
         isFrameContext: true,
         cast
       };
-    } else {
-      console.log('Not in Farcaster frame context');
     }
     
     return this.context;
-  }
-
-  private sendReadyMessage() {
-    // Send ready message to Farcaster parent frame
-    if (window.parent && window.parent !== window) {
-      window.parent.postMessage({
-        type: 'miniapp_ready',
-        data: {
-          name: 'Castaloud',
-          version: '1.0.0'
-        }
-      }, '*');
-    }
-  }
-
-  private async requestFarcasterContext(): Promise<void> {
-    return new Promise((resolve) => {
-      // Listen for context from parent frame
-      const handleMessage = (event: MessageEvent) => {
-        if (event.data.type === 'farcaster_context') {
-          console.log('Received Farcaster context:', event.data);
-          window.removeEventListener('message', handleMessage);
-          resolve();
-        }
-      };
-
-      window.addEventListener('message', handleMessage);
-      
-      // Request context from parent
-      if (window.parent && window.parent !== window) {
-        window.parent.postMessage({
-          type: 'request_context'
-        }, '*');
-      }
-      
-      // Timeout after 5 seconds
-      setTimeout(() => {
-        window.removeEventListener('message', handleMessage);
-        resolve();
-      }, 5000);
-    });
   }
 
   private detectFrameContext(): boolean {
@@ -99,7 +46,6 @@ class FarcasterSDK {
     const urlParams = new URLSearchParams(window.location.search);
     const hasFrameParams = urlParams.has('fc_frame') || 
                           urlParams.has('fid') ||
-                          urlParams.has('cast_hash') ||
                           window.parent !== window;
     
     return hasFrameParams;
