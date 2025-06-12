@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import HomeSimple from "@/pages/home-simple";
 import CastAloud from "@/pages/cast-aloud";
-import FarcasterMiniApp from "@/pages/farcaster-miniapp";
+import FarcasterMiniApp from "@/pages/index";
 import NotFound from "@/pages/not-found";
 import { useEffect } from "react";
 import { sdk } from "@farcaster/frame-sdk";

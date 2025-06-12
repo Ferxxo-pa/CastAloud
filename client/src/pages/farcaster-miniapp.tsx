@@ -179,133 +179,113 @@ export default function FarcasterMiniApp() {
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50">
       <div className="max-w-md mx-auto p-4">
         {/* Header */}
-        <Card className="mb-4">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-center flex items-center justify-center gap-2">
+        <div className="bg-white rounded-lg shadow-sm p-4 mb-4">
+          <div className="text-center">
+            <h1 className="text-xl font-semibold flex items-center justify-center gap-2 mb-2">
               <span className="text-2xl">🔊</span>
               <span>Castaloud</span>
-            </CardTitle>
-            <p className="text-sm text-gray-600 text-center">
+            </h1>
+            <p className="text-sm text-gray-600">
               Voice accessibility for Farcaster
             </p>
-          </CardHeader>
-        </Card>
+          </div>
+        </div>
 
         {/* Connection Status */}
-        <Card className="mb-4">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className={`w-3 h-3 rounded-full ${farcasterContext?.isFrameContext ? 'bg-green-500' : 'bg-yellow-500'}`}></div>
-              <div>
-                <p className="font-medium">
-                  {farcasterContext?.isFrameContext ? 'Connected to Farcaster' : 'Standalone Mode'}
+        <div className="bg-white rounded-lg shadow-sm p-4 mb-4">
+          <div className="flex items-center gap-3">
+            <div className={`w-3 h-3 rounded-full ${farcasterContext?.isFrameContext ? 'bg-green-500' : 'bg-yellow-500'}`}></div>
+            <div>
+              <p className="font-medium">
+                {farcasterContext?.isFrameContext ? 'Connected to Farcaster' : 'Standalone Mode'}
+              </p>
+              {farcasterContext?.user && (
+                <p className="text-sm text-gray-600">
+                  Welcome, {farcasterContext.user.displayName}
                 </p>
-                {farcasterContext?.user && (
-                  <p className="text-sm text-gray-600">
-                    Welcome, {farcasterContext.user.displayName}
-                  </p>
-                )}
-              </div>
+              )}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Cast Content */}
-        <Card className="mb-4">
-          <CardHeader>
-            <CardTitle className="text-lg">Cast Content</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-gray-700 mb-4">
-              {farcasterContext?.cast?.text || "Welcome to Castaloud! This voice accessibility tool helps you read and reply to casts using AI-powered voice technology."}
-            </p>
-            
-            <Button 
-              onClick={handleReadCast}
-              className="w-full h-12 text-lg"
-              variant={isSpeaking ? "secondary" : "default"}
-            >
-              {isSpeaking ? "🔇 Stop Reading" : "🔊 Read This Cast"}
-            </Button>
-          </CardContent>
-        </Card>
+        <div className="bg-white rounded-lg shadow-sm p-4 mb-4">
+          <h2 className="text-lg font-medium mb-3">Cast Content</h2>
+          <p className="text-gray-700 mb-4">
+            {farcasterContext?.cast?.text || "Welcome to Castaloud! This voice accessibility tool helps you read and reply to casts using AI-powered voice technology."}
+          </p>
+          
+          <Button 
+            onClick={handleReadCast}
+            className="w-full h-12 text-lg"
+            variant={isSpeaking ? "secondary" : "default"}
+          >
+            {isSpeaking ? "🔇 Stop Reading" : "🔊 Read This Cast"}
+          </Button>
+        </div>
 
         {/* Voice Reply Section */}
         {currentStep === "listen" && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Voice Reply</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Button 
-                onClick={handleStartVoiceReply}
-                className="w-full h-12 text-lg bg-red-500 hover:bg-red-600"
-                disabled={!isSupported}
-              >
-                🎙️ Record Voice Reply
-              </Button>
-              {!isSupported && (
-                <p className="text-sm text-gray-500 mt-2 text-center">
-                  Voice recording not supported in this browser
-                </p>
-              )}
-            </CardContent>
-          </Card>
+          <div className="bg-white rounded-lg shadow-sm p-4">
+            <h2 className="text-lg font-medium mb-3">Voice Reply</h2>
+            <Button 
+              onClick={handleStartVoiceReply}
+              className="w-full h-12 text-lg bg-red-500 hover:bg-red-600"
+              disabled={!isSupported}
+            >
+              🎙️ Record Voice Reply
+            </Button>
+            {!isSupported && (
+              <p className="text-sm text-gray-500 mt-2 text-center">
+                Voice recording not supported in this browser
+              </p>
+            )}
+          </div>
         )}
 
         {/* Recording State */}
         {currentStep === "speak" && (
-          <Card>
-            <CardContent className="p-6 text-center">
-              <div className="text-4xl mb-4">🎙️</div>
-              <h2 className="font-medium mb-2">Recording...</h2>
-              <p className="text-gray-600 mb-4">Speak your reply now</p>
-              <Button 
-                onClick={handleStopVoiceReply}
-                className="w-full h-12 text-lg bg-red-500 hover:bg-red-600"
-              >
-                ⏹️ Stop Recording
-              </Button>
-            </CardContent>
-          </Card>
+          <div className="bg-white rounded-lg shadow-sm p-6 text-center">
+            <div className="text-4xl mb-4">🎙️</div>
+            <h2 className="font-medium mb-2">Recording...</h2>
+            <p className="text-gray-600 mb-4">Speak your reply now</p>
+            <Button 
+              onClick={handleStopVoiceReply}
+              className="w-full h-12 text-lg bg-red-500 hover:bg-red-600"
+            >
+              ⏹️ Stop Recording
+            </Button>
+          </div>
         )}
 
         {/* Review State */}
         {currentStep === "review" && (
           <div className="space-y-4">
             {userReply && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Your Voice Input</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-700">{userReply}</p>
-                </CardContent>
-              </Card>
+              <div className="bg-white rounded-lg shadow-sm p-4">
+                <h3 className="text-lg font-medium mb-3">Your Voice Input</h3>
+                <p className="text-gray-700">{userReply}</p>
+              </div>
             )}
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Polished Reply</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-700 mb-4 p-3 bg-gray-50 rounded">
-                  {polishedReply || "Processing your reply..."}
-                </p>
-                <div className="space-y-2">
-                  <Button onClick={handleCopyReply} className="w-full">
-                    ✔️ Copy Reply
-                  </Button>
-                  <Button 
-                    onClick={() => setCurrentStep("speak")} 
-                    variant="outline" 
-                    className="w-full"
-                  >
-                    🔁 Record Again
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+            <div className="bg-white rounded-lg shadow-sm p-4">
+              <h3 className="text-lg font-medium mb-3">Polished Reply</h3>
+              <p className="text-gray-700 mb-4 p-3 bg-gray-50 rounded">
+                {polishedReply || "Processing your reply..."}
+              </p>
+              <div className="space-y-2">
+                <Button onClick={handleCopyReply} className="w-full">
+                  ✔️ Copy Reply
+                </Button>
+                <Button 
+                  onClick={() => setCurrentStep("speak")} 
+                  variant="outline" 
+                  className="w-full"
+                >
+                  🔁 Record Again
+                </Button>
+              </div>
+            </div>
           </div>
         )}
       </div>
