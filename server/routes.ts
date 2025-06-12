@@ -847,48 +847,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.redirect('/favicon.png');
   });
 
-  // Mini App manifest endpoint for deployment
-  app.get('/manifest.json', (_req, res) => {
-    res.json({
-      "name": "Cast Aloud",
-      "short_name": "Cast Aloud", 
-      "description": "Voice accessibility tools for reading and replying to Farcaster casts",
-      "start_url": "/",
-      "display": "standalone",
-      "background_color": "#FFFFFF",
-      "theme_color": "#8A63D2",
-      "orientation": "portrait",
-      "scope": "/",
-      "icons": [
-        {
-          "src": "/favicon.png",
-          "sizes": "1024x1024",
-          "type": "image/png",
-          "purpose": "any maskable"
-        }
-      ],
-      "categories": ["accessibility", "social", "utilities"],
-      "lang": "en",
-      "dir": "ltr",
-      "farcaster": {
-        "version": "1",
-        "name": "Cast Aloud",
-        "description": "Voice accessibility tools for Farcaster",
-        "iconUrl": "https://castaloud.replit.app/favicon.png",
-        "splashImageUrl": "https://castaloud.replit.app/api/frame/image?state=initial",
-        "homeUrl": "https://castaloud.replit.app/",
-        "buttonTitle": "Open Cast Aloud",
-        "splashBackgroundColor": "#FFFFFF",
-        "webhookUrl": "https://castaloud.replit.app/api/frame/action",
-        "features": ["voice", "accessibility", "tts", "transcription"]
-      },
-      "accountAssociation": {
-        "header": "eyJmaWQiOjEsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHgxMjM0NSJ9",
-        "payload": "eyJkb21haW4iOiJjYXN0YWxvdWQucmVwbGl0LmFwcCJ9",
-        "signature": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
-      }
-    });
-  });
+
 
   const httpServer = createServer(app);
   return httpServer;
