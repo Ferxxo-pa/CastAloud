@@ -6,44 +6,53 @@ import path from "path";
 const app = express();
 
 // Priority routes for Farcaster manifest - must be before any middleware
-const farcasterManifest = {
-  "name": "Cast Aloud",
-  "description": "Voice accessibility tools for reading and replying to Farcaster casts",
-  "homeUrl": "https://castaloud.replit.app",
-  "iconUrl": "https://castaloud.replit.app/icon.png",
-  "splashImageUrl": "https://castaloud.replit.app/api/frame/image?state=initial",
-  "backgroundColor": "#8A63D2",
-  "frame": {
-    "requiredChains": [],
-    "requiredCapabilities": [
-      "actions.composeCast",
-      "actions.ready"
-    ]
-  },
-  "accountAssociation": {
-    "header": "eyJmaWQiOjU0MzIxLCJ0eXBlIjoiY3VzdG9keSIsImtleSI6IjB4YWJjZGVmMTIzNDU2Nzg5MCJ9",
-    "payload": "eyJkb21haW4iOiJjYXN0YWxvdWQucmVwbGl0LmFwcCJ9",
-    "signature": "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890"
-  }
-};
+// Generate fresh manifest data to avoid caching issues
+function getFarcasterManifest() {
+  return {
+    "name": "Cast Aloud",
+    "description": "Voice accessibility tools for reading and replying to Farcaster casts",
+    "homeUrl": "https://castaloud.replit.app",
+    "iconUrl": "https://castaloud.replit.app/icon.png", 
+    "splashImageUrl": "https://castaloud.replit.app/api/frame/image?state=initial",
+    "backgroundColor": "#8A63D2",
+    "frame": {
+      "requiredChains": [],
+      "requiredCapabilities": [
+        "actions.composeCast",
+        "actions.ready"
+      ]
+    },
+    "accountAssociation": {
+      "header": "eyJmaWQiOjU0MzIxLCJ0eXBlIjoiY3VzdG9keSIsImtleSI6IjB4YWJjZGVmMTIzNDU2Nzg5MCJ9",
+      "payload": "eyJkb21haW4iOiJjYXN0YWxvdWQucmVwbGl0LmFwcCJ9", 
+      "signature": "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890"
+    }
+  };
+}
 
 // Create multiple endpoints to ensure Farcaster can find the manifest
 app.get('/.well-known/farcaster.json', (req, res) => {
   res.setHeader('Content-Type', 'application/json');
-  res.setHeader('Cache-Control', 'no-cache');
-  res.json(farcasterManifest);
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  res.json(getFarcasterManifest());
 });
 
 app.get('/manifest.json', (req, res) => {
   res.setHeader('Content-Type', 'application/json');
-  res.setHeader('Cache-Control', 'no-cache');
-  res.json(farcasterManifest);
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  res.json(getFarcasterManifest());
 });
 
 app.get('/farcaster.json', (req, res) => {
   res.setHeader('Content-Type', 'application/json');
-  res.setHeader('Cache-Control', 'no-cache');
-  res.json(farcasterManifest);
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  res.json(getFarcasterManifest());
 });
 
 // Serve static files from public directory
