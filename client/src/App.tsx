@@ -21,8 +21,25 @@ function Router() {
 
 function App() {
   useEffect(() => {
-    // Initialize Frame SDK when the app is ready
-    sdk.actions.ready().catch(console.error);
+    async function initializeFrameSDK() {
+      try {
+        // Initialize Frame SDK when the app is ready
+        await sdk.actions.ready();
+        
+        // Check for supported capabilities
+        const capabilities = await sdk.getCapabilities();
+        const supportsCompose = capabilities.includes('actions.composeCast');
+        
+        // Store capability information for use throughout the app
+        if (supportsCompose) {
+          console.log('Cast composition supported');
+        }
+      } catch (error) {
+        console.error('Frame SDK initialization failed:', error);
+      }
+    }
+    
+    initializeFrameSDK();
   }, []);
 
   return (

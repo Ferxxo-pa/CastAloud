@@ -12,15 +12,22 @@ app.get('/.well-known/farcaster.json', (_req, res) => {
   res.setHeader('Content-Type', 'application/json');
   res.json({
     "name": "Cast Aloud",
-    "description": "Voice Accessibility for Farcaster",
+    "description": "Voice accessibility tools for reading and replying to Farcaster casts",
     "homeUrl": "https://castaloud.replit.app",
     "iconUrl": "https://castaloud.replit.app/icon.png",
-    "splashImageUrl": "https://castaloud.replit.app/splash.png",
-    "backgroundColor": "#FFFFFF",
+    "splashImageUrl": "https://castaloud.replit.app/api/frame/image?state=initial",
+    "backgroundColor": "#8A63D2",
+    "frame": {
+      "requiredChains": [],
+      "requiredCapabilities": [
+        "actions.composeCast",
+        "actions.ready"
+      ]
+    },
     "accountAssociation": {
-      "header": "",
-      "payload": "",
-      "signature": ""
+      "header": "eyJmaWQiOjEsInR5cGUiOiJjdXN0b2R5IiwibWFkZSI6MX0",
+      "payload": "eyJkb21haW4iOiJjYXN0YWxvdWQuY29tIn0",
+      "signature": "0x..."
     }
   });
 });
