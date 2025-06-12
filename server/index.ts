@@ -40,6 +40,11 @@ app.use((req, res, next) => {
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
   
+  // Add Farcaster Mini App manifest header for root requests
+  if (req.path === '/' || req.path === '/index.html') {
+    res.header('Link', '</well-known/farcaster.json>; rel="farcaster-manifest"');
+  }
+  
   // Handle preflight requests
   if (req.method === 'OPTIONS') {
     res.sendStatus(200);
