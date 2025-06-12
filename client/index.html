@@ -36,8 +36,10 @@
     <!-- Mini App manifest -->
     <link rel="manifest" href="/manifest.json" />
     
-    <!-- Service Worker for Mini App -->
+    <!-- Service Worker disabled to prevent console errors -->
     <script>
+      // Service worker temporarily disabled due to module loading conflicts
+      /*
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('/sw.js')
@@ -45,6 +47,7 @@
             .catch(error => console.log('SW registration failed:', error));
         });
       }
+      */
     </script>
     
     <!-- Theme -->

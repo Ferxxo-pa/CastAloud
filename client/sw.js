@@ -14,10 +14,20 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  // Skip chrome-extension and invalid URLs
+  if (event.request.url.startsWith('chrome-extension://') || 
+      event.request.url.includes('invalid/')) {
+    return;
+  }
+  
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
         return response || fetch(event.request);
+      })
+      .catch((error) => {
+        console.warn('Fetch failed:', error);
+        return new Response('Service worker fetch failed', { status: 503 });
       })
   );
 });
