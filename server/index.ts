@@ -5,10 +5,8 @@ import path from "path";
 
 const app = express();
 
-// Priority route for Farcaster manifest - must be before any middleware
-app.get('/.well-known/farcaster.json', (req, res) => {
-  res.type('application/json');
-  res.send(`{
+// Priority routes for Farcaster manifest - must be before any middleware
+const farcasterManifest = {
   "name": "Cast Aloud",
   "description": "Voice accessibility tools for reading and replying to Farcaster casts",
   "homeUrl": "https://castaloud.replit.app",
@@ -27,7 +25,19 @@ app.get('/.well-known/farcaster.json', (req, res) => {
     "payload": "eyJkb21haW4iOiJjYXN0YWxvdWQuY29tIn0",
     "signature": "0x..."
   }
-}`);
+};
+
+app.get('/.well-known/farcaster.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.json(farcasterManifest);
+});
+
+// Override any static manifest.json with our Farcaster-compatible version
+app.get('/manifest.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.json(farcasterManifest);
 });
 
 // Serve static files from public directory
@@ -36,29 +46,7 @@ app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.get('/manifest.json', (_req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-  res.json({
-    "name": "Cast Aloud",
-    "description": "Voice accessibility tools for reading and replying to Farcaster casts",
-    "homeUrl": "https://castaloud.replit.app",
-    "iconUrl": "https://castaloud.replit.app/icon.png",
-    "splashImageUrl": "https://castaloud.replit.app/api/frame/image?state=initial",
-    "backgroundColor": "#8A63D2",
-    "frame": {
-      "requiredChains": [],
-      "requiredCapabilities": [
-        "actions.composeCast",
-        "actions.ready"
-      ]
-    },
-    "accountAssociation": {
-      "header": "eyJmaWQiOjEsInR5cGUiOiJjdXN0b2R5IiwibWFkZSI6MX0",
-      "payload": "eyJkb21haW4iOiJjYXN0YWxvdWQuY29tIn0",
-      "signature": "0x..."
-    }
-  });
-});
+
 
 // CORS headers for Farcaster miniapp testing
 app.use((req, res, next) => {
