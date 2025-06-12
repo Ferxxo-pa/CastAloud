@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import HomeSimple from "@/pages/home-simple";
 import CastAloud from "@/pages/cast-aloud";
+import FarcasterMiniApp from "@/pages/farcaster-miniapp";
 import NotFound from "@/pages/not-found";
 import { useEffect } from "react";
 import { sdk } from "@farcaster/frame-sdk";
@@ -12,7 +13,8 @@ import { sdk } from "@farcaster/frame-sdk";
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={HomeSimple} />
+      <Route path="/" component={FarcasterMiniApp} />
+      <Route path="/home" component={HomeSimple} />
       <Route path="/cast-aloud" component={CastAloud} />
       <Route component={NotFound} />
     </Switch>
