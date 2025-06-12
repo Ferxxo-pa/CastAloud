@@ -38,19 +38,20 @@ function getFarcasterManifest() {
 
 
 
-// Priority route to force correct manifest format
+// Priority route with timestamp to force cache refresh
 app.get('/.well-known/farcaster.json', (req, res) => {
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
   res.setHeader('Pragma', 'no-cache');
   res.setHeader('Expires', '0');
+  res.setHeader('X-Timestamp', Date.now().toString());
   res.json({
     "frame": {
       "version": "1",
       "name": "Cast Aloud",
       "iconUrl": "https://castaloud.replit.app/icon.png",
       "homeUrl": "https://castaloud.replit.app",
-      "splashImageUrl": "https://castaloud.replit.app/icon.png",
+      "splashImageUrl": "https://castaloud.replit.app/icon.png", 
       "splashBackgroundColor": "#8A63D2",
       "subtitle": "Voice accessibility for Farcaster",
       "description": "Read casts aloud with AI-powered voice technology and get intelligent feedback on your replies",
