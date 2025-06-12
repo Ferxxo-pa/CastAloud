@@ -7,7 +7,23 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Static file serving will be added after routes to avoid conflicts
+// Register .well-known/farcaster.json before any middleware to ensure proper handling
+app.get('/.well-known/farcaster.json', (_req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.json({
+    "name": "Cast Aloud",
+    "description": "Voice Accessibility for Farcaster",
+    "homeUrl": "https://castaloud.replit.app",
+    "iconUrl": "https://castaloud.replit.app/icon.png",
+    "splashImageUrl": "https://castaloud.replit.app/splash.png",
+    "backgroundColor": "#FFFFFF",
+    "accountAssociation": {
+      "header": "",
+      "payload": "",
+      "signature": ""
+    }
+  });
+});
 
 // CORS headers for Farcaster miniapp testing
 app.use((req, res, next) => {
