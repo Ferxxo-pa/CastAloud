@@ -81,6 +81,24 @@ async function getFeedbackOnComment(text: string): Promise<{ feedback: string; p
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Serve .well-known/farcaster.json first to avoid middleware interference
+  app.get('/.well-known/farcaster.json', (_req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.json({
+      "name": "Cast Aloud",
+      "description": "Voice Accessibility for Farcaster",
+      "homeUrl": "https://castaloud.replit.app",
+      "iconUrl": "https://castaloud.replit.app/icon.png",
+      "splashImageUrl": "https://castaloud.replit.app/splash.png",
+      "backgroundColor": "#FFFFFF",
+      "accountAssociation": {
+        "header": "",
+        "payload": "",
+        "signature": ""
+      }
+    });
+  });
+
   // Frame routes
   app.get("/frame", handleFrameIndex);
   app.post("/api/frame/action", handleFrameAction);
@@ -821,6 +839,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ error: 'TTS generation failed' });
     }
   });
+
+
 
   // Serve og-image.png for social sharing
   app.get('/og-image.png', (_req, res) => {

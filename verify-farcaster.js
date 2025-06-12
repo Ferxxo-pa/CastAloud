@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-const https = require('https');
-const fs = require('fs');
+import https from 'https';
+import fs from 'fs';
 
 const baseUrl = 'https://castaloud.replit.app';
 

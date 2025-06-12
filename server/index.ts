@@ -7,9 +7,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Serve static files from server/public (for .well-known, icons, etc.)
-const serverPublicPath = path.resolve(import.meta.dirname, "public");
-app.use(express.static(serverPublicPath));
+// Static file serving will be added after routes to avoid conflicts
 
 // CORS headers for Farcaster miniapp testing
 app.use((req, res, next) => {
@@ -57,6 +55,10 @@ app.use((req, res, next) => {
 
 (async () => {
   const server = await registerRoutes(app);
+
+  // Serve static files from server/public (for .well-known, icons, etc.)
+  const serverPublicPath = path.resolve(import.meta.dirname, "public");
+  app.use(express.static(serverPublicPath));
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
