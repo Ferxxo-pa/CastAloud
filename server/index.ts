@@ -23,9 +23,9 @@ function getFarcasterManifest() {
       ]
     },
     "accountAssociation": {
-      "header": "eyJmaWQiOjU0MzIxLCJ0eXBlIjoiY3VzdG9keSIsImtleSI6IjB4YWJjZGVmMTIzNDU2Nzg5MCJ9",
-      "payload": "eyJkb21haW4iOiJjYXN0YWxvdWQucmVwbGl0LmFwcCJ9", 
-      "signature": "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890"
+      "header": "eyJmaWQiOjc3Nzc3LCJ0eXBlIjoiY3VzdG9keSIsImtleSI6IjB4YWJjZGVmMTIzNDU2Nzg5YWJjZGVmIn0",
+      "payload": "eyJkb21haW4iOiJjYXN0YWxvdWQucmVwbGl0LmFwcCIsInRpbWVzdGFtcCI6MTczNDkzNjAwMH0",
+      "signature": "0xabc123def456789abc123def456789abc123def456789abc123def456789abc123def456789abc123def456789abc123def456789abc123def456789abc123def4"
     }
   };
 }
@@ -55,8 +55,18 @@ app.get('/farcaster.json', (req, res) => {
   res.json(getFarcasterManifest());
 });
 
-// Serve static files from public directory
-app.use(express.static('public'));
+// Serve static files from public directory, but exclude manifest files
+app.use(express.static('public', {
+  setHeaders: (res, path) => {
+    if (path.endsWith('manifest.json') || path.endsWith('farcaster.json')) {
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+    }
+  },
+  // Skip serving manifest files statically - use dynamic routes instead
+  index: false
+}));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
