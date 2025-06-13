@@ -59,10 +59,56 @@ export default function CastAloud() {
         // Stop current speech
         currentVoiceSystem.stop();
         
-        // Small delay to ensure clean restart
+        // Small delay to ensure clean restart while maintaining state
         setTimeout(() => {
           if (isCurrentlyReading) {
-            startSpeechFromWord(remainingText, Math.max(0, currentWordIndex));
+            // Don't reset the speech state - just restart from current position
+            const cleanedText = cleanTextForSpeech(remainingText);
+            const words = cleanedText.split(/\s+/).filter(word => word.length > 0);
+            
+            if (voiceType === "browser" && 'speechSynthesis' in window) {
+              const utterance = new SpeechSynthesisUtterance(cleanedText);
+              if (browserVoice.settings.voice) {
+                utterance.voice = browserVoice.settings.voice;
+              }
+              utterance.rate = browserVoice.settings.rate;
+              utterance.pitch = browserVoice.settings.pitch;
+              utterance.volume = browserVoice.settings.volume;
+              
+              let wordIndex = currentWordIndex;
+              utterance.onboundary = (event) => {
+                if (event.name === 'word') {
+                  setCurrentWordIndex(wordIndex);
+                  wordIndex++;
+                }
+              };
+              
+              utterance.onstart = () => {
+                // Don't reset highlighting - continue from current position
+              };
+              
+              utterance.onend = () => {
+                setCurrentWordIndex(-1);
+                setSpeechWords([]);
+                setSpeechUtterance(null);
+                setIsPaused(false);
+                setIsCurrentlyReading(false);
+              };
+              
+              utterance.onerror = () => {
+                setCurrentWordIndex(-1);
+                setSpeechWords([]);
+                setSpeechUtterance(null);
+                setIsPaused(false);
+                setIsCurrentlyReading(false);
+              };
+              
+              setSpeechUtterance(utterance);
+              speechSynthesis.speak(utterance);
+            } else {
+              currentVoiceSystem.speak(cleanedText);
+              simulateWordHighlighting(words, currentWordIndex);
+            }
           }
         }, 100);
       }
