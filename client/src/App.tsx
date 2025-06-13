@@ -19,17 +19,36 @@ function Router() {
 }
 
 function App() {
+  useEffect(() => {
+    async function initializeFrameSDK() {
+      try {
+        // Only initialize Frame SDK if we're in a frame context
+        if (typeof window !== 'undefined' && (window as any).parent !== window) {
+          const { sdk } = await import("@farcaster/frame-sdk");
+          await sdk.actions.ready();
+          
+          const capabilities = await sdk.getCapabilities();
+          const supportsCompose = capabilities.includes('actions.composeCast');
+          
+          if (supportsCompose) {
+            console.log('Cast composition supported');
+          }
+        }
+      } catch (error) {
+        console.log('Frame SDK initialization skipped or failed');
+      }
+    }
+    
+    initializeFrameSDK();
+  }, []);
+
   return (
-    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
-      <h1 style={{ color: '#8A63D2' }}>Cast Aloud - Test</h1>
-      <p>If you can see this, React is working!</p>
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <Toaster />
-          <Router />
-        </TooltipProvider>
-      </QueryClientProvider>
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Router />
+      </TooltipProvider>
+    </QueryClientProvider>
   );
 }
 
