@@ -7,6 +7,7 @@ import HomeSimple from "@/pages/home-simple";
 import CastAloud from "@/pages/cast-aloud";
 import NotFound from "@/pages/not-found";
 import { useEffect } from "react";
+import { sdk } from "@farcaster/frame-sdk";
 
 function Router() {
   return (
@@ -22,20 +23,19 @@ function App() {
   useEffect(() => {
     async function initializeFrameSDK() {
       try {
-        // Only initialize Frame SDK if we're in a frame context
-        if (typeof window !== 'undefined' && (window as any).parent !== window) {
-          const { sdk } = await import("@farcaster/frame-sdk");
-          await sdk.actions.ready();
-          
-          const capabilities = await sdk.getCapabilities();
-          const supportsCompose = capabilities.includes('actions.composeCast');
-          
-          if (supportsCompose) {
-            console.log('Cast composition supported');
-          }
+        // Initialize Frame SDK when the app is ready
+        await sdk.actions.ready();
+        
+        // Check for supported capabilities
+        const capabilities = await sdk.getCapabilities();
+        const supportsCompose = capabilities.includes('actions.composeCast');
+        
+        // Store capability information for use throughout the app
+        if (supportsCompose) {
+          console.log('Cast composition supported');
         }
       } catch (error) {
-        console.log('Frame SDK initialization skipped or failed');
+        console.error('Frame SDK initialization failed:', error);
       }
     }
     
