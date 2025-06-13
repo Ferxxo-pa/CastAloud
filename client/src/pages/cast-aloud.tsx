@@ -29,6 +29,28 @@ export default function CastAloud() {
 
   const currentVoiceSystem = voiceType === "openai" ? openaiVoice : browserVoice;
 
+  // Function to clean text for speech synthesis
+  const cleanTextForSpeech = (text: string): string => {
+    return text
+      // Remove URLs
+      .replace(/https?:\/\/[^\s]+/g, '')
+      // Remove hashtags but keep the word
+      .replace(/#(\w+)/g, '$1')
+      // Remove mentions but keep the username
+      .replace(/@(\w+)/g, '$1')
+      // Replace common special characters with spoken equivalents
+      .replace(/&/g, 'and')
+      .replace(/\$/g, 'dollar')
+      .replace(/%/g, 'percent')
+      .replace(/\+/g, 'plus')
+      .replace(/=/g, 'equals')
+      // Remove other special characters except basic punctuation
+      .replace(/[^\w\s.,!?;:'"()-]/g, ' ')
+      // Clean up multiple spaces
+      .replace(/\s+/g, ' ')
+      .trim();
+  };
+
   const getFeedbackMutation = useMutation({
     mutationFn: async (text: string) => {
       const response = await fetch('/api/get-feedback', {
@@ -80,16 +102,19 @@ export default function CastAloud() {
     if (currentVoiceSystem.isSpeaking) {
       currentVoiceSystem.stop();
     } else {
-      currentVoiceSystem.speak(castText);
+      const cleanedText = cleanTextForSpeech(castText);
+      currentVoiceSystem.speak(cleanedText);
     }
   };
 
   const handleReadFeedback = () => {
-    currentVoiceSystem.speak(feedback);
+    const cleanedText = cleanTextForSpeech(feedback);
+    currentVoiceSystem.speak(cleanedText);
   };
 
   const handleReadPolishedReply = () => {
-    currentVoiceSystem.speak(polishedReply);
+    const cleanedText = cleanTextForSpeech(polishedReply);
+    currentVoiceSystem.speak(cleanedText);
   };
 
   const handleGetFeedback = () => {
