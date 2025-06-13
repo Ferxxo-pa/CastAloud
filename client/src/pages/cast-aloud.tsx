@@ -106,6 +106,10 @@ export default function CastAloud() {
                 if (wordIndex >= truncatedWords.length - 2) {
                   console.log('Auto-expanding text during speed change at word', wordIndex);
                   setIsTextExpanded(true);
+                  // Update speechWords to match the full expanded text for proper highlighting
+                  const fullText = cleanTextForSpeech(castText);
+                  const fullWords = fullText.split(/\s+/).filter(word => word.length > 0);
+                  setSpeechWords(fullWords);
                 }
               }
               
@@ -254,6 +258,10 @@ export default function CastAloud() {
             if (wordIndex >= truncatedWords.length - 2) {
               console.log('Auto-expanding text as speech reaches "..." at word', wordIndex);
               setIsTextExpanded(true);
+              // Update speechWords to match the full expanded text for proper highlighting
+              const fullText = cleanTextForSpeech(castText);
+              const fullWords = fullText.split(/\s+/).filter(word => word.length > 0);
+              setSpeechWords(fullWords);
             }
           }
           
@@ -372,6 +380,10 @@ export default function CastAloud() {
             if (currentWord >= truncatedWords.length - 2) {
               console.log('Auto-expanding text with OpenAI TTS at word', currentWord);
               setIsTextExpanded(true);
+              // Update speechWords to match the full expanded text for proper highlighting
+              const fullText = cleanTextForSpeech(castText);
+              const fullWords = fullText.split(/\s+/).filter(word => word.length > 0);
+              setSpeechWords(fullWords);
             }
           }
         }
