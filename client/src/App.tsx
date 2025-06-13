@@ -15,6 +15,7 @@ function Router() {
     <Switch>
       <Route path="/" component={HomeSimple} />
       <Route path="/cast-aloud" component={CastAloud} />
+      <Route path="/debug" component={DebugTest} />
       <Route component={NotFound} />
     </Switch>
   );
