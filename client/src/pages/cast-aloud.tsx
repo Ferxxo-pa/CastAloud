@@ -124,23 +124,19 @@ export default function CastAloud() {
         utterance.pitch = browserVoice.settings.pitch;
         utterance.volume = browserVoice.settings.volume;
         
+        let wordIndex = 0;
         utterance.onboundary = (event) => {
           if (event.name === 'word') {
-            // Find which word we're currently on based on character position
-            const charIndex = event.charIndex || 0;
-            let currentWordIndex = 0;
-            let charCount = 0;
-            
-            for (let i = 0; i < words.length; i++) {
-              if (charCount + words[i].length > charIndex) {
-                currentWordIndex = i;
-                break;
-              }
-              charCount += words[i].length + 1; // +1 for space
-            }
-            
-            setCurrentWordIndex(currentWordIndex);
+            // Highlight the word that's about to be spoken
+            setCurrentWordIndex(wordIndex);
+            wordIndex++;
           }
+        };
+        
+        // Start highlighting the first word immediately
+        utterance.onstart = () => {
+          setCurrentWordIndex(0);
+          wordIndex = 1; // Next word boundary will be word 1
         };
         
         utterance.onend = () => {
