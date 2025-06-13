@@ -45,15 +45,19 @@ export default function CastAloud() {
     async function checkContext() {
       try {
         await sdk.actions.ready();
-        const context = await sdk.context.get();
-        if (context?.location?.type === 'cast_embed') {
-          setIsEmbed(true);
-          setCastContext(context.location.cast);
-          // Auto-load cast text from embed context
-          if (context.location.cast?.text) {
-            setCastText(context.location.cast.text);
+        // Access context directly since it's a Promise<FrameContext>
+        sdk.context.then(context => {
+          if (context?.location?.type === 'cast_embed') {
+            setIsEmbed(true);
+            setCastContext(context.location.cast);
+            // Auto-load cast text from embed context
+            if (context.location.cast?.text) {
+              setCastText(context.location.cast.text);
+            }
           }
-        }
+        }).catch(error => {
+          console.log('Not running in Farcaster embed context', error);
+        });
       } catch (error) {
         // Not running in Farcaster embed context, continue as standalone
         console.log('Not running in Farcaster embed context');
@@ -497,6 +501,23 @@ export default function CastAloud() {
   };
 
 
+
+  // Show compact UI when embedded in Farcaster
+  if (isEmbed && castContext) {
+    return (
+      <div className="p-4 bg-white rounded shadow flex flex-col items-center">
+        <img src="/castaloud-logo.png" alt="Castaloud" className="w-16 h-16 mb-2" />
+        <div className="font-bold text-lg mb-1">Read this Cast Aloud</div>
+        <div className="text-gray-700 mb-2 text-center">{castContext.text}</div>
+        <button
+          className="bg-purple-600 text-white px-4 py-2 rounded flex items-center gap-2"
+          onClick={handleReadCast}
+        >
+          ▶️ Read Aloud
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-fc-gray-50">
