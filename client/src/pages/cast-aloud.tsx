@@ -25,6 +25,8 @@ export default function CastAloud() {
   const [isTextExpanded, setIsTextExpanded] = useState(false);
   const [currentWordIndex, setCurrentWordIndex] = useState(-1);
   const [speechWords, setSpeechWords] = useState<string[]>([]);
+  const [isPaused, setIsPaused] = useState(false);
+  const [speechUtterance, setSpeechUtterance] = useState<SpeechSynthesisUtterance | null>(null);
 
   const browserVoice = useSpeechSynthesis();
   const openaiVoice = useOpenAITTS();
@@ -102,14 +104,13 @@ export default function CastAloud() {
 
   const handleReadCast = () => {
     if (currentVoiceSystem.isSpeaking) {
-      currentVoiceSystem.stop();
-      setCurrentWordIndex(-1);
-      setSpeechWords([]);
+      handleStopReading();
     } else {
       const cleanedText = cleanTextForSpeech(castText);
       const words = cleanedText.split(/\s+/).filter(word => word.length > 0);
       setSpeechWords(words);
       setCurrentWordIndex(0);
+      setIsPaused(false);
       
       if (voiceType === "browser" && 'speechSynthesis' in window) {
         // Use Web Speech API with word boundary events
@@ -132,18 +133,49 @@ export default function CastAloud() {
         utterance.onend = () => {
           setCurrentWordIndex(-1);
           setSpeechWords([]);
+          setSpeechUtterance(null);
+          setIsPaused(false);
         };
         
         utterance.onerror = () => {
           setCurrentWordIndex(-1);
           setSpeechWords([]);
+          setSpeechUtterance(null);
+          setIsPaused(false);
         };
         
+        setSpeechUtterance(utterance);
         speechSynthesis.speak(utterance);
       } else {
         // For OpenAI TTS, simulate word highlighting with timing
         currentVoiceSystem.speak(cleanedText);
         simulateWordHighlighting(words);
+      }
+    }
+  };
+
+  const handleStopReading = () => {
+    currentVoiceSystem.stop();
+    setCurrentWordIndex(-1);
+    setSpeechWords([]);
+    setSpeechUtterance(null);
+    setIsPaused(false);
+  };
+
+  const handlePauseResume = () => {
+    if (voiceType === "browser" && 'speechSynthesis' in window) {
+      if (isPaused) {
+        speechSynthesis.resume();
+        setIsPaused(false);
+      } else {
+        speechSynthesis.pause();
+        setIsPaused(true);
+      }
+    } else {
+      // For OpenAI TTS, we can only stop/start (no pause functionality)
+      if (currentVoiceSystem.isSpeaking) {
+        currentVoiceSystem.stop();
+        setIsPaused(true);
       }
     }
   };
@@ -396,16 +428,31 @@ export default function CastAloud() {
                 })()}
               </div>
               
-              <button 
-                onClick={handleReadCast}
-                className={`w-full font-medium py-3 px-4 rounded-xl transition-colors duration-200 ${
-                  currentVoiceSystem.isSpeaking 
-                    ? 'bg-red-500 hover:bg-red-600 text-white' 
-                    : 'bg-purple-600 hover:bg-purple-700 text-white'
-                }`}
-              >
-                {currentVoiceSystem.isSpeaking ? 'Stop Reading' : 'Read Aloud'}
-              </button>
+              {currentVoiceSystem.isSpeaking ? (
+                <div className="flex gap-2">
+                  <button 
+                    onClick={handleStopReading}
+                    className="flex-1 bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-4 rounded-xl transition-colors duration-200"
+                  >
+                    Stop Reading
+                  </button>
+                  {voiceType === "browser" && (
+                    <button 
+                      onClick={handlePauseResume}
+                      className="bg-orange-500 hover:bg-orange-600 text-white font-medium py-3 px-3 rounded-xl transition-colors duration-200 min-w-[80px]"
+                    >
+                      {isPaused ? 'Resume' : 'Pause'}
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <button 
+                  onClick={handleReadCast}
+                  className="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-3 px-4 rounded-xl transition-colors duration-200"
+                >
+                  Read Aloud
+                </button>
+              )}
             </div>
           )}
 
