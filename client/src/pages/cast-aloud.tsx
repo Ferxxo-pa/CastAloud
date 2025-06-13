@@ -185,13 +185,27 @@ export default function CastAloud() {
                   <div className="flex-1 border-t border-fc-gray-200"></div>
                 </div>
 
-                <textarea
-                  placeholder="Or paste the cast text directly here..."
-                  value={inputText}
-                  onChange={(e) => setInputText(e.target.value)}
-                  rows={3}
-                  className="w-full p-3 border border-fc-gray-200 rounded-xl resize-none focus:ring-2 focus:ring-fc-purple focus:border-transparent text-base"
-                />
+                <div className="space-y-2">
+                  <textarea
+                    placeholder="Or paste the cast text directly here..."
+                    value={inputText}
+                    onChange={(e) => setInputText(e.target.value)}
+                    maxLength={5000}
+                    rows={3}
+                    className="w-full p-3 border border-fc-gray-200 rounded-xl resize-none focus:ring-2 focus:ring-fc-purple focus:border-transparent text-base"
+                  />
+                  <div className="flex justify-end">
+                    <span className={`text-xs ${
+                      inputText.length > 4500 
+                        ? 'text-red-500' 
+                        : inputText.length > 4000 
+                        ? 'text-yellow-600' 
+                        : 'text-fc-gray-500'
+                    }`}>
+                      {inputText.length}/5000 characters
+                    </span>
+                  </div>
+                </div>
 
                 <button
                   onClick={() => {
