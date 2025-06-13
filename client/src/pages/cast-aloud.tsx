@@ -27,6 +27,7 @@ export default function CastAloud() {
   const [speechWords, setSpeechWords] = useState<string[]>([]);
   const [isPaused, setIsPaused] = useState(false);
   const [speechUtterance, setSpeechUtterance] = useState<SpeechSynthesisUtterance | null>(null);
+  const [isCurrentlyReading, setIsCurrentlyReading] = useState(false);
 
   const browserVoice = useSpeechSynthesis();
   const openaiVoice = useOpenAITTS();
@@ -103,7 +104,7 @@ export default function CastAloud() {
   });
 
   const handleReadCast = () => {
-    if (currentVoiceSystem.isSpeaking) {
+    if (isCurrentlyReading) {
       handleStopReading();
     } else {
       const cleanedText = cleanTextForSpeech(castText);
@@ -111,6 +112,7 @@ export default function CastAloud() {
       setSpeechWords(words);
       setCurrentWordIndex(0);
       setIsPaused(false);
+      setIsCurrentlyReading(true);
       
       if (voiceType === "browser" && 'speechSynthesis' in window) {
         // Use Web Speech API with word boundary events
@@ -135,6 +137,7 @@ export default function CastAloud() {
           setSpeechWords([]);
           setSpeechUtterance(null);
           setIsPaused(false);
+          setIsCurrentlyReading(false);
         };
         
         utterance.onerror = () => {
@@ -142,6 +145,7 @@ export default function CastAloud() {
           setSpeechWords([]);
           setSpeechUtterance(null);
           setIsPaused(false);
+          setIsCurrentlyReading(false);
         };
         
         setSpeechUtterance(utterance);
@@ -160,6 +164,7 @@ export default function CastAloud() {
     setSpeechWords([]);
     setSpeechUtterance(null);
     setIsPaused(false);
+    setIsCurrentlyReading(false);
   };
 
   const handlePauseResume = () => {
@@ -186,7 +191,7 @@ export default function CastAloud() {
     
     words.forEach((_, index) => {
       setTimeout(() => {
-        if (currentVoiceSystem.isSpeaking) {
+        if (isCurrentlyReading) {
           setCurrentWordIndex(index);
         }
       }, index * millisecondsPerWord);
@@ -196,6 +201,7 @@ export default function CastAloud() {
     setTimeout(() => {
       setCurrentWordIndex(-1);
       setSpeechWords([]);
+      setIsCurrentlyReading(false);
     }, words.length * millisecondsPerWord + 1000);
   };
 
@@ -428,7 +434,7 @@ export default function CastAloud() {
                 })()}
               </div>
               
-              {currentVoiceSystem.isSpeaking ? (
+              {isCurrentlyReading ? (
                 <div className="flex gap-2">
                   <button 
                     onClick={handleStopReading}
