@@ -56,6 +56,9 @@ export class MemStorage implements IStorage {
     const post: Post = {
       id: this.currentPostId++,
       ...insertPost,
+      likesCount: insertPost.likesCount || 0,
+      sharesCount: insertPost.sharesCount || 0,
+      repliesCount: insertPost.repliesCount || 0,
     };
     this.posts.set(post.id, post);
     return post;
@@ -70,8 +73,11 @@ export class MemStorage implements IStorage {
     const comment: VoiceComment = {
       id: this.currentVoiceCommentId++,
       createdAt: new Date(),
+      postHash: insertComment.postHash,
       originalAudio: insertComment.originalAudio || null,
-      ...insertComment,
+      transcription: insertComment.transcription,
+      generatedComment: insertComment.generatedComment,
+      posted: insertComment.posted || false,
     };
     this.voiceComments.set(comment.id, comment);
     return comment;

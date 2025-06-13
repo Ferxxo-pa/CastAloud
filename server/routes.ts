@@ -273,17 +273,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     `);
   });
 
-  // Get current cast
-  app.get("/api/cast/current", async (req, res) => {
+  // Get current post
+  app.get("/api/post/current", async (req, res) => {
     try {
       const post = await storage.getCurrentPost();
-      if (!cast) {
-        return res.status(404).json({ message: "No cast found" });
+      if (!post) {
+        return res.status(404).json({ message: "No post found" });
       }
-      res.json(cast);
+      res.json(post);
     } catch (error) {
-      console.error("Error fetching current cast:", error);
-      res.status(500).json({ message: "Failed to fetch cast" });
+      console.error("Error fetching current post:", error);
+      res.status(500).json({ message: "Failed to fetch post" });
     }
   });
 
@@ -425,7 +425,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           },
           {
             role: "user",
-            content: `Original post: "${castContent}"\n\nUser's voice input: "${transcription.text}"\n\nPlease turn this voice input into a good reply to the original post.`
+            content: `Original post: "${postContent}"\n\nUser's voice input: "${transcription.text}"\n\nPlease turn this voice input into a good reply to the original post.`
           }
         ],
         response_format: { type: "json_object" },
@@ -436,7 +436,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Store the voice comment
       const voiceComment = await storage.createVoiceComment({
-        castHash,
+        postHash: postHash,
         originalAudio: null, // We're not storing the audio file for now
         transcription: transcription.text,
         generatedComment,
