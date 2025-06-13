@@ -124,16 +124,23 @@ export default function CastAloud() {
         utterance.pitch = browserVoice.settings.pitch;
         utterance.volume = browserVoice.settings.volume;
         
-        let wordIndex = -1;
         utterance.onboundary = (event) => {
           if (event.name === 'word') {
-            wordIndex++;
-            setCurrentWordIndex(wordIndex);
+            // Find which word we're currently on based on character position
+            const charIndex = event.charIndex || 0;
+            let currentWordIndex = 0;
+            let charCount = 0;
+            
+            for (let i = 0; i < words.length; i++) {
+              if (charCount + words[i].length > charIndex) {
+                currentWordIndex = i;
+                break;
+              }
+              charCount += words[i].length + 1; // +1 for space
+            }
+            
+            setCurrentWordIndex(currentWordIndex);
           }
-        };
-        
-        utterance.onstart = () => {
-          setCurrentWordIndex(0);
         };
         
         utterance.onend = () => {
