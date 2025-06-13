@@ -92,10 +92,14 @@ export default function CastAloud() {
           utterance.pitch = browserVoice.settings.pitch;
           utterance.volume = browserVoice.settings.volume;
           
-          let wordIndex = uiState.wordIndex;
           utterance.onboundary = (event) => {
             if (event.name === 'word') {
-              setCurrentWordIndex(wordIndex);
+              // Use the actual character position for precise word tracking during speed changes
+              const spokenText = cleanedText.substring(0, event.charIndex);
+              const spokenWords = spokenText.split(/\s+/).filter(word => word.length > 0);
+              const actualWordIndex = spokenWords.length - 1;
+              
+              setCurrentWordIndex(actualWordIndex);
               
               // Auto-expand text when speech reaches truncation point (speed change scenario)
               const maxLength = 300;
@@ -103,8 +107,8 @@ export default function CastAloud() {
               if (shouldTruncate && !isTextExpanded) {
                 const truncatedText = castText.substring(0, maxLength);
                 const truncatedWords = cleanTextForSpeech(truncatedText).split(/\s+/).filter(word => word.length > 0);
-                if (wordIndex >= truncatedWords.length - 2) {
-                  console.log('Auto-expanding text during speed change at word', wordIndex);
+                if (actualWordIndex >= truncatedWords.length - 2) {
+                  console.log('Auto-expanding text during speed change at word', actualWordIndex);
                   setIsTextExpanded(true);
                   // Update speechWords with slight delay to maintain highlighting sync
                   setTimeout(() => {
@@ -114,8 +118,6 @@ export default function CastAloud() {
                   }, 50);
                 }
               }
-              
-              wordIndex++;
             }
           };
           
@@ -248,7 +250,12 @@ export default function CastAloud() {
       let wordIndex = startWordIndex;
       utterance.onboundary = (event) => {
         if (event.name === 'word') {
-          setCurrentWordIndex(wordIndex);
+          // Use the actual character position from the speech synthesis event
+          const spokenText = cleanedText.substring(0, event.charIndex);
+          const spokenWords = spokenText.split(/\s+/).filter(word => word.length > 0);
+          const actualWordIndex = spokenWords.length - 1;
+          
+          setCurrentWordIndex(actualWordIndex);
           
           // Auto-expand text when speech reaches truncation point
           const maxLength = 300;
@@ -257,8 +264,8 @@ export default function CastAloud() {
             const truncatedText = castText.substring(0, maxLength);
             const truncatedWords = cleanTextForSpeech(truncatedText).split(/\s+/).filter(word => word.length > 0);
             // Expand when we're within 2 words of the truncation point
-            if (wordIndex >= truncatedWords.length - 2) {
-              console.log('Auto-expanding text as speech reaches "..." at word', wordIndex);
+            if (actualWordIndex >= truncatedWords.length - 2) {
+              console.log('Auto-expanding text as speech reaches "..." at word', actualWordIndex);
               setIsTextExpanded(true);
               // Update speechWords immediately to maintain highlighting sync
               setTimeout(() => {
@@ -268,8 +275,6 @@ export default function CastAloud() {
               }, 50);
             }
           }
-          
-          wordIndex++;
         }
       };
       
@@ -353,55 +358,53 @@ export default function CastAloud() {
   };
   
   const simulateWordHighlighting = (words: string[], startWordIndex: number = 0) => {
-    // More accurate timing calculation based on actual speech synthesis behavior
-    const baseWordsPerMinute = 180; // Adjusted base rate
-    const speedMultiplier = voiceType === "browser" ? browserVoice.settings.rate : openaiVoice.speed;
+    // Enhanced timing calculation that adapts to speed changes in real-time
+    let currentIndex = 0;
+    const totalWords = words.length;
     
-    // Apply non-linear speed adjustment to match browser behavior
-    let adjustedSpeed;
-    if (speedMultiplier <= 1) {
-      // For slower speeds, use exponential curve
-      adjustedSpeed = baseWordsPerMinute * Math.pow(speedMultiplier, 0.8);
-    } else {
-      // For faster speeds, use linear scaling
-      adjustedSpeed = baseWordsPerMinute * speedMultiplier;
-    }
-    
-    const millisecondsPerWord = (60 * 1000) / adjustedSpeed;
-    
-    words.forEach((_, index) => {
-      setTimeout(() => {
-        if (isCurrentlyReading) {
-          const currentWord = startWordIndex + index;
-          setCurrentWordIndex(currentWord);
-          
-          // Auto-expand text when speech reaches truncation point (OpenAI TTS)
-          const maxLength = 300;
-          const shouldTruncate = castText.length > maxLength;
-          if (shouldTruncate && !isTextExpanded) {
-            const truncatedText = castText.substring(0, maxLength);
-            const truncatedWords = cleanTextForSpeech(truncatedText).split(/\s+/).filter(word => word.length > 0);
-            if (currentWord >= truncatedWords.length - 2) {
-              console.log('Auto-expanding text with OpenAI TTS at word', currentWord);
-              setIsTextExpanded(true);
-              // Update speechWords with slight delay to maintain highlighting sync
-              setTimeout(() => {
-                const fullText = cleanTextForSpeech(castText);
-                const fullWords = fullText.split(/\s+/).filter(word => word.length > 0);
-                setSpeechWords(fullWords);
-              }, 50);
-            }
-          }
+    const updateWordHighlight = () => {
+      if (!isCurrentlyReading || currentIndex >= totalWords) {
+        // End of highlighting
+        setCurrentWordIndex(-1);
+        setSpeechWords([]);
+        setIsCurrentlyReading(false);
+        return;
+      }
+      
+      const actualWordIndex = startWordIndex + currentIndex;
+      setCurrentWordIndex(actualWordIndex);
+      
+      // Auto-expand text when speech reaches truncation point (OpenAI TTS)
+      const maxLength = 300;
+      const shouldTruncate = castText.length > maxLength;
+      if (shouldTruncate && !isTextExpanded) {
+        const truncatedText = castText.substring(0, maxLength);
+        const truncatedWords = cleanTextForSpeech(truncatedText).split(/\s+/).filter(word => word.length > 0);
+        if (actualWordIndex >= truncatedWords.length - 2) {
+          console.log('Auto-expanding text with OpenAI TTS at word', actualWordIndex);
+          setIsTextExpanded(true);
+          setTimeout(() => {
+            const fullText = cleanTextForSpeech(castText);
+            const fullWords = fullText.split(/\s+/).filter(word => word.length > 0);
+            setSpeechWords(fullWords);
+          }, 50);
         }
-      }, index * millisecondsPerWord);
-    });
+      }
+      
+      currentIndex++;
+      
+      // Calculate delay for next word based on current speed settings
+      const currentSpeed = openaiVoice.speed;
+      const baseWordsPerMinute = 180;
+      const adjustedSpeed = baseWordsPerMinute * currentSpeed;
+      const millisecondsPerWord = (60 * 1000) / adjustedSpeed;
+      
+      // Schedule next word highlight
+      setTimeout(updateWordHighlight, millisecondsPerWord);
+    };
     
-    // Clear highlighting when done
-    setTimeout(() => {
-      setCurrentWordIndex(-1);
-      setSpeechWords([]);
-      setIsCurrentlyReading(false);
-    }, words.length * millisecondsPerWord + 300);
+    // Start the highlighting sequence
+    updateWordHighlight();
   };
 
   const handleReadFeedback = () => {
