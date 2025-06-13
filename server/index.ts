@@ -865,20 +865,18 @@ app.use((req, res, next) => {
   //   res.redirect('/app');
   // });
 
-  // Keep original Vite setup for development testing if needed
-  // Setup vite in development, serve static files in production
-  // Check NODE_ENV instead of app.get("env") for better reliability
-  if (process.env.NODE_ENV === "development") {
-    await setupVite(app, server);
-  } else {
-    // In production, serve the built static files
-    try {
-      serveStatic(app);
-    } catch (error) {
-      console.log("Static files not found, falling back to vite dev server");
-      await setupVite(app, server);
-    }
-  }
+  // Disable Vite completely to ensure Express routes work
+  // if (process.env.NODE_ENV === "development") {
+  //   await setupVite(app, server);
+  // } else {
+  //   // In production, serve the built static files
+  //   try {
+  //     serveStatic(app);
+  //   } catch (error) {
+  //     console.log("Static files not found, falling back to vite dev server");
+  //     await setupVite(app, server);
+  //   }
+  // }
   
   // Override the root route AFTER Vite setup to ensure it takes precedence
   app.get('/', (req, res) => {
