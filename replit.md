@@ -96,6 +96,7 @@ Cast Aloud is a web application that provides accessibility tools for reading an
 - June 13, 2025. Added Farcaster protocol integration with .well-known/farcaster.json endpoint for frame discovery
 - June 13, 2025. Configured branded PNG assets (1024x1024 icon, 200x200 splash) served at public URLs for Farcaster frame integration
 - June 13, 2025. Added Farcaster Frame SDK embed detection with compact UI for cast embeds - auto-loads cast content and shows branded player interface
+- June 13, 2025. Updated Farcaster account association with authentic FID 384715 credentials for domain verification and protocol compliance
 
 ## User Preferences
 

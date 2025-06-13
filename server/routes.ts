@@ -84,7 +84,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Serve .well-known/farcaster.json
   app.get("/.well-known/farcaster.json", (req, res) => {
     const farcasterConfig = {
-      "accountAssociation": {},
+      "accountAssociation": {
+        "header": "eyJmaWQiOjM4NDcxNSwidHlwZSI6ImN1c3RvZHkiLCJrZXkiOiIweDgyNDZEODU1YjkyM2NDMzEwRGMyOGYzMTE0OWE3RjVjQzkzOTM0YjQifQ",
+        "payload": "eyJkb21haW4iOiJjYXN0YWxvdWQucmVwbGl0LmFwcCJ9",
+        "signature": "MHhhMDI5OGYwYTc5ZjA3MmQ4OTFkMzE1YmMwMTkxZDgzMDBjMTBhMjM1OThjMjRiZDI4ZjRmMmViZDAwZGJiZGE0MWUyM2MzNzJjZGQzYjIzOWNlYmMyM2U2ZDZiMmFiNzg2ZDg0MDUyMWJkZGI0NGJlNWFjNTVlNDg1MjVhMGJkMjFj"
+      },
       "frame": {
         "version": "1",
         "name": "Castaloud",
