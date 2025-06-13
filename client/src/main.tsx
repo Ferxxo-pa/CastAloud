@@ -22,8 +22,8 @@ window.addEventListener('unhandledrejection', (e) => {
 });
 
 // Signal that module loaded
-if (window.moduleLoadedCallback) {
-  window.moduleLoadedCallback();
+if ((window as any).moduleLoadedCallback) {
+  (window as any).moduleLoadedCallback();
 }
 
 try {
@@ -42,6 +42,11 @@ try {
   root.render(<App />);
   
   console.log('React app rendered successfully');
+  
+  // Signal that React mounted
+  if ((window as any).reactMountedCallback) {
+    (window as any).reactMountedCallback();
+  }
   
 } catch (error) {
   console.error('Failed to initialize React app:', error);

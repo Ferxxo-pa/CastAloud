@@ -53,24 +53,68 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
   </head>
   <body style="background-color: white; margin: 0; padding: 0;">
-    <div id="root" style="background-color: white; min-height: 100vh;"></div>
+    <!-- Static fallback content that should always show -->
+    <div style="padding: 20px; font-family: Arial, sans-serif; background: white;">
+      <h1 style="color: #8A63D2; margin: 0 0 20px 0;">Cast Aloud</h1>
+      <p style="color: #666; margin: 0 0 20px 0;">Voice accessibility tools for reading and replying to Farcaster casts</p>
+      
+      <div style="background: #f0f0f0; padding: 15px; border-radius: 8px; margin: 20px 0;">
+        <h2 style="margin: 0 0 10px 0; color: #333;">App Status</h2>
+        <div id="status">Loading...</div>
+      </div>
+      
+      <div style="background: #e8f4f8; padding: 15px; border-radius: 8px; margin: 20px 0;">
+        <h3 style="margin: 0 0 10px 0;">Quick Test</h3>
+        <button onclick="testBasicFunction()" style="background: #8A63D2; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">
+          Test JavaScript
+        </button>
+        <div id="test-result" style="margin-top: 10px;"></div>
+      </div>
+    </div>
     
-    <!-- Immediate loading test -->
+    <div id="root" style="display: none;"></div>
+    
     <script>
       console.log('HTML script executing...');
-      document.body.innerHTML += '<div style="position: fixed; top: 10px; left: 10px; background: red; color: white; padding: 10px; z-index: 9999;">Basic JS Working</div>';
+      
+      function updateStatus(message, color = '#333') {
+        const status = document.getElementById('status');
+        if (status) {
+          status.innerHTML += '<div style="color: ' + color + '; margin: 5px 0;">' + new Date().toLocaleTimeString() + ': ' + message + '</div>';
+        }
+      }
+      
+      function testBasicFunction() {
+        const result = document.getElementById('test-result');
+        result.innerHTML = '<span style="color: green;">✓ JavaScript is working!</span>';
+        updateStatus('JavaScript test button clicked', 'green');
+      }
+      
+      updateStatus('Static HTML loaded');
+      updateStatus('Basic JavaScript executing');
       
       // Test if main.tsx loads
       let moduleLoaded = false;
+      let reactMounted = false;
+      
       setTimeout(() => {
         if (!moduleLoaded) {
-          document.body.innerHTML = '<div style="padding: 20px; font-family: Arial;"><h1 style="color: red;">Module Loading Failed</h1><p>The React module (main.tsx) is not loading.</p></div>';
+          updateStatus('Module failed to load after 3 seconds', 'red');
+        } else if (!reactMounted) {
+          updateStatus('Module loaded but React failed to mount', 'orange');
         }
       }, 3000);
       
       window.moduleLoadedCallback = () => {
         moduleLoaded = true;
-        console.log('Module loaded successfully');
+        updateStatus('Module loaded successfully', 'green');
+      };
+      
+      window.reactMountedCallback = () => {
+        reactMounted = true;
+        updateStatus('React mounted successfully - switching to app', 'green');
+        document.getElementById('root').style.display = 'block';
+        document.body.children[0].style.display = 'none';
       };
     </script>
     
