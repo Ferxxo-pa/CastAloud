@@ -282,7 +282,7 @@ export default function HomeSimple() {
             <ol className="text-sm text-gray-600 space-y-1">
               <li>1. 📝 Paste a Farcaster post URL or text directly</li>
               <li>2. 🔊 Click "Read Aloud" to hear the content</li>
-              <li>3. ✍️ Type your reply in the text area</li>
+              <li>3. 🗣️ Speak your reply in the text area</li>
               <li>4. 🤖 Get AI feedback or polish your reply</li>
               <li>5. 📋 Copy the improved reply to post on Farcaster</li>
             </ol>
