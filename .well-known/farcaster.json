@@ -1,3 +1,13 @@
 {
-  
+  "accountAssociation": {},
+  "frame": {
+    "version": "1",
+    "name": "Castaloud",
+    "homeUrl": "https://castaloud.replit.app/",
+    "iconUrl": "https://castaloud.replit.app/icon.png",
+    "subtitle": "Read and reply",
+    "description": "Paste a cast, get it read out loud, and generate a reply with AI",
+    "splashImageUrl": "https://castaloud.replit.app/splash.png",
+    "splashBackgroundColor": "#ffffff"
+  }
 }
