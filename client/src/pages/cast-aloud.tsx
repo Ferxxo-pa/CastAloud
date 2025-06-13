@@ -124,12 +124,16 @@ export default function CastAloud() {
         utterance.pitch = browserVoice.settings.pitch;
         utterance.volume = browserVoice.settings.volume;
         
-        let wordIndex = 0;
+        let wordIndex = -1;
         utterance.onboundary = (event) => {
           if (event.name === 'word') {
-            setCurrentWordIndex(wordIndex);
             wordIndex++;
+            setCurrentWordIndex(wordIndex);
           }
+        };
+        
+        utterance.onstart = () => {
+          setCurrentWordIndex(0);
         };
         
         utterance.onend = () => {
