@@ -106,10 +106,12 @@ export default function CastAloud() {
                 if (wordIndex >= truncatedWords.length - 2) {
                   console.log('Auto-expanding text during speed change at word', wordIndex);
                   setIsTextExpanded(true);
-                  // Update speechWords to match the full expanded text for proper highlighting
-                  const fullText = cleanTextForSpeech(castText);
-                  const fullWords = fullText.split(/\s+/).filter(word => word.length > 0);
-                  setSpeechWords(fullWords);
+                  // Update speechWords with slight delay to maintain highlighting sync
+                  setTimeout(() => {
+                    const fullText = cleanTextForSpeech(castText);
+                    const fullWords = fullText.split(/\s+/).filter(word => word.length > 0);
+                    setSpeechWords(fullWords);
+                  }, 50);
                 }
               }
               
@@ -258,10 +260,12 @@ export default function CastAloud() {
             if (wordIndex >= truncatedWords.length - 2) {
               console.log('Auto-expanding text as speech reaches "..." at word', wordIndex);
               setIsTextExpanded(true);
-              // Update speechWords to match the full expanded text for proper highlighting
-              const fullText = cleanTextForSpeech(castText);
-              const fullWords = fullText.split(/\s+/).filter(word => word.length > 0);
-              setSpeechWords(fullWords);
+              // Update speechWords immediately to maintain highlighting sync
+              setTimeout(() => {
+                const fullText = cleanTextForSpeech(castText);
+                const fullWords = fullText.split(/\s+/).filter(word => word.length > 0);
+                setSpeechWords(fullWords);
+              }, 50);
             }
           }
           
@@ -380,10 +384,12 @@ export default function CastAloud() {
             if (currentWord >= truncatedWords.length - 2) {
               console.log('Auto-expanding text with OpenAI TTS at word', currentWord);
               setIsTextExpanded(true);
-              // Update speechWords to match the full expanded text for proper highlighting
-              const fullText = cleanTextForSpeech(castText);
-              const fullWords = fullText.split(/\s+/).filter(word => word.length > 0);
-              setSpeechWords(fullWords);
+              // Update speechWords with slight delay to maintain highlighting sync
+              setTimeout(() => {
+                const fullText = cleanTextForSpeech(castText);
+                const fullWords = fullText.split(/\s+/).filter(word => word.length > 0);
+                setSpeechWords(fullWords);
+              }, 50);
             }
           }
         }
@@ -575,13 +581,18 @@ export default function CastAloud() {
                     }
                     
                     const displayWords = text.split(/\s+/).filter(word => word.length > 0);
+                    
+                    // Use speechWords for highlighting if available, otherwise fall back to displayWords
+                    const wordsForHighlighting = speechWords.length > 0 ? speechWords : displayWords;
+                    const actualCurrentWordIndex = currentWordIndex < wordsForHighlighting.length ? currentWordIndex : -1;
+                    
                     return (
                       <p>
                         {displayWords.map((word, index) => (
                           <span
                             key={index}
                             className={`${
-                              index === currentWordIndex 
+                              index === actualCurrentWordIndex 
                                 ? 'bg-yellow-200 px-1 rounded transition-colors duration-200' 
                                 : ''
                             }`}
