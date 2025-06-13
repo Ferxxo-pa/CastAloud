@@ -32,7 +32,7 @@ async function polishReply(text: string): Promise<string> {
     messages: [
       {
         role: "system",
-        content: "You are a helpful assistant that polishes social media replies. Make the text more clear, friendly, and well-written while preserving the original meaning and tone. Keep it concise and natural for Farcaster."
+        content: "You are a helpful assistant that polishes social media replies. Make the text more clear, friendly, and well-written while preserving the original meaning and tone. Keep it concise and natural for social media."
       },
       {
         role: "user",
@@ -109,7 +109,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
 
   
-  // TTS endpoint for Frame interactions
+  // TTS endpoint for voice synthesis
   app.post("/api/tts", async (req, res) => {
     try {
       const { text, voice = "alloy" } = req.body;
