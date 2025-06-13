@@ -128,18 +128,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
   
-  // App icon for Mini App
+  // App icon for Mini App - serve the uploaded PNG
   app.get("/icon.png", (req, res) => {
-    // Generate SVG icon and convert to PNG response
-    const svg = `
-      <svg width="256" height="256" xmlns="http://www.w3.org/2000/svg">
-        <rect width="256" height="256" rx="32" fill="#8A63D2"/>
-        <circle cx="128" cy="128" r="60" fill="white" opacity="0.9"/>
-        <text x="128" y="145" font-family="Arial, sans-serif" font-size="48" fill="#8A63D2" text-anchor="middle">🔊</text>
-      </svg>
-    `;
-    res.setHeader('Content-Type', 'image/svg+xml');
-    res.send(svg);
+    res.sendFile(path.join(process.cwd(), "client", "public", "icon.png"));
+  });
+
+  // Splash image for Mini App
+  app.get("/splash.png", (req, res) => {
+    res.sendFile(path.join(process.cwd(), "client", "public", "splash.png"));
   });
 
   // Voice recorder page for complex interactions
