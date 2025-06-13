@@ -84,6 +84,26 @@ app.get('/test-manifest', (req, res) => {
   });
 });
 
+// Simple test endpoint with minimal HTML - placed before Vite middleware
+app.get('/api/test', (req, res) => {
+  res.setHeader('Content-Type', 'text/html');
+  res.send(`
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Page</title>
+    <meta charset="UTF-8">
+</head>
+<body style="font-family: Arial; padding: 20px; background: white;">
+    <h1 style="color: #8A63D2;">Server Test Working</h1>
+    <p>If you can see this, the server is working correctly.</p>
+    <p>Time: ${new Date().toISOString()}</p>
+    <p>This bypasses Vite and serves directly from Express.</p>
+    <button onclick="alert('JavaScript is working!')" style="background: #8A63D2; color: white; padding: 10px; border: none; border-radius: 4px;">Test JS</button>
+</body>
+</html>`);
+});
+
 // Cache clearing endpoint
 app.get('/clear-cache', (req, res) => {
   res.setHeader('Content-Type', 'text/html');
