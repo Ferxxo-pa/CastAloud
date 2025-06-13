@@ -22,6 +22,7 @@ export default function CastAloud() {
   const [isLoading, setIsLoading] = useState(false);
   const [userTier, setUserTier] = useState<"free" | "premium">("free");
   const [showPaymentInfo, setShowPaymentInfo] = useState(false);
+  const [isTextExpanded, setIsTextExpanded] = useState(false);
 
   const browserVoice = useSpeechSynthesis();
   const openaiVoice = useOpenAITTS();
@@ -246,7 +247,43 @@ export default function CastAloud() {
                 </button>
               </div>
               
-              <p className="text-gray-800 text-base leading-relaxed mb-4">{castText}</p>
+              <div className="text-gray-800 text-base leading-relaxed mb-4">
+                {(() => {
+                  const maxLength = 300; // Show first 300 characters
+                  const shouldTruncate = castText.length > maxLength;
+                  
+                  if (!shouldTruncate) {
+                    return <p>{castText}</p>;
+                  }
+                  
+                  if (isTextExpanded) {
+                    return (
+                      <div>
+                        <p>{castText}</p>
+                        <button
+                          onClick={() => setIsTextExpanded(false)}
+                          className="text-fc-purple hover:text-fc-purple-dark text-sm font-medium mt-2 flex items-center gap-1"
+                        >
+                          Show less
+                        </button>
+                      </div>
+                    );
+                  }
+                  
+                  return (
+                    <div>
+                      <p>{castText.substring(0, maxLength)}...</p>
+                      <button
+                        onClick={() => setIsTextExpanded(true)}
+                        className="text-fc-purple hover:text-fc-purple-dark text-sm font-medium mt-2 flex items-center gap-1"
+                      >
+                        <span>Show more</span>
+                        <span>...</span>
+                      </button>
+                    </div>
+                  );
+                })()}
+              </div>
               
               <button 
                 onClick={handleReadCast}
