@@ -714,10 +714,10 @@ export default function CastAloud() {
           {/* Reply Section */}
           {castText && (
             <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-900 mb-3">Write a reply</h2>
+              <h2 className="text-lg font-semibold text-gray-900 mb-3">Speak a reply</h2>
             
             <textarea
-              placeholder="What's your reply?"
+              placeholder="Speak your reply or type it here..."
               value={reply}
               onChange={(e) => setReply(e.target.value)}
               rows={3}
