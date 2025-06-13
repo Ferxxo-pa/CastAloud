@@ -21,6 +21,11 @@ window.addEventListener('unhandledrejection', (e) => {
   </div>`;
 });
 
+// Signal that module loaded
+if (window.moduleLoadedCallback) {
+  window.moduleLoadedCallback();
+}
+
 try {
   console.log('Starting React app initialization...');
   

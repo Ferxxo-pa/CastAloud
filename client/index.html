@@ -54,6 +54,26 @@
   </head>
   <body style="background-color: white; margin: 0; padding: 0;">
     <div id="root" style="background-color: white; min-height: 100vh;"></div>
+    
+    <!-- Immediate loading test -->
+    <script>
+      console.log('HTML script executing...');
+      document.body.innerHTML += '<div style="position: fixed; top: 10px; left: 10px; background: red; color: white; padding: 10px; z-index: 9999;">Basic JS Working</div>';
+      
+      // Test if main.tsx loads
+      let moduleLoaded = false;
+      setTimeout(() => {
+        if (!moduleLoaded) {
+          document.body.innerHTML = '<div style="padding: 20px; font-family: Arial;"><h1 style="color: red;">Module Loading Failed</h1><p>The React module (main.tsx) is not loading.</p></div>';
+        }
+      }, 3000);
+      
+      window.moduleLoadedCallback = () => {
+        moduleLoaded = true;
+        console.log('Module loaded successfully');
+      };
+    </script>
+    
     <script type="module" src="/src/main.tsx"></script>
     <!-- Replit banner disabled to prevent yellow screen flash -->
     <!-- <script type="text/javascript" src="https://replit.com/public/js/replit-dev-banner.js"></script> -->
