@@ -15,12 +15,14 @@ interface UseSpeechSynthesisReturn {
   voices: SpeechSynthesisVoice[];
   settings: VoiceSettings;
   updateSettings: (newSettings: Partial<VoiceSettings>) => void;
+  currentUtterance: SpeechSynthesisUtterance | null;
 }
 
 export default function useSpeechSynthesis(): UseSpeechSynthesisReturn {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isSupported] = useState(() => 'speechSynthesis' in window);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [currentUtterance, setCurrentUtterance] = useState<SpeechSynthesisUtterance | null>(null);
   
   // Load settings from localStorage
   const [settings, setSettings] = useState<VoiceSettings>(() => {
@@ -105,6 +107,26 @@ export default function useSpeechSynthesis(): UseSpeechSynthesisReturn {
     setSettings(prev => {
       const updated = { ...prev, ...newSettings };
       
+      // Apply settings immediately to current utterance if speaking
+      if (currentUtterance && isSpeaking) {
+        // For speed changes, we need to restart the speech
+        if (newSettings.rate !== undefined && newSettings.rate !== prev.rate) {
+          window.speechSynthesis.cancel();
+          // Let the calling component handle restarting with new settings
+        } else {
+          // For volume and pitch, we can update the current utterance
+          if (newSettings.volume !== undefined) {
+            currentUtterance.volume = newSettings.volume;
+          }
+          if (newSettings.pitch !== undefined) {
+            currentUtterance.pitch = newSettings.pitch;
+          }
+          if (newSettings.voice !== undefined) {
+            currentUtterance.voice = newSettings.voice;
+          }
+        }
+      }
+      
       // Save to localStorage
       try {
         const toSave = {
@@ -120,7 +142,7 @@ export default function useSpeechSynthesis(): UseSpeechSynthesisReturn {
       
       return updated;
     });
-  }, []);
+  }, [currentUtterance, isSpeaking]);
 
   const speak = useCallback((text: string) => {
     if (!isSupported) {
@@ -142,14 +164,17 @@ export default function useSpeechSynthesis(): UseSpeechSynthesisReturn {
     
     utterance.onstart = () => {
       setIsSpeaking(true);
+      setCurrentUtterance(utterance);
     };
     
     utterance.onend = () => {
       setIsSpeaking(false);
+      setCurrentUtterance(null);
     };
     
     utterance.onerror = () => {
       setIsSpeaking(false);
+      setCurrentUtterance(null);
     };
     
     window.speechSynthesis.speak(utterance);
@@ -159,6 +184,7 @@ export default function useSpeechSynthesis(): UseSpeechSynthesisReturn {
     if (isSupported) {
       window.speechSynthesis.cancel();
       setIsSpeaking(false);
+      setCurrentUtterance(null);
     }
   }, [isSupported]);
 
@@ -179,5 +205,6 @@ export default function useSpeechSynthesis(): UseSpeechSynthesisReturn {
     voices,
     settings,
     updateSettings,
+    currentUtterance
   };
 }

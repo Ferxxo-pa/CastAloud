@@ -24,6 +24,7 @@ interface UseOpenAITTSReturn {
   setSelectedVoice: (voice: string) => void;
   speed: number;
   setSpeed: (speed: number) => void;
+  currentText: string | null;
 }
 
 export default function useOpenAITTS(): UseOpenAITTSReturn {
