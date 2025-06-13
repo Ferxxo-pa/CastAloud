@@ -97,11 +97,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       },
       "frame": {
         "version": "1",
-        "name": "Cast Aloud",
+        "name": "castaloud",
         "iconUrl": `${baseUrl}/icon.png`,
         "homeUrl": baseUrl,
         "imageUrl": `${baseUrl}/api/frame/image?state=initial`,
-        "buttonTitle": "Open Cast Aloud",
+        "buttonTitle": "Open castaloud",
         "splashImageUrl": `${baseUrl}/api/frame/image?state=initial`,
         "splashBackgroundColor": "#8A63D2",
         "webhookUrl": `${baseUrl}/api/frame/action`

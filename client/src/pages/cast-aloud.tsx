@@ -159,7 +159,7 @@ export default function CastAloud() {
         <div className="p-4">
           <header className="mb-6">
             <div className="text-center">
-              <h1 className="text-2xl font-bold text-fc-gray-900">Cast Aloud</h1>
+              <h1 className="text-2xl font-bold text-fc-gray-900">castaloud</h1>
               <p className="text-fc-gray-600 mt-2">
                 Accessibility tools for reading and replying to casts
               </p>
