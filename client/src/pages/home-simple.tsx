@@ -85,16 +85,16 @@ export default function HomeSimple() {
 
   const readPageAloud = () => {
     const textToRead = `
-      Cast Aloud. Accessibility tools for reading and replying to social media posts.
+      Cast Aloud. Accessibility tools for reading and replying to casts.
       
-      Try the Voice Tools. The app helps you read social media posts aloud and create voice replies with AI assistance.
+      Try the Mini App. The mini app helps you read casts aloud and create voice replies with AI assistance.
       
       How it works:
-      1. Paste a social media post URL or text directly
+      1. Paste a Farcaster post URL or text directly
       2. Click "Read Aloud" to hear the content  
       3. Type your reply in the text area
       4. Get AI feedback or polish your reply
-      5. Copy the improved reply to post on social media
+      5. Copy the improved reply to post on Farcaster
     `;
 
     if (isSpeaking) {
@@ -119,7 +119,7 @@ export default function HomeSimple() {
           <div className="text-center">
             <h1 className="text-2xl font-bold text-fc-gray-900">Cast Aloud</h1>
             <p className="text-fc-gray-600 mt-2">
-              Accessibility tools for reading and replying to social media posts
+              Accessibility tools for reading and replying to casts
             </p>
           </div>
         </header>
@@ -153,14 +153,14 @@ export default function HomeSimple() {
               </>
             )}
           </button>
-          <h2 className="text-lg font-semibold mb-4 text-fc-gray-900">Voice Tools</h2>
+          <h2 className="text-lg font-semibold mb-4 text-fc-gray-900">Try the Mini App</h2>
           <p className="text-fc-gray-600 mb-4">
-            Read social media posts aloud and create voice replies with AI assistance.
+            The mini app helps you read casts aloud and create voice replies with AI assistance.
           </p>
           
           <div className="space-y-3">
             <button className="block w-full bg-fc-purple hover:bg-fc-purple-dark text-white py-3 px-4 rounded-lg text-center font-medium">
-              Read Social Post Aloud
+              Read Cast Aloud
             </button>
             
             <button 
@@ -280,11 +280,11 @@ export default function HomeSimple() {
           <div className="mt-6 p-4 bg-gray-50 rounded-lg">
             <h3 className="font-medium mb-2">How it works:</h3>
             <ol className="text-sm text-gray-600 space-y-1">
-              <li>1. 📝 Paste a social media post URL or text directly</li>
+              <li>1. 📝 Paste a Farcaster post URL or text directly</li>
               <li>2. 🔊 Click "Read Aloud" to hear the content</li>
               <li>3. ✍️ Type your reply in the text area</li>
               <li>4. 🤖 Get AI feedback or polish your reply</li>
-              <li>5. 📋 Copy the improved reply to post on social media</li>
+              <li>5. 📋 Copy the improved reply to post on Farcaster</li>
             </ol>
           </div>
         </div>

@@ -1,11 +1,11 @@
-import { posts, voiceComments, type Post, type VoiceComment, type InsertPost, type InsertVoiceComment } from "@shared/schema";
+import { casts, voiceComments, type Cast, type VoiceComment, type InsertCast, type InsertVoiceComment } from "@shared/schema";
 
 export interface IStorage {
-  // Post operations
-  getPost(id: number): Promise<Post | undefined>;
-  getPostByHash(hash: string): Promise<Post | undefined>;
-  createPost(post: InsertPost): Promise<Post>;
-  getCurrentPost(): Promise<Post | undefined>;
+  // Cast operations
+  getCast(id: number): Promise<Cast | undefined>;
+  getCastByHash(hash: string): Promise<Cast | undefined>;
+  createCast(cast: InsertCast): Promise<Cast>;
+  getCurrentCast(): Promise<Cast | undefined>;
   
   // Voice comment operations
   createVoiceComment(comment: InsertVoiceComment): Promise<VoiceComment>;
@@ -14,70 +14,63 @@ export interface IStorage {
 }
 
 export class MemStorage implements IStorage {
-  private posts: Map<number, Post>;
+  private casts: Map<number, Cast>;
   private voiceComments: Map<number, VoiceComment>;
-  private currentPostId: number;
+  private currentCastId: number;
   private currentVoiceCommentId: number;
 
   constructor() {
-    this.posts = new Map();
+    this.casts = new Map();
     this.voiceComments = new Map();
-    this.currentPostId = 1;
+    this.currentCastId = 1;
     this.currentVoiceCommentId = 1;
     
-    // Initialize with a sample post for demo purposes
-    this.initializeSamplePost();
+    // Initialize with a sample cast for demo purposes
+    this.initializeSampleCast();
   }
 
-  private initializeSamplePost() {
-    const samplePost: Post = {
-      id: this.currentPostId++,
+  private initializeSampleCast() {
+    const sampleCast: Cast = {
+      id: this.currentCastId++,
       hash: "0x123abc",
-      authorId: "1234",
+      authorFid: 1234,
       authorUsername: "alice",
       content: "Just discovered this amazing new coffee shop in downtown! The barista made the most incredible latte art. Perfect spot for morning meetings or quiet work sessions. Highly recommend checking it out! ☕️✨",
       timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
       likesCount: 24,
-      sharesCount: 8,
+      recastsCount: 8,
       repliesCount: 12,
     };
-    this.posts.set(samplePost.id, samplePost);
+    this.casts.set(sampleCast.id, sampleCast);
   }
 
-  async getPost(id: number): Promise<Post | undefined> {
-    return this.posts.get(id);
+  async getCast(id: number): Promise<Cast | undefined> {
+    return this.casts.get(id);
   }
 
-  async getPostByHash(hash: string): Promise<Post | undefined> {
-    return Array.from(this.posts.values()).find(post => post.hash === hash);
+  async getCastByHash(hash: string): Promise<Cast | undefined> {
+    return Array.from(this.casts.values()).find(cast => cast.hash === hash);
   }
 
-  async createPost(insertPost: InsertPost): Promise<Post> {
-    const post: Post = {
-      id: this.currentPostId++,
-      ...insertPost,
-      likesCount: insertPost.likesCount || 0,
-      sharesCount: insertPost.sharesCount || 0,
-      repliesCount: insertPost.repliesCount || 0,
+  async createCast(insertCast: InsertCast): Promise<Cast> {
+    const cast: Cast = {
+      ...insertCast,
+      id: this.currentCastId++,
     };
-    this.posts.set(post.id, post);
-    return post;
+    this.casts.set(cast.id, cast);
+    return cast;
   }
 
-  async getCurrentPost(): Promise<Post | undefined> {
-    const allPosts = Array.from(this.posts.values());
-    return allPosts.length > 0 ? allPosts[allPosts.length - 1] : undefined;
+  async getCurrentCast(): Promise<Cast | undefined> {
+    // Return the first cast for now (in a real app, this would be more sophisticated)
+    return Array.from(this.casts.values())[0];
   }
 
   async createVoiceComment(insertComment: InsertVoiceComment): Promise<VoiceComment> {
     const comment: VoiceComment = {
+      ...insertComment,
       id: this.currentVoiceCommentId++,
       createdAt: new Date(),
-      postHash: insertComment.postHash,
-      originalAudio: insertComment.originalAudio || null,
-      transcription: insertComment.transcription,
-      generatedComment: insertComment.generatedComment,
-      posted: insertComment.posted || false,
     };
     this.voiceComments.set(comment.id, comment);
     return comment;

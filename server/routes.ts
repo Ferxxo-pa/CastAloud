@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertVoiceCommentSchema } from "@shared/schema";
+import { handleFrameIndex, handleFrameAction, handleFrameImage } from "./frame";
 import OpenAI from "openai";
 import multer from "multer";
 import fs from "fs";
@@ -32,7 +33,7 @@ async function polishReply(text: string): Promise<string> {
     messages: [
       {
         role: "system",
-        content: "You are a helpful assistant that polishes social media replies. Make the text more clear, friendly, and well-written while preserving the original meaning and tone. Keep it concise and natural for social media."
+        content: "You are a helpful assistant that polishes social media replies. Make the text more clear, friendly, and well-written while preserving the original meaning and tone. Keep it concise and natural for Farcaster."
       },
       {
         role: "user",
@@ -81,12 +82,19 @@ async function getFeedbackOnComment(text: string): Promise<{ feedback: string; p
 
 export async function registerRoutes(app: Express): Promise<Server> {
 
-  // Basic web app manifest
+  // Frame routes
+  app.get("/frame", handleFrameIndex);
+  app.post("/api/frame/action", handleFrameAction);
+  app.get("/api/frame/image", handleFrameImage);
+  
+  // Mini App manifest for Farcaster
   app.get("/manifest.json", (req, res) => {
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
+    
     res.json({
       "name": "Cast Aloud",
       "short_name": "Cast Aloud",
-      "description": "Voice accessibility tools for reading and replying to social media posts",
+      "description": "Voice accessibility tools for reading and replying to Farcaster casts",
       "start_url": "/",
       "display": "standalone",
       "background_color": "#8A63D2",
@@ -97,19 +105,117 @@ export async function registerRoutes(app: Express): Promise<Server> {
         {
           "src": "/icon.png",
           "sizes": "256x256",
-          "type": "image/png",
+          "type": "image/svg+xml",
           "purpose": "any maskable"
         }
       ],
-      "categories": ["accessibility", "utilities"],
+      "categories": ["accessibility", "social", "utilities"],
       "lang": "en",
-      "dir": "ltr"
+      "dir": "ltr",
+      "farcaster": {
+        "version": "1",
+        "name": "Cast Aloud",
+        "description": "Voice accessibility tools for Farcaster",
+        "iconUrl": `${baseUrl}/icon.png`,
+        "splashImageUrl": `${baseUrl}/api/frame/image?state=initial`,
+        "homeUrl": `${baseUrl}/`,
+        "buttonTitle": "Open Cast Aloud",
+        "splashBackgroundColor": "#8A63D2",
+        "webhookUrl": `${baseUrl}/api/frame/action`,
+        "features": ["voice", "accessibility", "tts", "transcription"]
+      },
+      "accountAssociation": {
+        "header": "eyJmaWQiOjEsInR5cGUiOiJjdXN0b2R5IiwibWFkZSI6MX0",
+        "payload": "eyJkb21haW4iOiJjYXN0YWxvdWQuY29tIn0",
+        "signature": "0x..."
+      }
     });
   });
   
+  // Farcaster API endpoints for miniapp testing
+  app.get("/api/farcaster/user/:fid", async (req, res) => {
+    try {
+      const { fid } = req.params;
+      
+      const response = await fetch(`https://api.neynar.com/v2/farcaster/user/bulk?fids=${fid}`, {
+        headers: {
+          'accept': 'application/json',
+          'api_key': process.env.NEYNAR_API_KEY || ''
+        }
+      });
+      
+      if (!response.ok) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+      
+      const data = await response.json();
+      const user = data.users[0];
+      
+      res.json({
+        fid: user.fid,
+        username: user.username,
+        displayName: user.display_name,
+        pfpUrl: user.pfp_url
+      });
+    } catch (error) {
+      console.error('Error fetching user:', error);
+      res.status(500).json({ error: 'Failed to fetch user' });
+    }
+  });
 
+  app.get("/api/farcaster/cast/:hash", async (req, res) => {
+    try {
+      const { hash } = req.params;
+      
+      const response = await fetch(`https://api.neynar.com/v2/farcaster/cast?identifier=${hash}&type=hash`, {
+        headers: {
+          'accept': 'application/json',
+          'api_key': process.env.NEYNAR_API_KEY || ''
+        }
+      });
+      
+      if (!response.ok) {
+        return res.status(404).json({ error: 'Cast not found' });
+      }
+      
+      const data = await response.json();
+      const cast = data.cast;
+      
+      res.json({
+        hash: cast.hash,
+        text: cast.text,
+        author: {
+          fid: cast.author.fid,
+          username: cast.author.username,
+          displayName: cast.author.display_name,
+          pfpUrl: cast.author.pfp_url
+        }
+      });
+    } catch (error) {
+      console.error('Error fetching cast:', error);
+      res.status(500).json({ error: 'Failed to fetch cast' });
+    }
+  });
+
+  // Webhook for Farcaster Frame validation
+  app.post("/webhook/farcaster", (req, res) => {
+    const { type, data } = req.body;
+    
+    // Handle different webhook types
+    switch (type) {
+      case 'frame_validation':
+        res.json({ success: true, message: "Cast Aloud Frame validated" });
+        break;
+      case 'cast_action':
+        // Handle cast actions when frame is used
+        res.json({ success: true, message: "Action processed" });
+        break;
+      default:
+        res.json({ success: true, message: "Webhook received" });
+    }
+  });
   
-  // TTS endpoint for voice synthesis
+  // TTS endpoint for Frame interactions
   app.post("/api/tts", async (req, res) => {
     try {
       const { text, voice = "alloy" } = req.body;
@@ -273,17 +379,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     `);
   });
 
-  // Get current post
-  app.get("/api/post/current", async (req, res) => {
+  // Get current cast
+  app.get("/api/cast/current", async (req, res) => {
     try {
-      const post = await storage.getCurrentPost();
-      if (!post) {
-        return res.status(404).json({ message: "No post found" });
+      const cast = await storage.getCurrentCast();
+      if (!cast) {
+        return res.status(404).json({ message: "No cast found" });
       }
-      res.json(post);
+      res.json(cast);
     } catch (error) {
-      console.error("Error fetching current post:", error);
-      res.status(500).json({ message: "Failed to fetch post" });
+      console.error("Error fetching current cast:", error);
+      res.status(500).json({ message: "Failed to fetch cast" });
     }
   });
 
@@ -394,9 +500,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "No audio file provided" });
       }
 
-      const { postHash, postContent } = req.body;
-      if (!postHash || !postContent) {
-        return res.status(400).json({ message: "Post hash and content are required" });
+      const { castHash, castContent } = req.body;
+      if (!castHash || !castContent) {
+        return res.status(400).json({ message: "Cast hash and content are required" });
       }
 
       // Transcribe audio using Whisper
@@ -425,7 +531,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           },
           {
             role: "user",
-            content: `Original post: "${postContent}"\n\nUser's voice input: "${transcription.text}"\n\nPlease turn this voice input into a good reply to the original post.`
+            content: `Original post: "${castContent}"\n\nUser's voice input: "${transcription.text}"\n\nPlease turn this voice input into a good reply to the original post.`
           }
         ],
         response_format: { type: "json_object" },
@@ -436,7 +542,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Store the voice comment
       const voiceComment = await storage.createVoiceComment({
-        postHash: postHash,
+        castHash,
         originalAudio: null, // We're not storing the audio file for now
         transcription: transcription.text,
         generatedComment,
@@ -541,35 +647,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log("Processing URL:", url);
 
-      // Extract post hash from social media URLs
-      let postHash = null;
+      // Extract cast hash from Warpcast or Farcaster URLs
+      let castHash = null;
       if (url.includes('warpcast.com/') || url.includes('farcaster.xyz/')) {
         // Try different URL patterns
         // Pattern 1: /0x[hash]
         let hashMatch = url.match(/\/0x([a-fA-F0-9]+)/);
         if (hashMatch) {
-          postHash = '0x' + hashMatch[1];
+          castHash = '0x' + hashMatch[1];
         } else {
           // Pattern 2: /conversation/0x[hash]
           hashMatch = url.match(/\/conversation\/0x([a-fA-F0-9]+)/);
           if (hashMatch) {
-            postHash = '0x' + hashMatch[1];
+            castHash = '0x' + hashMatch[1];
           } else {
             // Pattern 3: Extract hash from end of URL path
             const urlParts = url.split('/');
             const lastPart = urlParts[urlParts.length - 1];
             if (lastPart && lastPart.startsWith('0x')) {
-              postHash = lastPart;
+              castHash = lastPart;
             }
           }
         }
       }
 
-      console.log("Extracted post hash:", postHash);
+      console.log("Extracted cast hash:", castHash);
 
-      if (!postHash) {
+      if (!castHash) {
         console.log("Failed to extract hash from URL:", url);
-        return res.status(400).json({ error: "Could not extract post hash from URL. Please make sure it's a valid social media post URL." });
+        return res.status(400).json({ error: "Could not extract cast hash from URL. Please make sure it's a valid Warpcast post URL." });
       }
 
       if (!process.env.NEYNAR_API_KEY) {
@@ -581,8 +687,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let apiUsed = 'Neynar';
 
       // Try with the extracted hash first
-      console.log("Trying Neynar API with hash:", postHash);
-      let neynarResponse = await fetch(`https://api.neynar.com/v2/farcaster/cast?identifier=${postHash}&type=hash`, {
+      console.log("Trying Neynar API with hash:", castHash);
+      let neynarResponse = await fetch(`https://api.neynar.com/v2/farcaster/cast?identifier=${castHash}&type=hash`, {
         headers: {
           'api_key': process.env.NEYNAR_API_KEY,
           'accept': 'application/json'
@@ -602,8 +708,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       if (!neynarResponse.ok) {
         // Try alternative V1 API if V2 fails
-        console.log("V2 failed, trying V1 API with hash:", postHash);
-        neynarResponse = await fetch(`https://api.neynar.com/v1/farcaster/cast?hash=${postHash}`, {
+        console.log("V2 failed, trying V1 API with hash:", castHash);
+        neynarResponse = await fetch(`https://api.neynar.com/v1/farcaster/cast?hash=${castHash}`, {
           headers: {
             'api_key': process.env.NEYNAR_API_KEY,
             'accept': 'application/json'
