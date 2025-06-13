@@ -468,6 +468,12 @@ app.use((req, res, next) => {
 
 
 
+  // Temporarily redirect root to working version, but we'll fix the original React app
+  // app.get('/', (req, res) => {
+  //   res.redirect('/app');
+  // });
+
+  // Keep original Vite setup for development testing if needed
   // Setup vite in development, serve static files in production
   // Check NODE_ENV instead of app.get("env") for better reliability
   if (process.env.NODE_ENV === "development") {
