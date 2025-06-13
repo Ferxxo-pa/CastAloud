@@ -31,6 +31,7 @@ export default function useOpenAITTS(): UseOpenAITTSReturn {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [selectedVoice, setSelectedVoice] = useState('alloy');
   const [speed, setSpeed] = useState(1.0);
+  const [currentText, setCurrentText] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const speak = async (text: string) => {
@@ -39,6 +40,7 @@ export default function useOpenAITTS(): UseOpenAITTSReturn {
       stop();
       
       setIsSpeaking(true);
+      setCurrentText(text);
 
       // Call our TTS endpoint
       const response = await fetch('/api/tts', {
@@ -66,11 +68,13 @@ export default function useOpenAITTS(): UseOpenAITTSReturn {
 
       audio.onended = () => {
         setIsSpeaking(false);
+        setCurrentText(null);
         URL.revokeObjectURL(audioUrl);
       };
 
       audio.onerror = () => {
         setIsSpeaking(false);
+        setCurrentText(null);
         URL.revokeObjectURL(audioUrl);
       };
 
@@ -78,6 +82,7 @@ export default function useOpenAITTS(): UseOpenAITTSReturn {
     } catch (error) {
       console.error('Error with text-to-speech:', error);
       setIsSpeaking(false);
+      setCurrentText(null);
     }
   };
 
@@ -88,6 +93,7 @@ export default function useOpenAITTS(): UseOpenAITTSReturn {
       audioRef.current = null;
     }
     setIsSpeaking(false);
+    setCurrentText(null);
   };
 
   return {
@@ -98,6 +104,7 @@ export default function useOpenAITTS(): UseOpenAITTSReturn {
     selectedVoice,
     setSelectedVoice,
     speed,
-    setSpeed
+    setSpeed,
+    currentText
   };
 }
