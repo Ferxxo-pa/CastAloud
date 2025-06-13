@@ -466,6 +466,16 @@ app.get('/test-manifest', (req, res) => {
   });
 });
 
+// Simple health check endpoint
+app.get('/health', (req, res) => {
+  res.setHeader('Content-Type', 'text/html');
+  res.send(`
+    <h1 style="color: #8A63D2;">Cast Aloud Server - Running</h1>
+    <p>Server is working correctly at ${new Date().toISOString()}</p>
+    <p><a href="/">Go to Cast Aloud App</a></p>
+  `);
+});
+
 // Working Cast Aloud app served directly from Express
 app.get('/app', (req, res) => {
   res.setHeader('Content-Type', 'text/html');
