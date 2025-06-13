@@ -37,8 +37,8 @@ function App() {
         } else {
           console.log('Not in Frame context, skipping Frame SDK initialization');
         }
-      } catch (error) {
-        console.log('Frame SDK not available or failed to initialize:', error instanceof Error ? error.message : 'Unknown error');
+      } catch (error: any) {
+        console.log('Frame SDK not available or failed to initialize:', error?.message || 'Unknown error');
         // Continue without Frame SDK - this is expected in normal web context
       }
     }
