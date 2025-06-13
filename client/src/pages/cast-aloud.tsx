@@ -92,15 +92,10 @@ export default function CastAloud() {
           utterance.pitch = browserVoice.settings.pitch;
           utterance.volume = browserVoice.settings.volume;
           
+          let wordIndex = uiState.wordIndex;
           utterance.onboundary = (event) => {
             if (event.name === 'word') {
-              // Calculate the actual word index relative to the original text during speed changes
-              const spokenText = cleanedText.substring(0, event.charIndex);
-              const spokenWords = spokenText.split(/\s+/).filter(word => word.length > 0);
-              // Add the preserved starting word index to maintain continuity
-              const actualWordIndex = uiState.wordIndex + spokenWords.length - 1;
-              
-              setCurrentWordIndex(actualWordIndex);
+              setCurrentWordIndex(wordIndex);
               
               // Auto-expand text when speech reaches truncation point (speed change scenario)
               const maxLength = 300;
@@ -108,8 +103,8 @@ export default function CastAloud() {
               if (shouldTruncate && !isTextExpanded) {
                 const truncatedText = castText.substring(0, maxLength);
                 const truncatedWords = cleanTextForSpeech(truncatedText).split(/\s+/).filter(word => word.length > 0);
-                if (actualWordIndex >= truncatedWords.length - 2) {
-                  console.log('Auto-expanding text during speed change at word', actualWordIndex);
+                if (wordIndex >= truncatedWords.length - 2) {
+                  console.log('Auto-expanding text during speed change at word', wordIndex);
                   setIsTextExpanded(true);
                   // Update speechWords with slight delay to maintain highlighting sync
                   setTimeout(() => {
@@ -119,6 +114,8 @@ export default function CastAloud() {
                   }, 50);
                 }
               }
+              
+              wordIndex++;
             }
           };
           
@@ -248,15 +245,10 @@ export default function CastAloud() {
       utterance.pitch = browserVoice.settings.pitch;
       utterance.volume = browserVoice.settings.volume;
       
+      let wordIndex = startWordIndex;
       utterance.onboundary = (event) => {
         if (event.name === 'word') {
-          // Use the actual character position from the speech synthesis event
-          const spokenText = cleanedText.substring(0, event.charIndex);
-          const spokenWords = spokenText.split(/\s+/).filter(word => word.length > 0);
-          // Add the starting word index to maintain correct position in full text
-          const actualWordIndex = startWordIndex + spokenWords.length - 1;
-          
-          setCurrentWordIndex(actualWordIndex);
+          setCurrentWordIndex(wordIndex);
           
           // Auto-expand text when speech reaches truncation point
           const maxLength = 300;
@@ -265,8 +257,8 @@ export default function CastAloud() {
             const truncatedText = castText.substring(0, maxLength);
             const truncatedWords = cleanTextForSpeech(truncatedText).split(/\s+/).filter(word => word.length > 0);
             // Expand when we're within 2 words of the truncation point
-            if (actualWordIndex >= truncatedWords.length - 2) {
-              console.log('Auto-expanding text as speech reaches "..." at word', actualWordIndex);
+            if (wordIndex >= truncatedWords.length - 2) {
+              console.log('Auto-expanding text as speech reaches "..." at word', wordIndex);
               setIsTextExpanded(true);
               // Update speechWords immediately to maintain highlighting sync
               setTimeout(() => {
@@ -276,6 +268,8 @@ export default function CastAloud() {
               }, 50);
             }
           }
+          
+          wordIndex++;
         }
       };
       
