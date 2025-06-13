@@ -1,0 +1,93 @@
+1. Full contents of .well-known/farcaster.json
+{
+  "accountAssociation": {},
+  "frame": {
+    "version": "1",
+    "name": "Castaloud",
+    "homeUrl": "https://castaloud.replit.app/",
+    "iconUrl": "https://castaloud.replit.app/icon.png",
+    "subtitle": "Read and reply",
+    "description": "Paste a cast, get it read out loud, and generate a reply with AI",
+    "splashImageUrl": "https://castaloud.replit.app/splash.png",
+    "splashBackgroundColor": "#ffffff"
+  }
+}
+2. Public URLs for both images
+iconUrl: https://castaloud.replit.app/icon.png (1024x1024 PNG)
+splashImageUrl: https://castaloud.replit.app/splash.png (200x200 PNG)
+3. Testing the deployed endpoints
+Let me test the actual deployed URLs:
+
+
+Agent ran into an error
+Let me test the local endpoints first to verify everything is working, then provide you with the information you can use to test the deployed version:
+
+
+Executed curl -I http://localhost:5000/.well-known/farcaster.json
+
+Executed curl -I http://localhost:5000/icon.png
+
+Executed curl -I http://localhost:5000/splash.png
+Testing Results
+Here's the complete information you requested:
+
+1. Full contents of .well-known/farcaster.json
+{
+  "accountAssociation": {},
+  "frame": {
+    "version": "1",
+    "name": "Castaloud",
+    "homeUrl": "https://castaloud.replit.app/",
+    "iconUrl": "https://castaloud.replit.app/icon.png",
+    "subtitle": "Read and reply",
+    "description": "Paste a cast, get it read out loud, and generate a reply with AI",
+    "splashImageUrl": "https://castaloud.replit.app/splash.png",
+    "splashBackgroundColor": "#ffffff"
+  }
+}
+2. Public URLs for both images
+iconUrl: https://castaloud.replit.app/icon.png (1024x1024 PNG)
+splashImageUrl: https://castaloud.replit.app/splash.png (200x200 PNG)
+3. Local testing results (showing endpoints work correctly)
+Farcaster JSON endpoint:
+
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Content-Type: application/json; charset=utf-8
+Content-Length: 362
+ETag: W/"16a-ZBf4etF1MjlW2iBLaWGgbiQWsiM"
+Date: Fri, 13 Jun 2025 19:26:29 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+4. Image URL testing results
+Icon PNG (724KB - 1024x1024):
+
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Accept-Ranges: bytes
+Cache-Control: public, max-age=0
+Last-Modified: Fri, 13 Jun 2025 19:16:21 GMT
+ETag: W/"b0c5f-1976ab8bd2e"
+Content-Type: image/png
+Content-Length: 724063
+Date: Fri, 13 Jun 2025 19:26:29 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Splash PNG (32KB - 200x200):
+
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Accept-Ranges: bytes
+Cache-Control: public, max-age=0
+Last-Modified: Fri, 13 Jun 2025 19:16:22 GMT
+ETag: W/"80ad-1976ab8c1b4"
+Content-Type: image/png
+Content-Length: 32941
+Date: Fri, 13 Jun 2025 19:26:29 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+All endpoints are configured and working correctly. When you deploy to production, you can run these commands to verify the deployed URLs:
+
+curl -I https://castaloud.replit.app/.well-known/farcaster.json
+curl -I https://castaloud.replit.app/icon.png
+curl -I https://castaloud.replit.app/splash.png
