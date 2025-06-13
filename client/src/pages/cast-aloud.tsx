@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -35,7 +35,7 @@ export default function CastAloud() {
 
   const currentVoiceSystem = voiceType === "openai" ? openaiVoice : browserVoice;
 
-  // Monitor voice settings changes during playback
+  // Monitor voice settings changes during playback - simpler approach
   useEffect(() => {
     if (!isCurrentlyReading || speechWords.length === 0) return;
 
@@ -51,62 +51,28 @@ export default function CastAloud() {
       currentSettings.voice !== lastVoiceSettings.voice;
 
     if (settingsChanged && isCurrentlyReading && currentWordIndex >= 0) {
+      console.log('Speed changed during playback, restarting from word:', currentWordIndex);
+      
+      // Stop current speech
+      currentVoiceSystem.stop();
+      
       // Create remaining text from current position
       const remainingWords = speechWords.slice(currentWordIndex);
       const remainingText = remainingWords.join(' ');
       
       if (remainingText.trim()) {
-        // Stop current speech
-        currentVoiceSystem.stop();
-        
-        // Restart immediately with new settings from current position
-        const cleanedText = cleanTextForSpeech(remainingText);
-        
-        if (voiceType === "browser" && 'speechSynthesis' in window) {
-          const utterance = new SpeechSynthesisUtterance(cleanedText);
-          if (browserVoice.settings.voice) {
-            utterance.voice = browserVoice.settings.voice;
+        // Small delay then restart immediately
+        setTimeout(() => {
+          // Only restart if still reading (state hasn't changed)
+          if (isCurrentlyReading && speechWords.length > 0) {
+            startSpeechFromWord(remainingText, currentWordIndex, true);
           }
-          utterance.rate = browserVoice.settings.rate;
-          utterance.pitch = browserVoice.settings.pitch;
-          utterance.volume = browserVoice.settings.volume;
-          
-          let wordIndex = currentWordIndex;
-          utterance.onboundary = (event) => {
-            if (event.name === 'word' && isCurrentlyReading) {
-              setCurrentWordIndex(wordIndex);
-              wordIndex++;
-            }
-          };
-          
-          utterance.onend = () => {
-            setCurrentWordIndex(-1);
-            setSpeechWords([]);
-            setSpeechUtterance(null);
-            setIsPaused(false);
-            setIsCurrentlyReading(false);
-          };
-          
-          utterance.onerror = () => {
-            setCurrentWordIndex(-1);
-            setSpeechWords([]);
-            setSpeechUtterance(null);
-            setIsPaused(false);
-            setIsCurrentlyReading(false);
-          };
-          
-          setSpeechUtterance(utterance);
-          speechSynthesis.speak(utterance);
-        } else {
-          currentVoiceSystem.speak(cleanedText);
-          // For OpenAI, simulate highlighting for remaining words
-          simulateWordHighlighting(remainingWords, 0);
-        }
+        }, 10);
       }
       
       setLastVoiceSettings(currentSettings);
     }
-  }, [browserVoice.settings, openaiVoice.speed, voiceType, isCurrentlyReading, currentWordIndex, speechWords]);
+  }, [browserVoice.settings, openaiVoice.speed, voiceType]);
 
   // Function to clean text for speech synthesis
   const cleanTextForSpeech = (text: string): string => {
