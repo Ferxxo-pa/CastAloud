@@ -84,6 +84,88 @@ app.get('/test-manifest', (req, res) => {
   });
 });
 
+// Cache clearing endpoint
+app.get('/clear-cache', (req, res) => {
+  res.setHeader('Content-Type', 'text/html');
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  
+  const html = `
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clear Cache - Cast Aloud</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 4px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        button { background: #8A63D2; color: white; padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; }
+        button:hover { background: #7652C4; }
+    </style>
+</head>
+<body>
+    <h1>Cast Aloud - Clear Cache</h1>
+    <div id="status"></div>
+    <button onclick="clearAllCaches()">Clear All Caches</button>
+    <div style="margin-top: 20px;">
+        <a href="/" style="color: #8A63D2; text-decoration: none;">← Back to Cast Aloud</a>
+    </div>
+    
+    <script>
+        async function clearAllCaches() {
+            const status = document.getElementById('status');
+            status.innerHTML = '<div class="info">Clearing caches...</div>';
+            
+            try {
+                // Unregister all service workers
+                if ('serviceWorker' in navigator) {
+                    const registrations = await navigator.serviceWorker.getRegistrations();
+                    for (let registration of registrations) {
+                        await registration.unregister();
+                        status.innerHTML += '<div class="success">Unregistered service worker</div>';
+                    }
+                }
+                
+                // Clear all caches
+                if ('caches' in window) {
+                    const cacheNames = await caches.keys();
+                    await Promise.all(
+                        cacheNames.map(async name => {
+                            await caches.delete(name);
+                            status.innerHTML += '<div class="success">Cleared cache: ' + name + '</div>';
+                        })
+                    );
+                }
+                
+                // Clear localStorage and sessionStorage
+                localStorage.clear();
+                sessionStorage.clear();
+                status.innerHTML += '<div class="success">Cleared local storage</div>';
+                
+                status.innerHTML += '<div class="success"><strong>All caches cleared successfully!</strong></div>';
+                status.innerHTML += '<div class="info">Redirecting to main app in 2 seconds...</div>';
+                
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 2000);
+                
+            } catch (error) {
+                status.innerHTML += '<div class="error">Error: ' + error.message + '</div>';
+            }
+        }
+        
+        // Auto-clear on page load
+        window.addEventListener('load', clearAllCaches);
+    </script>
+</body>
+</html>`;
+  
+  res.send(html);
+});
+
 // Configure static file serving with proper MIME types
 app.use(express.static('public', {
   setHeaders: (res, path) => {
@@ -103,6 +185,16 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 
+
+// No-cache headers for HTML pages to prevent caching issues
+app.use((req, res, next) => {
+  if (req.path === '/' || req.path.endsWith('.html') || req.accepts('html')) {
+    res.header('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.header('Pragma', 'no-cache');
+    res.header('Expires', '0');
+  }
+  next();
+});
 
 // CORS headers for Farcaster miniapp testing
 app.use((req, res, next) => {
