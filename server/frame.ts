@@ -136,7 +136,7 @@ export async function handleFrameAction(req: Request, res: Response) {
           });
 
           const html = generateFrameHTML(
-            'Reading castaloud',
+            'Reading Castaloud',
             image,
             [
               { text: '⏹️ Stop', action: 'post' },
