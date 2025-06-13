@@ -48,8 +48,8 @@ app.get('/splash.png', (req, res) => {
   res.sendFile(path.resolve('./public/splash.png'));
 });
 
-// Serve the complete Cast Aloud app directly from Express
-app.get('/', (req, res) => {
+// Serve the complete Cast Aloud app directly from Express - DISABLED IN FAVOR OF ROOT
+app.get('/app-backup', (req, res) => {
   res.setHeader('Content-Type', 'text/html');
   res.send(`<!DOCTYPE html>
 <html lang="en">
@@ -872,7 +872,384 @@ app.use((req, res, next) => {
   
   // Override the root route AFTER Vite setup to ensure it takes precedence
   app.get('/', (req, res) => {
-    res.redirect('/app');
+    res.setHeader('Content-Type', 'text/html');
+    res.send(`<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cast Aloud - Voice Accessibility for Farcaster</title>
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            background: #fafafa;
+        }
+        .min-h-screen { min-height: 100vh; }
+        .bg-fc-gray-50 { background-color: #fafafa; }
+        .max-w-md { max-width: 28rem; }
+        .mx-auto { margin-left: auto; margin-right: auto; }
+        .p-4 { padding: 1rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .text-center { text-align: center; }
+        .text-2xl { font-size: 1.5rem; line-height: 2rem; }
+        .font-bold { font-weight: 700; }
+        .text-fc-gray-900 { color: #111827; }
+        .text-fc-gray-600 { color: #6b7280; }
+        .mt-2 { margin-top: 0.5rem; }
+        .bg-white { background-color: #ffffff; }
+        .rounded-lg { border-radius: 0.5rem; }
+        .p-6 { padding: 1.5rem; }
+        .border { border-width: 1px; }
+        .border-fc-gray-200 { border-color: #e5e7eb; }
+        .relative { position: relative; }
+        .absolute { position: absolute; }
+        .top-4 { top: 1rem; }
+        .right-4 { right: 1rem; }
+        .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+        .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+        .transition-colors { transition-property: color, background-color, border-color, text-decoration-color, fill, stroke; }
+        .duration-200 { transition-duration: 200ms; }
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .gap-2 { gap: 0.5rem; }
+        .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+        .font-medium { font-weight: 500; }
+        .bg-fc-purple\\/10 { background-color: rgba(138, 99, 210, 0.1); }
+        .hover\\:bg-fc-purple\\/20:hover { background-color: rgba(138, 99, 210, 0.2); }
+        .text-fc-purple { color: #8A63D2; }
+        .bg-fc-error\\/10 { background-color: rgba(239, 68, 68, 0.1); }
+        .hover\\:bg-fc-error\\/20:hover { background-color: rgba(239, 68, 68, 0.2); }
+        .text-fc-error { color: #ef4444; }
+        .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+        .font-semibold { font-weight: 600; }
+        .mb-4 { margin-bottom: 1rem; }
+        .space-y-3 > * + * { margin-top: 0.75rem; }
+        .block { display: block; }
+        .w-full { width: 100%; }
+        .bg-fc-purple { background-color: #8A63D2; }
+        .hover\\:bg-fc-purple-dark:hover { background-color: #7652C4; }
+        .text-white { color: #ffffff; }
+        .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+        .px-4 { padding-left: 1rem; padding-right: 1rem; }
+        .cursor-pointer { cursor: pointer; }
+        .bg-fc-gray-200 { background-color: #e5e7eb; }
+        .hover\\:bg-fc-gray-300:hover { background-color: #d1d5db; }
+        .text-fc-gray-800 { color: #1f2937; }
+        .hover\\:text-fc-gray-900:hover { color: #111827; }
+        .mt-4 { margin-top: 1rem; }
+        .mt-6 { margin-top: 1.5rem; }
+        .bg-gray-50 { background-color: #f9fafb; }
+        .border-fc-gray-300 { border-color: #d1d5db; }
+        .rounded-md { border-radius: 0.375rem; }
+        .focus\\:ring-2:focus { box-shadow: 0 0 0 2px rgba(138, 99, 210, 0.5); }
+        .focus\\:ring-fc-purple:focus { --tw-ring-color: #8A63D2; }
+        .focus\\:border-transparent:focus { border-color: transparent; }
+        .bg-gray-100 { background-color: #f3f4f6; }
+        .hover\\:bg-gray-200:hover { background-color: #e5e7eb; }
+        .text-gray-700 { color: #374151; }
+        .bg-red-500 { background-color: #ef4444; }
+        .hover\\:bg-red-600:hover { background-color: #dc2626; }
+        .hidden { display: none; }
+        
+        .voice-settings {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .form-group {
+            margin: 12px 0;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 4px;
+            font-weight: 500;
+            color: #374151;
+        }
+        
+        .form-group select,
+        .form-group input[type="range"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+        }
+        
+        .form-group input[type="range"] {
+            padding: 0;
+        }
+        
+        .how-it-works {
+            background: #f9fafb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .how-it-works ol {
+            margin: 0;
+            padding-left: 20px;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+        
+        .how-it-works ol li {
+            margin: 4px 0;
+        }
+        
+        button {
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body>
+    <div class="min-h-screen bg-fc-gray-50">
+        <div class="max-w-md mx-auto p-4">
+            <header class="mb-6">
+                <div class="text-center">
+                    <h1 class="text-2xl font-bold text-fc-gray-900" style="color: #8A63D2;">Cast Aloud</h1>
+                    <p class="text-fc-gray-600 mt-2">
+                        Accessibility tools for reading and replying to casts
+                    </p>
+                </div>
+            </header>
+
+            <div class="bg-white rounded-lg p-6 border border-fc-gray-200 relative">
+                <button
+                    id="readAloudBtn"
+                    onclick="readPageAloud()"
+                    class="absolute top-4 right-4 px-3 py-2 rounded-lg transition-colors duration-200 flex items-center gap-2 text-sm font-medium bg-fc-purple/10 hover:bg-fc-purple/20 text-fc-purple"
+                    title="Read page aloud"
+                >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+                        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+                    </svg>
+                    <span id="readAloudText">Read Aloud</span>
+                </button>
+                
+                <h2 class="text-lg font-semibold mb-4 text-fc-gray-900">Try the Mini App</h2>
+                <p class="text-fc-gray-600 mb-4">
+                    The mini app helps you read casts aloud and create voice replies with AI assistance.
+                </p>
+                
+                <div class="space-y-3">
+                    <button onclick="readSampleCast()" class="block w-full bg-fc-purple hover:bg-fc-purple-dark text-white py-3 px-4 rounded-lg text-center font-medium">
+                        Read Cast Aloud
+                    </button>
+                    
+                    <button 
+                        onclick="toggleVoiceSettings()"
+                        class="block w-full bg-fc-gray-200 hover:bg-fc-gray-300 text-fc-gray-800 hover:text-fc-gray-900 py-3 px-4 rounded-lg text-center font-medium transition-colors duration-200"
+                    >
+                        Voice Settings
+                    </button>
+                </div>
+
+                <div id="voiceSettings" class="voice-settings hidden">
+                    <h3 style="margin-top: 0; font-weight: 500;">Voice Settings</h3>
+                    
+                    <div class="form-group">
+                        <label>Voice:</label>
+                        <select id="voiceSelect">
+                            <option value="">Loading voices...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Speed: <span id="speedValue">0.9x</span></label>
+                        <input type="range" id="speedSlider" min="0.5" max="2" step="0.1" value="0.9">
+                    </div>
+                    
+                    <button
+                        id="testVoiceBtn"
+                        onclick="testVoice()"
+                        class="w-full font-medium py-2 px-4 rounded-lg transition-colors duration-200 bg-gray-100 hover:bg-gray-200 text-gray-700"
+                    >
+                        Test Voice
+                    </button>
+                </div>
+
+                <div class="how-it-works">
+                    <h3 style="margin-top: 0; font-weight: 500;">How it works:</h3>
+                    <ol>
+                        <li>📝 Paste a Farcaster post URL or text directly</li>
+                        <li>🔊 Click "Read Aloud" to hear the content</li>
+                        <li>✍️ Type your reply in the text area</li>
+                        <li>🤖 Get AI feedback or polish your reply</li>
+                        <li>📋 Copy the improved reply to post on Farcaster</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let voices = [];
+        let selectedVoice = null;
+        let speechRate = 0.9;
+        let isSpeaking = false;
+        let showingSettings = false;
+        let isTestVoicePlaying = false;
+        
+        // Load available voices
+        function loadVoices() {
+            voices = speechSynthesis.getVoices();
+            const voiceSelect = document.getElementById('voiceSelect');
+            voiceSelect.innerHTML = '<option value="">Select a voice...</option>';
+            
+            voices.forEach((voice, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = voice.name + ' (' + voice.lang + ')';
+                voiceSelect.appendChild(option);
+            });
+            
+            if (voices.length > 0 && !selectedVoice) {
+                selectedVoice = voices[0];
+                voiceSelect.value = 0;
+            }
+        }
+        
+        // Initialize voices
+        speechSynthesis.addEventListener('voiceschanged', loadVoices);
+        loadVoices();
+        
+        // Voice settings handlers
+        document.getElementById('voiceSelect').addEventListener('change', function(e) {
+            if (e.target.value !== '') {
+                selectedVoice = voices[parseInt(e.target.value)];
+            }
+        });
+        
+        document.getElementById('speedSlider').addEventListener('input', function(e) {
+            speechRate = parseFloat(e.target.value);
+            document.getElementById('speedValue').textContent = speechRate.toFixed(1) + 'x';
+        });
+        
+        function toggleVoiceSettings() {
+            const settings = document.getElementById('voiceSettings');
+            showingSettings = !showingSettings;
+            settings.className = showingSettings ? 'voice-settings' : 'voice-settings hidden';
+        }
+        
+        function readPageAloud() {
+            const textToRead = \`
+                Cast Aloud. Accessibility tools for reading and replying to casts.
+                
+                Try the Mini App. The mini app helps you read casts aloud and create voice replies with AI assistance.
+                
+                How it works:
+                1. Paste a Farcaster post URL or text directly
+                2. Click "Read Aloud" to hear the content  
+                3. Type your reply in the text area
+                4. Get AI feedback or polish your reply
+                5. Copy the improved reply to post on Farcaster
+            \`;
+
+            if (isSpeaking) {
+                speechSynthesis.cancel();
+                updateReadButton(false);
+            } else {
+                speak(textToRead, function() {
+                    isSpeaking = true;
+                    updateReadButton(true);
+                }, function() {
+                    isSpeaking = false;
+                    updateReadButton(false);
+                });
+            }
+        }
+        
+        function readSampleCast() {
+            const sampleText = \`
+                Hello from Cast Aloud! This is a sample Farcaster cast being read aloud using voice technology. 
+                Cast Aloud helps make social media more accessible by providing voice features for reading and replying to posts.
+                You can adjust the voice settings to customize your listening experience.
+            \`;
+            
+            speak(sampleText);
+        }
+        
+        function testVoice() {
+            if (isTestVoicePlaying) {
+                speechSynthesis.cancel();
+                isTestVoicePlaying = false;
+                document.getElementById('testVoiceBtn').textContent = 'Test Voice';
+                document.getElementById('testVoiceBtn').className = 'w-full font-medium py-2 px-4 rounded-lg transition-colors duration-200 bg-gray-100 hover:bg-gray-200 text-gray-700';
+            } else {
+                const testText = "This is a test of your voice settings. How does this sound?";
+                speak(testText, function() {
+                    isTestVoicePlaying = true;
+                    document.getElementById('testVoiceBtn').textContent = 'Stop Voice';
+                    document.getElementById('testVoiceBtn').className = 'w-full font-medium py-2 px-4 rounded-lg transition-colors duration-200 bg-red-500 hover:bg-red-600 text-white';
+                }, function() {
+                    isTestVoicePlaying = false;
+                    document.getElementById('testVoiceBtn').textContent = 'Test Voice';
+                    document.getElementById('testVoiceBtn').className = 'w-full font-medium py-2 px-4 rounded-lg transition-colors duration-200 bg-gray-100 hover:bg-gray-200 text-gray-700';
+                });
+            }
+        }
+        
+        function speak(text, onStart, onEnd) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = speechRate;
+            if (selectedVoice) {
+                utterance.voice = selectedVoice;
+            }
+            
+            if (onStart) utterance.onstart = onStart;
+            if (onEnd) {
+                utterance.onend = onEnd;
+                utterance.onerror = onEnd;
+            }
+            
+            speechSynthesis.speak(utterance);
+        }
+        
+        function updateReadButton(speaking) {
+            const btn = document.getElementById('readAloudBtn');
+            const text = document.getElementById('readAloudText');
+            
+            if (speaking) {
+                btn.className = 'absolute top-4 right-4 px-3 py-2 rounded-lg transition-colors duration-200 flex items-center gap-2 text-sm font-medium bg-fc-error/10 hover:bg-fc-error/20 text-fc-error';
+                btn.innerHTML = \`
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="6" y="4" width="4" height="16" rx="1"/>
+                        <rect x="14" y="4" width="4" height="16" rx="1"/>
+                    </svg>
+                    <span>Stop</span>
+                \`;
+            } else {
+                btn.className = 'absolute top-4 right-4 px-3 py-2 rounded-lg transition-colors duration-200 flex items-center gap-2 text-sm font-medium bg-fc-purple/10 hover:bg-fc-purple/20 text-fc-purple';
+                btn.innerHTML = \`
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+                        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+                    </svg>
+                    <span>Read Aloud</span>
+                \`;
+            }
+        }
+        
+        console.log('Cast Aloud loaded successfully');
+    </script>
+</body>
+</html>`);
   });
 
   // ALWAYS serve the app on port 5000
