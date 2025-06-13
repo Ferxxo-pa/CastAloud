@@ -186,8 +186,11 @@ export default function CastAloud() {
   };
   
   const simulateWordHighlighting = (words: string[]) => {
-    const averageWordsPerMinute = 150; // Average reading speed
-    const millisecondsPerWord = (60 * 1000) / averageWordsPerMinute;
+    // Calculate timing based on current voice settings
+    const baseWordsPerMinute = 150;
+    const speedMultiplier = voiceType === "browser" ? browserVoice.settings.rate : openaiVoice.speed;
+    const adjustedWordsPerMinute = baseWordsPerMinute * speedMultiplier;
+    const millisecondsPerWord = (60 * 1000) / adjustedWordsPerMinute;
     
     words.forEach((_, index) => {
       setTimeout(() => {
@@ -202,7 +205,7 @@ export default function CastAloud() {
       setCurrentWordIndex(-1);
       setSpeechWords([]);
       setIsCurrentlyReading(false);
-    }, words.length * millisecondsPerWord + 1000);
+    }, words.length * millisecondsPerWord + 500);
   };
 
   const handleReadFeedback = () => {
