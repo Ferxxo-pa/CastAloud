@@ -447,7 +447,7 @@ export default function CastAloud() {
                       onClick={handlePauseResume}
                       className="bg-orange-500 hover:bg-orange-600 text-white font-medium py-3 px-3 rounded-xl transition-colors duration-200 min-w-[80px]"
                     >
-                      {isPaused ? 'Resume' : 'Pause'}
+                      {isPaused ? '▶️' : '⏸️'}
                     </button>
                   )}
                 </div>
