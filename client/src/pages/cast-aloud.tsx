@@ -541,7 +541,7 @@ export default function CastAloud() {
               <div className="space-y-4">
                 <input
                   type="url"
-                  placeholder="Paste Farcaster post URL here..."
+                  placeholder="🔗 Paste Farcaster post URL here..."
                   value={castUrl}
                   onChange={(e) => setCastUrl(e.target.value)}
                   className="w-full p-3 border border-fc-gray-200 rounded-xl focus:ring-2 focus:ring-fc-purple focus:border-transparent text-base"
