@@ -37,7 +37,7 @@ export default function CastAloud() {
 
   // Monitor voice settings changes during playback
   useEffect(() => {
-    if (!isCurrentlyReading || !castText) return;
+    if (!isCurrentlyReading || speechWords.length === 0) return;
 
     const currentSettings = voiceType === "browser" 
       ? { rate: browserVoice.settings.rate, pitch: browserVoice.settings.pitch, volume: browserVoice.settings.volume, voice: browserVoice.settings.voice }
@@ -50,72 +50,63 @@ export default function CastAloud() {
       currentSettings.volume !== lastVoiceSettings.volume ||
       currentSettings.voice !== lastVoiceSettings.voice;
 
-    if (settingsChanged && isCurrentlyReading) {
-      // Restart speech with new settings from current word
-      const remainingWords = speechWords.slice(Math.max(0, currentWordIndex));
+    if (settingsChanged && isCurrentlyReading && currentWordIndex >= 0) {
+      // Create remaining text from current position
+      const remainingWords = speechWords.slice(currentWordIndex);
       const remainingText = remainingWords.join(' ');
       
       if (remainingText.trim()) {
         // Stop current speech
         currentVoiceSystem.stop();
         
-        // Small delay to ensure clean restart while maintaining state
-        setTimeout(() => {
-          if (isCurrentlyReading) {
-            // Don't reset the speech state - just restart from current position
-            const cleanedText = cleanTextForSpeech(remainingText);
-            const words = cleanedText.split(/\s+/).filter(word => word.length > 0);
-            
-            if (voiceType === "browser" && 'speechSynthesis' in window) {
-              const utterance = new SpeechSynthesisUtterance(cleanedText);
-              if (browserVoice.settings.voice) {
-                utterance.voice = browserVoice.settings.voice;
-              }
-              utterance.rate = browserVoice.settings.rate;
-              utterance.pitch = browserVoice.settings.pitch;
-              utterance.volume = browserVoice.settings.volume;
-              
-              let wordIndex = currentWordIndex;
-              utterance.onboundary = (event) => {
-                if (event.name === 'word') {
-                  setCurrentWordIndex(wordIndex);
-                  wordIndex++;
-                }
-              };
-              
-              utterance.onstart = () => {
-                // Don't reset highlighting - continue from current position
-              };
-              
-              utterance.onend = () => {
-                setCurrentWordIndex(-1);
-                setSpeechWords([]);
-                setSpeechUtterance(null);
-                setIsPaused(false);
-                setIsCurrentlyReading(false);
-              };
-              
-              utterance.onerror = () => {
-                setCurrentWordIndex(-1);
-                setSpeechWords([]);
-                setSpeechUtterance(null);
-                setIsPaused(false);
-                setIsCurrentlyReading(false);
-              };
-              
-              setSpeechUtterance(utterance);
-              speechSynthesis.speak(utterance);
-            } else {
-              currentVoiceSystem.speak(cleanedText);
-              simulateWordHighlighting(words, currentWordIndex);
-            }
+        // Restart immediately with new settings from current position
+        const cleanedText = cleanTextForSpeech(remainingText);
+        
+        if (voiceType === "browser" && 'speechSynthesis' in window) {
+          const utterance = new SpeechSynthesisUtterance(cleanedText);
+          if (browserVoice.settings.voice) {
+            utterance.voice = browserVoice.settings.voice;
           }
-        }, 100);
+          utterance.rate = browserVoice.settings.rate;
+          utterance.pitch = browserVoice.settings.pitch;
+          utterance.volume = browserVoice.settings.volume;
+          
+          let wordIndex = currentWordIndex;
+          utterance.onboundary = (event) => {
+            if (event.name === 'word' && isCurrentlyReading) {
+              setCurrentWordIndex(wordIndex);
+              wordIndex++;
+            }
+          };
+          
+          utterance.onend = () => {
+            setCurrentWordIndex(-1);
+            setSpeechWords([]);
+            setSpeechUtterance(null);
+            setIsPaused(false);
+            setIsCurrentlyReading(false);
+          };
+          
+          utterance.onerror = () => {
+            setCurrentWordIndex(-1);
+            setSpeechWords([]);
+            setSpeechUtterance(null);
+            setIsPaused(false);
+            setIsCurrentlyReading(false);
+          };
+          
+          setSpeechUtterance(utterance);
+          speechSynthesis.speak(utterance);
+        } else {
+          currentVoiceSystem.speak(cleanedText);
+          // For OpenAI, simulate highlighting for remaining words
+          simulateWordHighlighting(remainingWords, 0);
+        }
       }
       
       setLastVoiceSettings(currentSettings);
     }
-  }, [browserVoice.settings, openaiVoice.speed, voiceType, isCurrentlyReading, currentWordIndex, speechWords, castText]);
+  }, [browserVoice.settings, openaiVoice.speed, voiceType, isCurrentlyReading, currentWordIndex, speechWords]);
 
   // Function to clean text for speech synthesis
   const cleanTextForSpeech = (text: string): string => {
@@ -186,7 +177,7 @@ export default function CastAloud() {
     }
   });
 
-  const startSpeechFromWord = (text: string, startWordIndex: number = 0) => {
+  const startSpeechFromWord = (text: string, startWordIndex: number = 0, maintainState: boolean = false) => {
     const cleanedText = cleanTextForSpeech(text);
     const words = cleanedText.split(/\s+/).filter(word => word.length > 0);
     
@@ -208,7 +199,9 @@ export default function CastAloud() {
       };
       
       utterance.onstart = () => {
-        setCurrentWordIndex(startWordIndex);
+        if (!maintainState) {
+          setCurrentWordIndex(startWordIndex);
+        }
         wordIndex = startWordIndex + 1;
       };
       
