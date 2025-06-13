@@ -890,6 +890,7 @@ app.use((req, res, next) => {
     res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     res.setHeader('Pragma', 'no-cache');
     res.setHeader('Expires', '0');
+    
     res.send(`<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -903,213 +904,128 @@ app.use((req, res, next) => {
             padding: 0; 
             background: #fafafa;
         }
-        .min-h-screen { min-height: 100vh; }
-        .bg-fc-gray-50 { background-color: #fafafa; }
-        .max-w-md { max-width: 28rem; }
-        .mx-auto { margin-left: auto; margin-right: auto; }
-        .p-4 { padding: 1rem; }
-        .mb-6 { margin-bottom: 1.5rem; }
-        .text-center { text-align: center; }
-        .text-2xl { font-size: 1.5rem; line-height: 2rem; }
-        .font-bold { font-weight: 700; }
-        .text-fc-gray-900 { color: #111827; }
-        .text-fc-gray-600 { color: #6b7280; }
-        .mt-2 { margin-top: 0.5rem; }
-        .bg-white { background-color: #ffffff; }
-        .rounded-lg { border-radius: 0.5rem; }
-        .p-6 { padding: 1.5rem; }
-        .border { border-width: 1px; }
-        .border-fc-gray-200 { border-color: #e5e7eb; }
-        .relative { position: relative; }
-        .absolute { position: absolute; }
-        .top-4 { top: 1rem; }
-        .right-4 { right: 1rem; }
-        .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
-        .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
-        .transition-colors { transition-property: color, background-color, border-color, text-decoration-color, fill, stroke; }
-        .duration-200 { transition-duration: 200ms; }
-        .flex { display: flex; }
-        .items-center { align-items: center; }
-        .gap-2 { gap: 0.5rem; }
-        .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
-        .font-medium { font-weight: 500; }
-        .bg-fc-purple\\/10 { background-color: rgba(138, 99, 210, 0.1); }
-        .hover\\:bg-fc-purple\\/20:hover { background-color: rgba(138, 99, 210, 0.2); }
-        .text-fc-purple { color: #8A63D2; }
-        .bg-fc-error\\/10 { background-color: rgba(239, 68, 68, 0.1); }
-        .hover\\:bg-fc-error\\/20:hover { background-color: rgba(239, 68, 68, 0.2); }
-        .text-fc-error { color: #ef4444; }
-        .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
-        .font-semibold { font-weight: 600; }
-        .mb-4 { margin-bottom: 1rem; }
-        .space-y-3 > * + * { margin-top: 0.75rem; }
-        .block { display: block; }
-        .w-full { width: 100%; }
-        .bg-fc-purple { background-color: #8A63D2; }
-        .hover\\:bg-fc-purple-dark:hover { background-color: #7652C4; }
-        .text-white { color: #ffffff; }
-        .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
-        .px-4 { padding-left: 1rem; padding-right: 1rem; }
-        .cursor-pointer { cursor: pointer; }
-        .bg-fc-gray-200 { background-color: #e5e7eb; }
-        .hover\\:bg-fc-gray-300:hover { background-color: #d1d5db; }
-        .text-fc-gray-800 { color: #1f2937; }
-        .hover\\:text-fc-gray-900:hover { color: #111827; }
-        .mt-4 { margin-top: 1rem; }
-        .mt-6 { margin-top: 1.5rem; }
-        .bg-gray-50 { background-color: #f9fafb; }
-        .border-fc-gray-300 { border-color: #d1d5db; }
-        .rounded-md { border-radius: 0.375rem; }
-        .focus\\:ring-2:focus { box-shadow: 0 0 0 2px rgba(138, 99, 210, 0.5); }
-        .focus\\:ring-fc-purple:focus { --tw-ring-color: #8A63D2; }
-        .focus\\:border-transparent:focus { border-color: transparent; }
-        .bg-gray-100 { background-color: #f3f4f6; }
-        .hover\\:bg-gray-200:hover { background-color: #e5e7eb; }
-        .text-gray-700 { color: #374151; }
-        .bg-red-500 { background-color: #ef4444; }
-        .hover\\:bg-red-600:hover { background-color: #dc2626; }
-        .hidden { display: none; }
-        
-        .voice-settings {
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 0.5rem;
-            padding: 1rem;
-            margin-top: 1rem;
+        .container { max-width: 500px; margin: 0 auto; padding: 20px; min-height: 100vh; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .app-title { color: #8A63D2; font-size: 32px; font-weight: bold; margin: 0; }
+        .app-subtitle { color: #6b6b6b; margin: 10px 0 0 0; }
+        .card { 
+            background: white; 
+            border-radius: 12px; 
+            padding: 24px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: relative;
+            border: 1px solid #e8e8e8;
         }
-        
-        .form-group {
-            margin: 12px 0;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 4px;
-            font-weight: 500;
-            color: #374151;
-        }
-        
-        .form-group select,
-        .form-group input[type="range"] {
+        .btn { 
+            background: #8A63D2; 
+            color: white; 
+            border: none; 
+            padding: 12px 24px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-size: 16px;
             width: 100%;
-            padding: 8px;
-            border: 1px solid #d1d5db;
-            border-radius: 4px;
-        }
-        
-        .form-group input[type="range"] {
-            padding: 0;
-        }
-        
-        .how-it-works {
-            background: #f9fafb;
-            border-radius: 0.5rem;
-            padding: 1rem;
-            margin-top: 1.5rem;
-        }
-        
-        .how-it-works ol {
-            margin: 0;
-            padding-left: 20px;
-            color: #6b7280;
-            font-size: 0.875rem;
-        }
-        
-        .how-it-works ol li {
-            margin: 4px 0;
-        }
-        
-        button {
-            border: none;
-            cursor: pointer;
-            font-family: inherit;
+            margin: 8px 0;
             transition: all 0.2s;
         }
-        
-        button:hover {
-            transform: translateY(-1px);
+        .btn:hover { background: #7652C4; transform: translateY(-1px); }
+        .btn-secondary { 
+            background: #e8e8e8; 
+            color: #383838; 
         }
+        .btn-secondary:hover { background: #d1d1d1; }
+        .read-aloud-btn { 
+            position: absolute; 
+            top: 16px; 
+            right: 16px; 
+            width: auto; 
+            padding: 8px 16px; 
+            font-size: 14px; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px;
+            background: rgba(138, 99, 210, 0.1);
+            color: #8A63D2;
+        }
+        .voice-settings { 
+            background: #f8f9fa; 
+            border-radius: 8px; 
+            padding: 16px; 
+            margin-top: 16px;
+            display: none;
+        }
+        .form-group { margin: 12px 0; }
+        .form-group label { display: block; margin-bottom: 4px; font-weight: 500; }
+        .form-group select, .form-group input { 
+            width: 100%; 
+            padding: 8px; 
+            border: 1px solid #ddd; 
+            border-radius: 4px; 
+        }
+        .how-it-works { 
+            background: #f0f7ff; 
+            border-radius: 8px; 
+            padding: 16px; 
+            margin-top: 16px;
+        }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
-    <div class="min-h-screen bg-fc-gray-50">
-        <div class="max-w-md mx-auto p-4">
-            <header class="mb-6">
-                <div class="text-center">
-                    <h1 class="text-2xl font-bold text-fc-gray-900" style="color: #8A63D2;">Cast Aloud</h1>
-                    <p class="text-fc-gray-600 mt-2">
-                        Accessibility tools for reading and replying to casts
-                    </p>
-                </div>
-            </header>
+    <div class="container">
+        <div class="header">
+            <h1 class="app-title">Cast Aloud</h1>
+            <p class="app-subtitle">Accessibility tools for reading and replying to casts</p>
+        </div>
+        
+        <div class="card">
+            <button id="readAloudBtn" class="btn read-aloud-btn" onclick="toggleReading()">
+                <span id="readIcon">🔊</span>
+                <span id="readText">Read Aloud</span>
+            </button>
+            
+            <h2 style="margin-top: 0; font-size: 20px;">Try the Mini App</h2>
+            <p style="margin-bottom: 20px;">
+                The mini app helps you read casts aloud and create voice replies with AI assistance.
+            </p>
+            
+            <button class="btn" onclick="readSampleCast()">
+                Read Cast Aloud
+            </button>
+            
+            <button class="btn btn-secondary" onclick="toggleVoiceSettings()">
+                Voice Settings
+            </button>
 
-            <div class="bg-white rounded-lg p-6 border border-fc-gray-200 relative">
-                <button
-                    id="readAloudBtn"
-                    onclick="readPageAloud()"
-                    class="absolute top-4 right-4 px-3 py-2 rounded-lg transition-colors duration-200 flex items-center gap-2 text-sm font-medium bg-fc-purple/10 hover:bg-fc-purple/20 text-fc-purple"
-                    title="Read page aloud"
-                >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
-                        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
-                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
-                    </svg>
-                    <span id="readAloudText">Read Aloud</span>
+            <div id="voiceSettings" class="voice-settings">
+                <h3 style="margin-top: 0;">Voice Settings</h3>
+                
+                <div class="form-group">
+                    <label>Voice:</label>
+                    <select id="voiceSelect">
+                        <option value="">Loading voices...</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Speed: <span id="speedValue">1.0x</span></label>
+                    <input type="range" id="speedSlider" min="0.5" max="2" step="0.1" value="1.0">
+                </div>
+                
+                <button class="btn btn-secondary" onclick="testVoice()">
+                    Test Voice
                 </button>
-                
-                <h2 class="text-lg font-semibold mb-4 text-fc-gray-900">Try the Mini App</h2>
-                <p class="text-fc-gray-600 mb-4">
-                    The mini app helps you read casts aloud and create voice replies with AI assistance.
-                </p>
-                
-                <div class="space-y-3">
-                    <button onclick="readSampleCast()" class="block w-full bg-fc-purple hover:bg-fc-purple-dark text-white py-3 px-4 rounded-lg text-center font-medium">
-                        Read Cast Aloud
-                    </button>
-                    
-                    <button 
-                        onclick="toggleVoiceSettings()"
-                        class="block w-full bg-fc-gray-200 hover:bg-fc-gray-300 text-fc-gray-800 hover:text-fc-gray-900 py-3 px-4 rounded-lg text-center font-medium transition-colors duration-200"
-                    >
-                        Voice Settings
-                    </button>
-                </div>
-
-                <div id="voiceSettings" class="voice-settings hidden">
-                    <h3 style="margin-top: 0; font-weight: 500;">Voice Settings</h3>
-                    
-                    <div class="form-group">
-                        <label>Voice:</label>
-                        <select id="voiceSelect">
-                            <option value="">Loading voices...</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Speed: <span id="speedValue">0.9x</span></label>
-                        <input type="range" id="speedSlider" min="0.5" max="2" step="0.1" value="0.9">
-                    </div>
-                    
-                    <button
-                        id="testVoiceBtn"
-                        onclick="testVoice()"
-                        class="w-full font-medium py-2 px-4 rounded-lg transition-colors duration-200 bg-gray-100 hover:bg-gray-200 text-gray-700"
-                    >
-                        Test Voice
-                    </button>
-                </div>
-
-                <div class="how-it-works">
-                    <h3 style="margin-top: 0; font-weight: 500;">How it works:</h3>
-                    <ol>
-                        <li>📝 Paste a Farcaster post URL or text directly</li>
-                        <li>🔊 Click "Read Aloud" to hear the content</li>
-                        <li>✍️ Type your reply in the text area</li>
-                        <li>🤖 Get AI feedback or polish your reply</li>
-                        <li>📋 Copy the improved reply to post on Farcaster</li>
-                    </ol>
-                </div>
+            </div>
+            
+            <div class="how-it-works">
+                <h3 style="margin-top: 0;">How it works:</h3>
+                <ol style="margin: 0; padding-left: 20px;">
+                    <li>📝 Paste a Farcaster post URL or text directly</li>
+                    <li>🔊 Click "Read Aloud" to hear the content</li>
+                    <li>✍️ Type your reply in the text area</li>
+                    <li>🤖 Get AI feedback or polish your reply</li>
+                    <li>📋 Copy the improved reply to post on Farcaster</li>
+                </ol>
             </div>
         </div>
     </div>
@@ -1117,12 +1033,10 @@ app.use((req, res, next) => {
     <script>
         let voices = [];
         let selectedVoice = null;
-        let speechRate = 0.9;
+        let speechRate = 1.0;
         let isSpeaking = false;
         let showingSettings = false;
-        let isTestVoicePlaying = false;
         
-        // Load available voices
         function loadVoices() {
             voices = speechSynthesis.getVoices();
             const voiceSelect = document.getElementById('voiceSelect');
@@ -1135,17 +1049,15 @@ app.use((req, res, next) => {
                 voiceSelect.appendChild(option);
             });
             
-            if (voices.length > 0 && !selectedVoice) {
+            if (voices.length > 0) {
                 selectedVoice = voices[0];
                 voiceSelect.value = 0;
             }
         }
         
-        // Initialize voices
         speechSynthesis.addEventListener('voiceschanged', loadVoices);
         loadVoices();
         
-        // Voice settings handlers
         document.getElementById('voiceSelect').addEventListener('change', function(e) {
             if (e.target.value !== '') {
                 selectedVoice = voices[parseInt(e.target.value)];
@@ -1160,106 +1072,70 @@ app.use((req, res, next) => {
         function toggleVoiceSettings() {
             const settings = document.getElementById('voiceSettings');
             showingSettings = !showingSettings;
-            settings.className = showingSettings ? 'voice-settings' : 'voice-settings hidden';
+            settings.style.display = showingSettings ? 'block' : 'none';
         }
         
-        function readPageAloud() {
-            const textToRead = \`
-                Cast Aloud. Accessibility tools for reading and replying to casts.
-                
-                Try the Mini App. The mini app helps you read casts aloud and create voice replies with AI assistance.
-                
-                How it works:
-                1. Paste a Farcaster post URL or text directly
-                2. Click "Read Aloud" to hear the content  
-                3. Type your reply in the text area
-                4. Get AI feedback or polish your reply
-                5. Copy the improved reply to post on Farcaster
-            \`;
-
+        function toggleReading() {
+            const pageText = 'Cast Aloud. Accessibility tools for reading and replying to casts. Try the Mini App. The mini app helps you read casts aloud and create voice replies with AI assistance. How it works: 1. Paste a Farcaster post URL or text directly. 2. Click Read Aloud to hear the content. 3. Type your reply in the text area. 4. Get AI feedback or polish your reply. 5. Copy the improved reply to post on Farcaster.';
+            
             if (isSpeaking) {
                 speechSynthesis.cancel();
                 updateReadButton(false);
             } else {
-                speak(textToRead, function() {
-                    isSpeaking = true;
-                    updateReadButton(true);
-                }, function() {
-                    isSpeaking = false;
-                    updateReadButton(false);
-                });
+                speak(pageText);
             }
         }
         
         function readSampleCast() {
-            const sampleText = \`
-                Hello from Cast Aloud! This is a sample Farcaster cast being read aloud using voice technology. 
-                Cast Aloud helps make social media more accessible by providing voice features for reading and replying to posts.
-                You can adjust the voice settings to customize your listening experience.
-            \`;
-            
+            const sampleText = 'Hello from Cast Aloud! This is a sample Farcaster cast being read aloud using voice technology. Cast Aloud helps make social media more accessible by providing voice features for reading and replying to posts. You can adjust the voice settings to customize your listening experience.';
             speak(sampleText);
         }
         
         function testVoice() {
-            if (isTestVoicePlaying) {
-                speechSynthesis.cancel();
-                isTestVoicePlaying = false;
-                document.getElementById('testVoiceBtn').textContent = 'Test Voice';
-                document.getElementById('testVoiceBtn').className = 'w-full font-medium py-2 px-4 rounded-lg transition-colors duration-200 bg-gray-100 hover:bg-gray-200 text-gray-700';
-            } else {
-                const testText = "This is a test of your voice settings. How does this sound?";
-                speak(testText, function() {
-                    isTestVoicePlaying = true;
-                    document.getElementById('testVoiceBtn').textContent = 'Stop Voice';
-                    document.getElementById('testVoiceBtn').className = 'w-full font-medium py-2 px-4 rounded-lg transition-colors duration-200 bg-red-500 hover:bg-red-600 text-white';
-                }, function() {
-                    isTestVoicePlaying = false;
-                    document.getElementById('testVoiceBtn').textContent = 'Test Voice';
-                    document.getElementById('testVoiceBtn').className = 'w-full font-medium py-2 px-4 rounded-lg transition-colors duration-200 bg-gray-100 hover:bg-gray-200 text-gray-700';
-                });
-            }
+            const testText = "This is a test of your voice settings. How does this sound?";
+            speak(testText);
         }
         
-        function speak(text, onStart, onEnd) {
+        function speak(text) {
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.rate = speechRate;
             if (selectedVoice) {
                 utterance.voice = selectedVoice;
             }
             
-            if (onStart) utterance.onstart = onStart;
-            if (onEnd) {
-                utterance.onend = onEnd;
-                utterance.onerror = onEnd;
-            }
+            utterance.onstart = function() {
+                isSpeaking = true;
+                updateReadButton(true);
+            };
+            
+            utterance.onend = function() {
+                isSpeaking = false;
+                updateReadButton(false);
+            };
+            
+            utterance.onerror = function() {
+                isSpeaking = false;
+                updateReadButton(false);
+            };
             
             speechSynthesis.speak(utterance);
         }
         
         function updateReadButton(speaking) {
             const btn = document.getElementById('readAloudBtn');
-            const text = document.getElementById('readAloudText');
+            const icon = document.getElementById('readIcon');
+            const text = document.getElementById('readText');
             
             if (speaking) {
-                btn.className = 'absolute top-4 right-4 px-3 py-2 rounded-lg transition-colors duration-200 flex items-center gap-2 text-sm font-medium bg-fc-error/10 hover:bg-fc-error/20 text-fc-error';
-                btn.innerHTML = \`
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="6" y="4" width="4" height="16" rx="1"/>
-                        <rect x="14" y="4" width="4" height="16" rx="1"/>
-                    </svg>
-                    <span>Stop</span>
-                \`;
+                btn.style.background = 'rgba(239, 68, 68, 0.1)';
+                btn.style.color = '#ef4444';
+                icon.textContent = '⏹️';
+                text.textContent = 'Stop';
             } else {
-                btn.className = 'absolute top-4 right-4 px-3 py-2 rounded-lg transition-colors duration-200 flex items-center gap-2 text-sm font-medium bg-fc-purple/10 hover:bg-fc-purple/20 text-fc-purple';
-                btn.innerHTML = \`
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
-                        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
-                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
-                    </svg>
-                    <span>Read Aloud</span>
-                \`;
+                btn.style.background = 'rgba(138, 99, 210, 0.1)';
+                btn.style.color = '#8A63D2';
+                icon.textContent = '🔊';
+                text.textContent = 'Read Aloud';
             }
         }
         
