@@ -283,7 +283,6 @@ export default function CastAloud() {
         if (!maintainState) {
           setCurrentWordIndex(startWordIndex);
         }
-        wordIndex = startWordIndex + 1;
       };
       
       utterance.onend = () => {
