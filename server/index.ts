@@ -869,6 +869,11 @@ app.use((req, res, next) => {
       await setupVite(app, server);
     }
   }
+  
+  // Override the root route AFTER Vite setup to ensure it takes precedence
+  app.get('/', (req, res) => {
+    res.redirect('/app');
+  });
 
   // ALWAYS serve the app on port 5000
   // this serves both the API and the client.
