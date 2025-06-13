@@ -84,7 +84,7 @@ export default function HomeSimple() {
 
   const readPageAloud = () => {
     const textToRead = `
-      Cast Aloud. Accessibility tools for reading and replying to casts.
+      Castaloud. Accessibility tools for reading and replying to casts.
       
       Try the Mini App. The mini app helps you read casts aloud and create voice replies with AI assistance.
       
@@ -116,7 +116,7 @@ export default function HomeSimple() {
       <div className="max-w-md mx-auto p-4">
         <header className="mb-6">
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-fc-gray-900">Cast Aloud</h1>
+            <h1 className="text-2xl font-bold text-fc-gray-900">Castaloud</h1>
             <p className="text-fc-gray-600 mt-2">
               Accessibility tools for reading and replying to casts
             </p>
@@ -160,7 +160,7 @@ export default function HomeSimple() {
           <div className="space-y-3">
             <Link href="/cast-aloud?text=Hello%20world!%20This%20is%20a%20sample%20cast%20about%20the%20future%20of%20decentralized%20social%20networks.">
               <button className="block w-full bg-fc-purple hover:bg-fc-purple-dark text-white py-3 px-4 rounded-lg text-center font-medium">
-                Read Cast Aloud
+                Read Castaloud
               </button>
             </Link>
             

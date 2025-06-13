@@ -88,7 +88,7 @@ export async function handleFrameIndex(req: Request, res: Response) {
       hash: 'sample',
       authorFid: 1,
       authorUsername: 'demo',
-      content: 'Welcome to Cast Aloud - your voice-enabled accessibility tool for Farcaster! This demo shows how you can listen to casts and reply using your voice.',
+      content: 'Welcome to Castaloud - your voice-enabled accessibility tool for Farcaster! This demo shows how you can listen to casts and reply using your voice.',
       timestamp: new Date()
     });
   }
@@ -101,7 +101,7 @@ export async function handleFrameIndex(req: Request, res: Response) {
   });
 
   const html = generateFrameHTML(
-    'Cast Aloud - Voice Accessibility for Farcaster',
+    'Castaloud - Voice Accessibility for Farcaster',
     image,
     [
       { text: '🔊 Listen', action: 'post' },
@@ -193,7 +193,7 @@ export async function handleFrameAction(req: Request, res: Response) {
 
 export async function handleFrameImage(req: Request, res: Response) {
   const { state, castId, author, content, message } = req.query;
-  const contentStr = typeof content === 'string' ? content : 'Welcome to Cast Aloud! This accessibility app helps you listen to casts and reply using your voice.';
+  const contentStr = typeof content === 'string' ? content : 'Welcome to Castaloud! This accessibility app helps you listen to casts and reply using your voice.';
   const authorStr = typeof author === 'string' ? author : 'demo';
   const messageStr = typeof message === 'string' ? message : '';
 
@@ -216,7 +216,7 @@ export async function handleFrameImage(req: Request, res: Response) {
           <!-- Header -->
           <rect x="50" y="50" width="1100" height="120" rx="20" fill="white" fill-opacity="0.95"/>
           <text x="70" y="100" font-family="Arial, sans-serif" font-size="36" font-weight="bold" fill="#171717">
-            🔊 Cast Aloud
+            🔊 Castaloud
           </text>
           <text x="70" y="135" font-family="Arial, sans-serif" font-size="22" fill="#6B7280">
             Accessibility tools for reading and replying to casts
@@ -266,7 +266,7 @@ export async function handleFrameImage(req: Request, res: Response) {
           </text>
           
           <text x="600" y="450" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="white" text-anchor="middle">
-            Reading Cast Aloud...
+            Reading Castaloud...
           </text>
           
           <text x="600" y="500" font-family="Arial, sans-serif" font-size="20" fill="white" fill-opacity="0.8" text-anchor="middle">
