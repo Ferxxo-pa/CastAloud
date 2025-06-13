@@ -2,7 +2,6 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertVoiceCommentSchema } from "@shared/schema";
-import { handleFrameIndex, handleFrameAction, handleFrameImage } from "./frame";
 import OpenAI from "openai";
 import multer from "multer";
 import fs from "fs";
@@ -82,19 +81,12 @@ async function getFeedbackOnComment(text: string): Promise<{ feedback: string; p
 
 export async function registerRoutes(app: Express): Promise<Server> {
 
-  // Frame routes
-  app.get("/frame", handleFrameIndex);
-  app.post("/api/frame/action", handleFrameAction);
-  app.get("/api/frame/image", handleFrameImage);
-  
-  // Mini App manifest for Farcaster
+  // Basic web app manifest
   app.get("/manifest.json", (req, res) => {
-    const baseUrl = `${req.protocol}://${req.get('host')}`;
-    
     res.json({
       "name": "Cast Aloud",
       "short_name": "Cast Aloud",
-      "description": "Voice accessibility tools for reading and replying to Farcaster casts",
+      "description": "Voice accessibility tools for reading and replying to social media posts",
       "start_url": "/",
       "display": "standalone",
       "background_color": "#8A63D2",
@@ -105,115 +97,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         {
           "src": "/icon.png",
           "sizes": "256x256",
-          "type": "image/svg+xml",
+          "type": "image/png",
           "purpose": "any maskable"
         }
       ],
-      "categories": ["accessibility", "social", "utilities"],
+      "categories": ["accessibility", "utilities"],
       "lang": "en",
-      "dir": "ltr",
-      "farcaster": {
-        "version": "1",
-        "name": "Cast Aloud",
-        "description": "Voice accessibility tools for Farcaster",
-        "iconUrl": `${baseUrl}/icon.png`,
-        "splashImageUrl": `${baseUrl}/api/frame/image?state=initial`,
-        "homeUrl": `${baseUrl}/`,
-        "buttonTitle": "Open Cast Aloud",
-        "splashBackgroundColor": "#8A63D2",
-        "webhookUrl": `${baseUrl}/api/frame/action`,
-        "features": ["voice", "accessibility", "tts", "transcription"]
-      },
-      "accountAssociation": {
-        "header": "eyJmaWQiOjEsInR5cGUiOiJjdXN0b2R5IiwibWFkZSI6MX0",
-        "payload": "eyJkb21haW4iOiJjYXN0YWxvdWQuY29tIn0",
-        "signature": "0x..."
-      }
+      "dir": "ltr"
     });
   });
   
-  // Farcaster API endpoints for miniapp testing
-  app.get("/api/farcaster/user/:fid", async (req, res) => {
-    try {
-      const { fid } = req.params;
-      
-      const response = await fetch(`https://api.neynar.com/v2/farcaster/user/bulk?fids=${fid}`, {
-        headers: {
-          'accept': 'application/json',
-          'api_key': process.env.NEYNAR_API_KEY || ''
-        }
-      });
-      
-      if (!response.ok) {
-        return res.status(404).json({ error: 'User not found' });
-      }
-      
-      const data = await response.json();
-      const user = data.users[0];
-      
-      res.json({
-        fid: user.fid,
-        username: user.username,
-        displayName: user.display_name,
-        pfpUrl: user.pfp_url
-      });
-    } catch (error) {
-      console.error('Error fetching user:', error);
-      res.status(500).json({ error: 'Failed to fetch user' });
-    }
-  });
 
-  app.get("/api/farcaster/cast/:hash", async (req, res) => {
-    try {
-      const { hash } = req.params;
-      
-      const response = await fetch(`https://api.neynar.com/v2/farcaster/cast?identifier=${hash}&type=hash`, {
-        headers: {
-          'accept': 'application/json',
-          'api_key': process.env.NEYNAR_API_KEY || ''
-        }
-      });
-      
-      if (!response.ok) {
-        return res.status(404).json({ error: 'Cast not found' });
-      }
-      
-      const data = await response.json();
-      const cast = data.cast;
-      
-      res.json({
-        hash: cast.hash,
-        text: cast.text,
-        author: {
-          fid: cast.author.fid,
-          username: cast.author.username,
-          displayName: cast.author.display_name,
-          pfpUrl: cast.author.pfp_url
-        }
-      });
-    } catch (error) {
-      console.error('Error fetching cast:', error);
-      res.status(500).json({ error: 'Failed to fetch cast' });
-    }
-  });
-
-  // Webhook for Farcaster Frame validation
-  app.post("/webhook/farcaster", (req, res) => {
-    const { type, data } = req.body;
-    
-    // Handle different webhook types
-    switch (type) {
-      case 'frame_validation':
-        res.json({ success: true, message: "Cast Aloud Frame validated" });
-        break;
-      case 'cast_action':
-        // Handle cast actions when frame is used
-        res.json({ success: true, message: "Action processed" });
-        break;
-      default:
-        res.json({ success: true, message: "Webhook received" });
-    }
-  });
   
   // TTS endpoint for Frame interactions
   app.post("/api/tts", async (req, res) => {
