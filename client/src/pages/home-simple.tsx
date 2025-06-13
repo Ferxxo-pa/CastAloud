@@ -1,3 +1,4 @@
+import { Link } from "wouter";
 import { useState, useEffect } from "react";
 
 export default function HomeSimple() {
@@ -5,8 +6,6 @@ export default function HomeSimple() {
   const [showVoiceSettings, setShowVoiceSettings] = useState(false);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [selectedVoice, setSelectedVoice] = useState<SpeechSynthesisVoice | null>(null);
-
-  const [isTestVoicePlaying, setIsTestVoicePlaying] = useState(false);
   
   // Load speech rate from localStorage
   const [speechRate, setSpeechRate] = useState(() => {
@@ -159,9 +158,11 @@ export default function HomeSimple() {
           </p>
           
           <div className="space-y-3">
-            <button className="block w-full bg-fc-purple hover:bg-fc-purple-dark text-white py-3 px-4 rounded-lg text-center font-medium">
-              Read Cast Aloud
-            </button>
+            <Link href="/cast-aloud?text=Hello%20world!%20This%20is%20a%20sample%20cast%20about%20the%20future%20of%20decentralized%20social%20networks.">
+              <button className="block w-full bg-fc-purple hover:bg-fc-purple-dark text-white py-3 px-4 rounded-lg text-center font-medium">
+                Read Cast Aloud
+              </button>
+            </Link>
             
             <button 
               onClick={() => setShowVoiceSettings(!showVoiceSettings)}
@@ -247,31 +248,17 @@ export default function HomeSimple() {
 
                 <button
                   onClick={() => {
-                    if (isTestVoicePlaying) {
-                      speechSynthesis.cancel();
-                      setIsTestVoicePlaying(false);
-                    } else {
-                      const testText = "This is a test of your voice settings. How does this sound?";
-                      const utterance = new SpeechSynthesisUtterance(testText);
-                      utterance.rate = speechRate;
-                      if (selectedVoice) {
-                        utterance.voice = selectedVoice;
-                      }
-                      
-                      utterance.onstart = () => setIsTestVoicePlaying(true);
-                      utterance.onend = () => setIsTestVoicePlaying(false);
-                      utterance.onerror = () => setIsTestVoicePlaying(false);
-                      
-                      speechSynthesis.speak(utterance);
+                    const testText = "This is a test of your voice settings. How does this sound?";
+                    const utterance = new SpeechSynthesisUtterance(testText);
+                    utterance.rate = speechRate;
+                    if (selectedVoice) {
+                      utterance.voice = selectedVoice;
                     }
+                    speechSynthesis.speak(utterance);
                   }}
-                  className={`w-full font-medium py-2 px-4 rounded-lg transition-colors duration-200 ${
-                    isTestVoicePlaying 
-                      ? 'bg-red-500 hover:bg-red-600 text-white' 
-                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                  }`}
+                  className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors duration-200"
                 >
-                  {isTestVoicePlaying ? 'Stop Voice' : 'Test Voice'}
+                  Test Voice
                 </button>
               </div>
             </div>

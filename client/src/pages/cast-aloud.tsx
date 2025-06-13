@@ -22,8 +22,6 @@ export default function CastAloud() {
   const [isLoading, setIsLoading] = useState(false);
   const [userTier, setUserTier] = useState<"free" | "premium">("free");
   const [showPaymentInfo, setShowPaymentInfo] = useState(false);
-  const [isBrowserTestPlaying, setIsBrowserTestPlaying] = useState(false);
-  const [isOpenAITestPlaying, setIsOpenAITestPlaying] = useState(false);
 
   const browserVoice = useSpeechSynthesis();
   const openaiVoice = useOpenAITTS();
@@ -412,24 +410,12 @@ export default function CastAloud() {
 
                       <button
                         onClick={() => {
-                          if (isBrowserTestPlaying) {
-                            browserVoice.stop();
-                            setIsBrowserTestPlaying(false);
-                          } else {
-                            const testText = "This is a test of your voice settings. How does this sound?";
-                            browserVoice.speak(testText);
-                            setIsBrowserTestPlaying(true);
-                            // Reset state when speech ends
-                            setTimeout(() => setIsBrowserTestPlaying(false), 5000);
-                          }
+                          const testText = "This is a test of your voice settings. How does this sound?";
+                          browserVoice.speak(testText);
                         }}
-                        className={`w-full font-medium py-2 px-4 rounded-lg transition-colors duration-200 ${
-                          isBrowserTestPlaying 
-                            ? 'bg-red-500 hover:bg-red-600 text-white' 
-                            : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                        }`}
+                        className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors duration-200"
                       >
-                        {isBrowserTestPlaying ? 'Stop Voice' : 'Test Voice'}
+                        Test Voice
                       </button>
                     </>
                   )}
@@ -468,24 +454,12 @@ export default function CastAloud() {
 
                       <button
                         onClick={() => {
-                          if (isOpenAITestPlaying) {
-                            openaiVoice.stop();
-                            setIsOpenAITestPlaying(false);
-                          } else {
-                            const testText = "This is a test of your premium voice settings. How does this sound?";
-                            openaiVoice.speak(testText);
-                            setIsOpenAITestPlaying(true);
-                            // Reset state when speech ends
-                            setTimeout(() => setIsOpenAITestPlaying(false), 8000);
-                          }
+                          const testText = "This is a test of your premium voice settings. How does this sound?";
+                          openaiVoice.speak(testText);
                         }}
-                        className={`w-full font-medium py-2 px-4 rounded-lg transition-colors duration-200 ${
-                          isOpenAITestPlaying 
-                            ? 'bg-red-500 hover:bg-red-600 text-white' 
-                            : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                        }`}
+                        className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors duration-200"
                       >
-                        {isOpenAITestPlaying ? 'Stop Premium Voice' : 'Test Premium Voice'}
+                        Test Premium Voice
                       </button>
                     </>
                   )}

@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import {
@@ -37,7 +36,6 @@ export default function OpenAIVoiceSettings({
   setSpeed,
   onTestVoice 
 }: OpenAIVoiceSettingsProps) {
-  const [isTestPlaying, setIsTestPlaying] = useState(false);
   const currentVoice = voices.find(v => v.id === selectedVoice);
 
   const handleSpeedChange = (value: number[]) => {
@@ -112,26 +110,12 @@ export default function OpenAIVoiceSettings({
 
           <div className="pt-2">
             <Button 
-              onClick={() => {
-                if (isTestPlaying) {
-                  // Stop any ongoing audio (this would need to be handled by the parent component)
-                  setIsTestPlaying(false);
-                } else {
-                  onTestVoice();
-                  setIsTestPlaying(true);
-                  // Auto-reset after typical test duration
-                  setTimeout(() => setIsTestPlaying(false), 6000);
-                }
-              }}
+              onClick={onTestVoice}
               size="sm" 
-              className={`w-full ${
-                isTestPlaying 
-                  ? 'bg-red-500 hover:bg-red-600 text-white' 
-                  : 'bg-fc-purple hover:bg-fc-purple-dark text-white'
-              }`}
+              className="w-full bg-fc-purple hover:bg-fc-purple-dark text-white"
             >
-              <i className={`fas ${isTestPlaying ? 'fa-stop' : 'fa-play'} text-xs mr-2`} aria-hidden="true"></i>
-              {isTestPlaying ? 'Stop Voice' : `Test ${currentVoice?.name || 'Voice'}`}
+              <i className="fas fa-play text-xs mr-2" aria-hidden="true"></i>
+              Test {currentVoice?.name || 'Voice'}
             </Button>
           </div>
         </div>

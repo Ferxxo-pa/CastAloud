@@ -18,7 +18,6 @@ interface VoiceSettingsProps {
 
 export default function VoiceSettings({ voices, settings, updateSettings, onTestVoice }: VoiceSettingsProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [isTestPlaying, setIsTestPlaying] = useState(false);
 
   if (!isOpen) {
     return (
@@ -152,35 +151,11 @@ export default function VoiceSettings({ voices, settings, updateSettings, onTest
 
           {/* Test Voice */}
           <Button
-            onClick={() => {
-              if (isTestPlaying) {
-                speechSynthesis.cancel();
-                setIsTestPlaying(false);
-              } else {
-                const testText = "This is a test of your voice settings. How does this sound?";
-                const utterance = new SpeechSynthesisUtterance(testText);
-                utterance.rate = settings.rate;
-                utterance.pitch = settings.pitch;
-                utterance.volume = settings.volume;
-                if (settings.voice) {
-                  utterance.voice = settings.voice;
-                }
-                
-                utterance.onstart = () => setIsTestPlaying(true);
-                utterance.onend = () => setIsTestPlaying(false);
-                utterance.onerror = () => setIsTestPlaying(false);
-                
-                speechSynthesis.speak(utterance);
-              }
-            }}
-            className={`w-full ${
-              isTestPlaying 
-                ? 'bg-red-500 hover:bg-red-600 text-white' 
-                : 'bg-fc-purple hover:bg-fc-purple-dark text-white'
-            }`}
+            onClick={onTestVoice}
+            className="w-full bg-fc-purple hover:bg-fc-purple-dark text-white"
           >
-            <i className={`fas ${isTestPlaying ? 'fa-stop' : 'fa-volume-up'} mr-2`} aria-hidden="true"></i>
-            {isTestPlaying ? 'Stop Voice' : 'Test Voice'}
+            <i className="fas fa-volume-up mr-2" aria-hidden="true"></i>
+            Test Voice
           </Button>
 
           {/* Presets */}

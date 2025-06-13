@@ -1,49 +1,6 @@
-@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css");
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Override default browser styling to ensure white background */
-html, body {
-  background-color: white !important;
-  background: white !important;
-}
-
-#root {
-  background-color: white;
-  min-height: 100vh;
-}
-
-/* Override any potential loading states */
-*:before, *:after {
-  background-color: inherit;
-}
-
-/* Ensure body loads with white background immediately */
-body::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: white;
-  z-index: -1;
-}
-
-/* Override Replit preview iframe styling */
-html[data-replit-preview] body,
-iframe body,
-.replit-preview body {
-  background-color: white !important;
-  background: white !important;
-}
-
-/* Force white background for all possible containers */
-body, html, #root, .app, main, div {
-  background-color: white !important;
-}
 
 :root {
   /* Official Farcaster brand colors */
@@ -74,7 +31,7 @@ body, html, #root, .app, main, div {
   --fc-purple-light: 259 83% 71%; /* #9E76E0 - Lighter purple */
   --fc-warpcast-purple: 267 84% 58%; /* #855DCD - Warpcast variant */
   --fc-success: 142 71% 45%; /* #22C55E */
-  --fc-warning: 0 0% 100%; /* #FFFFFF */
+  --fc-warning: 43 96% 56%; /* #F59E0B */
   --fc-error: 0 84% 60%; /* #EF4444 */
   --fc-gray-50: 0 0% 98%; /* #FAFAFA */
   --fc-gray-100: 0 0% 96%; /* #F7F7F7 */
@@ -251,4 +208,5 @@ body, html, #root, .app, main, div {
   font-weight: 900;
 }
 
-/* Font Awesome is now loaded at the top of the file */
+/* Ensure Font Awesome is loaded */
+@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css");
