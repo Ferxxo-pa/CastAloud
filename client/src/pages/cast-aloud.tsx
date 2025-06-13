@@ -59,9 +59,17 @@ export default function CastAloud() {
       currentSettings.voice !== lastVoiceSettings.voice;
 
     if (settingsChanged && isCurrentlyReading) {
-      console.log('Speed changed during playback - restarting speech seamlessly');
+      console.log('Speed changed during playback - preserving UI state completely');
       
-      // Cancel current speech
+      // Store the exact UI state before any changes
+      const uiState = {
+        reading: isCurrentlyReading,
+        paused: isPaused,
+        words: speechWords,
+        wordIndex: currentWordIndex
+      };
+      
+      // Cancel current speech only
       if (voiceType === "browser") {
         speechSynthesis.cancel();
       } else {
@@ -84,12 +92,21 @@ export default function CastAloud() {
           utterance.pitch = browserVoice.settings.pitch;
           utterance.volume = browserVoice.settings.volume;
           
-          let wordIndex = currentWordIndex;
+          let wordIndex = uiState.wordIndex;
           utterance.onboundary = (event) => {
             if (event.name === 'word') {
               setCurrentWordIndex(wordIndex);
               wordIndex++;
             }
+          };
+          
+          utterance.onstart = () => {
+            // Explicitly maintain all UI state during speed changes
+            console.log('Restoring UI state after speed change');
+            setIsCurrentlyReading(true);
+            setSpeechWords(uiState.words);
+            setIsPaused(uiState.paused);
+            setCurrentWordIndex(uiState.wordIndex);
           };
           
           utterance.onend = () => {
@@ -109,11 +126,17 @@ export default function CastAloud() {
           };
           
           setSpeechUtterance(utterance);
-          speechSynthesis.speak(utterance);
+          
+          // Only speak if not paused
+          if (!uiState.paused) {
+            speechSynthesis.speak(utterance);
+          }
         } else {
           // OpenAI TTS
-          currentVoiceSystem.speak(cleanedText);
-          simulateWordHighlighting(remainingWords, 0);
+          if (!uiState.paused) {
+            currentVoiceSystem.speak(cleanedText);
+            simulateWordHighlighting(remainingWords, 0);
+          }
         }
       }
       
