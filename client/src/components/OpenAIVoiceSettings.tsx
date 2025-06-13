@@ -26,6 +26,7 @@ interface OpenAIVoiceSettingsProps {
   speed: number;
   setSpeed: (speed: number) => void;
   onTestVoice: () => void;
+  isSpeaking: boolean;
 }
 
 export default function OpenAIVoiceSettings({ 
@@ -34,7 +35,8 @@ export default function OpenAIVoiceSettings({
   setSelectedVoice,
   speed,
   setSpeed,
-  onTestVoice 
+  onTestVoice,
+  isSpeaking
 }: OpenAIVoiceSettingsProps) {
   const currentVoice = voices.find(v => v.id === selectedVoice);
 
@@ -112,10 +114,12 @@ export default function OpenAIVoiceSettings({
             <Button 
               onClick={onTestVoice}
               size="sm" 
-              className="w-full bg-fc-purple hover:bg-fc-purple-dark text-white"
+              className={`w-full text-white ${
+                isSpeaking ? 'bg-red-500 hover:bg-red-600' : 'bg-fc-purple hover:bg-fc-purple-dark'
+              }`}
             >
-              <i className="fas fa-play text-xs mr-2" aria-hidden="true"></i>
-              Test {currentVoice?.name || 'Voice'}
+              <i className={`text-xs mr-2 ${isSpeaking ? 'fas fa-stop' : 'fas fa-play'}`} aria-hidden="true"></i>
+              {isSpeaking ? 'Stop' : `Test ${currentVoice?.name || 'Voice'}`}
             </Button>
           </div>
         </div>
