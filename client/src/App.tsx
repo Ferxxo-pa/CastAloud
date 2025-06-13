@@ -19,40 +19,17 @@ function Router() {
 }
 
 function App() {
-  useEffect(() => {
-    async function initializeFrameSDK() {
-      try {
-        // Only initialize Frame SDK if available
-        if (typeof window !== 'undefined' && (window as any).parent !== window) {
-          // We're in an iframe, try to load Frame SDK
-          const { sdk } = await import("@farcaster/frame-sdk");
-          await sdk.actions.ready();
-          
-          const capabilities = await sdk.getCapabilities();
-          const supportsCompose = capabilities.includes('actions.composeCast');
-          
-          if (supportsCompose) {
-            console.log('Cast composition supported');
-          }
-        } else {
-          console.log('Not in frame context, skipping Frame SDK initialization');
-        }
-      } catch (error) {
-        console.log('Frame SDK not available or initialization failed:', error);
-        // This is expected when not running in a Farcaster frame
-      }
-    }
-    
-    initializeFrameSDK();
-  }, []);
-
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Router />
-      </TooltipProvider>
-    </QueryClientProvider>
+    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
+      <h1 style={{ color: '#8A63D2' }}>Cast Aloud - Test</h1>
+      <p>If you can see this, React is working!</p>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Router />
+        </TooltipProvider>
+      </QueryClientProvider>
+    </div>
   );
 }
 
