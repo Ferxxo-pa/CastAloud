@@ -92,6 +92,7 @@ Cast Aloud is a web application that provides accessibility tools for reading an
 ## Changelog
 
 - June 13, 2025. Initial setup
+- June 13, 2025. Implemented real-time voice speed adjustments during playback with complete UI state preservation
 
 ## User Preferences
 

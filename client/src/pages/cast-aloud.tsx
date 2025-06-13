@@ -96,6 +96,19 @@ export default function CastAloud() {
           utterance.onboundary = (event) => {
             if (event.name === 'word') {
               setCurrentWordIndex(wordIndex);
+              
+              // Auto-expand text when speech reaches truncation point (speed change scenario)
+              const maxLength = 300;
+              const shouldTruncate = castText.length > maxLength;
+              if (shouldTruncate && !isTextExpanded) {
+                const truncatedText = castText.substring(0, maxLength);
+                const truncatedWords = cleanTextForSpeech(truncatedText).split(/\s+/).filter(word => word.length > 0);
+                if (wordIndex >= truncatedWords.length - 2) {
+                  console.log('Auto-expanding text during speed change at word', wordIndex);
+                  setIsTextExpanded(true);
+                }
+              }
+              
               wordIndex++;
             }
           };
@@ -230,6 +243,20 @@ export default function CastAloud() {
       utterance.onboundary = (event) => {
         if (event.name === 'word') {
           setCurrentWordIndex(wordIndex);
+          
+          // Auto-expand text when speech reaches truncation point
+          const maxLength = 300;
+          const shouldTruncate = castText.length > maxLength;
+          if (shouldTruncate && !isTextExpanded) {
+            const truncatedText = castText.substring(0, maxLength);
+            const truncatedWords = cleanTextForSpeech(truncatedText).split(/\s+/).filter(word => word.length > 0);
+            // Expand when we're within 2 words of the truncation point
+            if (wordIndex >= truncatedWords.length - 2) {
+              console.log('Auto-expanding text as speech reaches "..." at word', wordIndex);
+              setIsTextExpanded(true);
+            }
+          }
+          
           wordIndex++;
         }
       };
@@ -333,7 +360,20 @@ export default function CastAloud() {
     words.forEach((_, index) => {
       setTimeout(() => {
         if (isCurrentlyReading) {
-          setCurrentWordIndex(startWordIndex + index);
+          const currentWord = startWordIndex + index;
+          setCurrentWordIndex(currentWord);
+          
+          // Auto-expand text when speech reaches truncation point (OpenAI TTS)
+          const maxLength = 300;
+          const shouldTruncate = castText.length > maxLength;
+          if (shouldTruncate && !isTextExpanded) {
+            const truncatedText = castText.substring(0, maxLength);
+            const truncatedWords = cleanTextForSpeech(truncatedText).split(/\s+/).filter(word => word.length > 0);
+            if (currentWord >= truncatedWords.length - 2) {
+              console.log('Auto-expanding text with OpenAI TTS at word', currentWord);
+              setIsTextExpanded(true);
+            }
+          }
         }
       }, index * millisecondsPerWord);
     });
