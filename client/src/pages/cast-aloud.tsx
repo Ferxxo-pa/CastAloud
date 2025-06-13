@@ -44,23 +44,45 @@ export default function CastAloud() {
   useEffect(() => {
     async function checkContext() {
       try {
+        // Check if SDK is available
+        if (!sdk) {
+          console.log('Farcaster SDK not available');
+          return;
+        }
+
         await sdk.actions.ready();
-        // Access context directly since it's a Promise<FrameContext>
-        sdk.context.then(context => {
-          if (context?.location?.type === 'cast_embed') {
-            setIsEmbed(true);
+        const context = await sdk.context;
+        
+        console.log('Full Farcaster context:', JSON.stringify(context, null, 2));
+        console.log('Context location:', context?.location);
+        console.log('Context client:', context?.client);
+        
+        // Check for cast embed context
+        if (context?.location?.type === 'cast_embed') {
+          console.log('Detected cast_embed context!');
+          setIsEmbed(true);
+          
+          if (context.location.cast) {
             setCastContext(context.location.cast);
+            console.log('Cast data:', context.location.cast);
+            
             // Auto-load cast text from embed context
-            if (context.location.cast?.text) {
+            if (context.location.cast.text) {
               setCastText(context.location.cast.text);
+              console.log('Auto-loaded cast text:', context.location.cast.text);
             }
           }
-        }).catch(error => {
-          console.log('Not running in Farcaster embed context', error);
-        });
+        } else {
+          console.log('Not in cast embed context. Location type:', context?.location?.type);
+          console.log('Available location types:', Object.keys(context?.location || {}));
+        }
       } catch (error) {
-        // Not running in Farcaster embed context, continue as standalone
-        console.log('Not running in Farcaster embed context');
+        console.log('Error checking Farcaster context:', error);
+        // Fallback: try to detect embed from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('embed') || window.parent !== window) {
+          console.log('Possible embed context detected via URL/iframe');
+        }
       }
     }
     checkContext();
