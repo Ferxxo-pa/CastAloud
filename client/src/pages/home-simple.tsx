@@ -1,14 +1,11 @@
-import { Link } from "wouter";
 import { useState, useEffect } from "react";
-import { farcasterSDK, type FarcasterContext } from '@/lib/farcaster-sdk';
 
 export default function HomeSimple() {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [showVoiceSettings, setShowVoiceSettings] = useState(false);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [selectedVoice, setSelectedVoice] = useState<SpeechSynthesisVoice | null>(null);
-  const [farcasterContext, setFarcasterContext] = useState<FarcasterContext | null>(null);
-  const [isMiniApp, setIsMiniApp] = useState(false);
+
   const [isTestVoicePlaying, setIsTestVoicePlaying] = useState(false);
   
   // Load speech rate from localStorage
@@ -162,11 +159,9 @@ export default function HomeSimple() {
           </p>
           
           <div className="space-y-3">
-            <Link href="/cast-aloud?text=Hello%20world!%20This%20is%20a%20sample%20cast%20about%20the%20future%20of%20decentralized%20social%20networks.">
-              <button className="block w-full bg-fc-purple hover:bg-fc-purple-dark text-white py-3 px-4 rounded-lg text-center font-medium">
-                Read Cast Aloud
-              </button>
-            </Link>
+            <button className="block w-full bg-fc-purple hover:bg-fc-purple-dark text-white py-3 px-4 rounded-lg text-center font-medium">
+              Read Cast Aloud
+            </button>
             
             <button 
               onClick={() => setShowVoiceSettings(!showVoiceSettings)}
