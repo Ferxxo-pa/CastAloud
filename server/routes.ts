@@ -81,6 +81,25 @@ async function getFeedbackOnComment(text: string): Promise<{ feedback: string; p
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Serve .well-known/farcaster.json
+  app.get("/.well-known/farcaster.json", (req, res) => {
+    const farcasterConfig = {
+      "accountAssociation": {},
+      "frame": {
+        "version": "1",
+        "name": "Castaloud",
+        "homeUrl": "https://castaloud.replit.app/",
+        "iconUrl": "https://castaloud.replit.app/icon.png",
+        "subtitle": "Read and reply",
+        "description": "Paste a cast, get it read out loud, and generate a reply with AI",
+        "splashImageUrl": "https://castaloud.replit.app/splash.png",
+        "splashBackgroundColor": "#ffffff"
+      }
+    };
+    res.setHeader('Content-Type', 'application/json');
+    res.json(farcasterConfig);
+  });
+  
   // Frame routes
   app.get("/frame", handleFrameIndex);
   app.post("/api/frame/action", handleFrameAction);
