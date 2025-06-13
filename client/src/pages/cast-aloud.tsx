@@ -657,7 +657,7 @@ export default function CastAloud() {
                   onClick={handleReadCast}
                   className="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-3 px-4 rounded-xl transition-colors duration-200"
                 >
-                  Read Aloud
+                  🗣️ Read Aloud
                 </button>
               )}
             </div>
@@ -742,7 +742,7 @@ export default function CastAloud() {
               onClick={() => setShowSettings(!showSettings)}
               className="w-full flex items-center justify-center gap-2 p-3 bg-fc-gray-100 text-fc-gray-700 hover:bg-fc-purple hover:text-white rounded-xl transition-colors duration-200"
             >
-              <span className="text-xl">⚙️</span>
+              <span className="text-xl">🤖</span>
               <span className="text-sm font-medium">Voice Settings</span>
             </button>
 
