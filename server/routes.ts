@@ -276,7 +276,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get current cast
   app.get("/api/cast/current", async (req, res) => {
     try {
-      const cast = await storage.getCurrentCast();
+      const post = await storage.getCurrentPost();
       if (!cast) {
         return res.status(404).json({ message: "No cast found" });
       }
@@ -394,9 +394,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "No audio file provided" });
       }
 
-      const { castHash, castContent } = req.body;
-      if (!castHash || !castContent) {
-        return res.status(400).json({ message: "Cast hash and content are required" });
+      const { postHash, postContent } = req.body;
+      if (!postHash || !postContent) {
+        return res.status(400).json({ message: "Post hash and content are required" });
       }
 
       // Transcribe audio using Whisper
@@ -541,35 +541,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log("Processing URL:", url);
 
-      // Extract cast hash from Warpcast or Farcaster URLs
-      let castHash = null;
+      // Extract post hash from social media URLs
+      let postHash = null;
       if (url.includes('warpcast.com/') || url.includes('farcaster.xyz/')) {
         // Try different URL patterns
         // Pattern 1: /0x[hash]
         let hashMatch = url.match(/\/0x([a-fA-F0-9]+)/);
         if (hashMatch) {
-          castHash = '0x' + hashMatch[1];
+          postHash = '0x' + hashMatch[1];
         } else {
           // Pattern 2: /conversation/0x[hash]
           hashMatch = url.match(/\/conversation\/0x([a-fA-F0-9]+)/);
           if (hashMatch) {
-            castHash = '0x' + hashMatch[1];
+            postHash = '0x' + hashMatch[1];
           } else {
             // Pattern 3: Extract hash from end of URL path
             const urlParts = url.split('/');
             const lastPart = urlParts[urlParts.length - 1];
             if (lastPart && lastPart.startsWith('0x')) {
-              castHash = lastPart;
+              postHash = lastPart;
             }
           }
         }
       }
 
-      console.log("Extracted cast hash:", castHash);
+      console.log("Extracted post hash:", postHash);
 
-      if (!castHash) {
+      if (!postHash) {
         console.log("Failed to extract hash from URL:", url);
-        return res.status(400).json({ error: "Could not extract cast hash from URL. Please make sure it's a valid Warpcast post URL." });
+        return res.status(400).json({ error: "Could not extract post hash from URL. Please make sure it's a valid social media post URL." });
       }
 
       if (!process.env.NEYNAR_API_KEY) {
@@ -581,8 +581,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let apiUsed = 'Neynar';
 
       // Try with the extracted hash first
-      console.log("Trying Neynar API with hash:", castHash);
-      let neynarResponse = await fetch(`https://api.neynar.com/v2/farcaster/cast?identifier=${castHash}&type=hash`, {
+      console.log("Trying Neynar API with hash:", postHash);
+      let neynarResponse = await fetch(`https://api.neynar.com/v2/farcaster/cast?identifier=${postHash}&type=hash`, {
         headers: {
           'api_key': process.env.NEYNAR_API_KEY,
           'accept': 'application/json'
@@ -602,8 +602,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       if (!neynarResponse.ok) {
         // Try alternative V1 API if V2 fails
-        console.log("V2 failed, trying V1 API with hash:", castHash);
-        neynarResponse = await fetch(`https://api.neynar.com/v1/farcaster/cast?hash=${castHash}`, {
+        console.log("V2 failed, trying V1 API with hash:", postHash);
+        neynarResponse = await fetch(`https://api.neynar.com/v1/farcaster/cast?hash=${postHash}`, {
           headers: {
             'api_key': process.env.NEYNAR_API_KEY,
             'accept': 'application/json'
