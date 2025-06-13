@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 
 export default function HomeSimple() {
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isTestVoiceSpeaking, setIsTestVoiceSpeaking] = useState(false);
   const [showVoiceSettings, setShowVoiceSettings] = useState(false);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [selectedVoice, setSelectedVoice] = useState<SpeechSynthesisVoice | null>(null);
@@ -248,17 +249,29 @@ export default function HomeSimple() {
 
                 <button
                   onClick={() => {
-                    const testText = "This is a test of your voice settings. How does this sound?";
-                    const utterance = new SpeechSynthesisUtterance(testText);
-                    utterance.rate = speechRate;
-                    if (selectedVoice) {
-                      utterance.voice = selectedVoice;
+                    if (isTestVoiceSpeaking) {
+                      speechSynthesis.cancel();
+                      setIsTestVoiceSpeaking(false);
+                    } else {
+                      const testText = "This is a test of your voice settings. How does this sound?";
+                      const utterance = new SpeechSynthesisUtterance(testText);
+                      utterance.rate = speechRate;
+                      if (selectedVoice) {
+                        utterance.voice = selectedVoice;
+                      }
+                      utterance.onstart = () => setIsTestVoiceSpeaking(true);
+                      utterance.onend = () => setIsTestVoiceSpeaking(false);
+                      utterance.onerror = () => setIsTestVoiceSpeaking(false);
+                      speechSynthesis.speak(utterance);
                     }
-                    speechSynthesis.speak(utterance);
                   }}
-                  className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors duration-200"
+                  className={`w-full font-medium py-2 px-4 rounded-lg transition-colors duration-200 ${
+                    isTestVoiceSpeaking 
+                      ? 'bg-red-500 hover:bg-red-600 text-white' 
+                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                  }`}
                 >
-                  Test Voice
+                  {isTestVoiceSpeaking ? 'Stop' : 'Test Voice'}
                 </button>
               </div>
             </div>
