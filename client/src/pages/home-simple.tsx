@@ -161,7 +161,7 @@ export default function HomeSimple() {
           <div className="space-y-3">
             <Link href="/cast-aloud?text=Hello%20world!%20This%20is%20a%20sample%20cast%20about%20the%20future%20of%20decentralized%20social%20networks.">
               <button className="block w-full bg-fc-purple hover:bg-fc-purple-dark text-white py-3 px-4 rounded-lg text-center font-medium">
-                Read Cast Aloud
+                Read Cast
               </button>
             </Link>
             
