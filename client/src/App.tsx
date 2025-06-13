@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import HomeSimple from "@/pages/home-simple";
 import CastAloud from "@/pages/cast-aloud";
 import NotFound from "@/pages/not-found";
+import DebugTest from "@/pages/debug-test";
 import { useEffect } from "react";
 import { sdk } from "@farcaster/frame-sdk";
 
