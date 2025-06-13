@@ -23,6 +23,8 @@ export default function CastAloud() {
   const [userTier, setUserTier] = useState<"free" | "premium">("free");
   const [showPaymentInfo, setShowPaymentInfo] = useState(false);
   const [isTextExpanded, setIsTextExpanded] = useState(false);
+  const [currentWordIndex, setCurrentWordIndex] = useState(-1);
+  const [speechWords, setSpeechWords] = useState<string[]>([]);
 
   const browserVoice = useSpeechSynthesis();
   const openaiVoice = useOpenAITTS();
@@ -101,10 +103,68 @@ export default function CastAloud() {
   const handleReadCast = () => {
     if (currentVoiceSystem.isSpeaking) {
       currentVoiceSystem.stop();
+      setCurrentWordIndex(-1);
+      setSpeechWords([]);
     } else {
       const cleanedText = cleanTextForSpeech(castText);
-      currentVoiceSystem.speak(cleanedText);
+      const words = cleanedText.split(/\s+/).filter(word => word.length > 0);
+      setSpeechWords(words);
+      setCurrentWordIndex(0);
+      
+      if (voiceType === "browser" && 'speechSynthesis' in window) {
+        // Use Web Speech API with word boundary events
+        const utterance = new SpeechSynthesisUtterance(cleanedText);
+        if (browserVoice.settings.voice) {
+          utterance.voice = browserVoice.settings.voice;
+        }
+        utterance.rate = browserVoice.settings.rate;
+        utterance.pitch = browserVoice.settings.pitch;
+        utterance.volume = browserVoice.settings.volume;
+        
+        let wordIndex = 0;
+        utterance.onboundary = (event) => {
+          if (event.name === 'word') {
+            setCurrentWordIndex(wordIndex);
+            wordIndex++;
+          }
+        };
+        
+        utterance.onend = () => {
+          setCurrentWordIndex(-1);
+          setSpeechWords([]);
+        };
+        
+        utterance.onerror = () => {
+          setCurrentWordIndex(-1);
+          setSpeechWords([]);
+        };
+        
+        speechSynthesis.speak(utterance);
+      } else {
+        // For OpenAI TTS, simulate word highlighting with timing
+        currentVoiceSystem.speak(cleanedText);
+        simulateWordHighlighting(words);
+      }
     }
+  };
+  
+  const simulateWordHighlighting = (words: string[]) => {
+    const averageWordsPerMinute = 150; // Average reading speed
+    const millisecondsPerWord = (60 * 1000) / averageWordsPerMinute;
+    
+    words.forEach((_, index) => {
+      setTimeout(() => {
+        if (currentVoiceSystem.isSpeaking) {
+          setCurrentWordIndex(index);
+        }
+      }, index * millisecondsPerWord);
+    });
+    
+    // Clear highlighting when done
+    setTimeout(() => {
+      setCurrentWordIndex(-1);
+      setSpeechWords([]);
+    }, words.length * millisecondsPerWord + 1000);
   };
 
   const handleReadFeedback = () => {
@@ -277,14 +337,40 @@ export default function CastAloud() {
                   const maxLength = 300; // Show first 300 characters
                   const shouldTruncate = castText.length > maxLength;
                   
+                  // Function to render text with highlighting
+                  const renderHighlightedText = (text: string) => {
+                    if (currentWordIndex === -1 || speechWords.length === 0) {
+                      return <p>{text}</p>;
+                    }
+                    
+                    const displayWords = text.split(/\s+/).filter(word => word.length > 0);
+                    return (
+                      <p>
+                        {displayWords.map((word, index) => (
+                          <span
+                            key={index}
+                            className={`${
+                              index === currentWordIndex 
+                                ? 'bg-yellow-200 px-1 rounded transition-colors duration-200' 
+                                : ''
+                            }`}
+                          >
+                            {word}
+                            {index < displayWords.length - 1 ? ' ' : ''}
+                          </span>
+                        ))}
+                      </p>
+                    );
+                  };
+                  
                   if (!shouldTruncate) {
-                    return <p>{castText}</p>;
+                    return renderHighlightedText(castText);
                   }
                   
                   if (isTextExpanded) {
                     return (
                       <div>
-                        <p>{castText}</p>
+                        {renderHighlightedText(castText)}
                         <button
                           onClick={() => setIsTextExpanded(false)}
                           className="text-fc-purple hover:text-fc-purple-dark text-sm font-medium mt-2 flex items-center gap-1"
@@ -297,7 +383,7 @@ export default function CastAloud() {
                   
                   return (
                     <div>
-                      <p>{castText.substring(0, maxLength)}...</p>
+                      {renderHighlightedText(castText.substring(0, maxLength) + "...")}
                       <button
                         onClick={() => setIsTextExpanded(true)}
                         className="text-fc-purple hover:text-fc-purple-dark text-sm font-medium mt-2 flex items-center gap-1"
