@@ -35,44 +35,91 @@ export default function CastAloud() {
 
   const currentVoiceSystem = voiceType === "openai" ? openaiVoice : browserVoice;
 
-  // Monitor voice settings changes during playback - simpler approach
+  // Handle speed changes without affecting UI state
   useEffect(() => {
+    // Only handle speed changes, not initial loads
+    if (lastVoiceSettings.rate === undefined) {
+      const initialSettings = voiceType === "browser" 
+        ? { rate: browserVoice.settings.rate, pitch: browserVoice.settings.pitch, volume: browserVoice.settings.volume, voice: browserVoice.settings.voice }
+        : { rate: openaiVoice.speed, pitch: 1, volume: 1, voice: null };
+      setLastVoiceSettings(initialSettings);
+      return;
+    }
+
     if (!isCurrentlyReading || speechWords.length === 0) return;
 
     const currentSettings = voiceType === "browser" 
       ? { rate: browserVoice.settings.rate, pitch: browserVoice.settings.pitch, volume: browserVoice.settings.volume, voice: browserVoice.settings.voice }
       : { rate: openaiVoice.speed, pitch: 1, volume: 1, voice: null };
 
-    // Check if settings have changed
     const settingsChanged = 
       currentSettings.rate !== lastVoiceSettings.rate ||
       currentSettings.pitch !== lastVoiceSettings.pitch ||
       currentSettings.volume !== lastVoiceSettings.volume ||
       currentSettings.voice !== lastVoiceSettings.voice;
 
-    if (settingsChanged && isCurrentlyReading && currentWordIndex >= 0) {
-      console.log('Speed changed during playback, restarting from word:', currentWordIndex);
+    if (settingsChanged && isCurrentlyReading) {
+      console.log('Speed changed during playback - restarting speech seamlessly');
       
-      // Stop current speech
-      currentVoiceSystem.stop();
+      // Cancel current speech
+      if (voiceType === "browser") {
+        speechSynthesis.cancel();
+      } else {
+        currentVoiceSystem.stop();
+      }
       
-      // Create remaining text from current position
-      const remainingWords = speechWords.slice(currentWordIndex);
+      // Get remaining text from current position
+      const remainingWords = speechWords.slice(Math.max(0, currentWordIndex));
       const remainingText = remainingWords.join(' ');
       
       if (remainingText.trim()) {
-        // Small delay then restart immediately
-        setTimeout(() => {
-          // Only restart if still reading (state hasn't changed)
-          if (isCurrentlyReading && speechWords.length > 0) {
-            startSpeechFromWord(remainingText, currentWordIndex, true);
+        const cleanedText = cleanTextForSpeech(remainingText);
+        
+        if (voiceType === "browser") {
+          const utterance = new SpeechSynthesisUtterance(cleanedText);
+          if (browserVoice.settings.voice) {
+            utterance.voice = browserVoice.settings.voice;
           }
-        }, 10);
+          utterance.rate = browserVoice.settings.rate;
+          utterance.pitch = browserVoice.settings.pitch;
+          utterance.volume = browserVoice.settings.volume;
+          
+          let wordIndex = currentWordIndex;
+          utterance.onboundary = (event) => {
+            if (event.name === 'word') {
+              setCurrentWordIndex(wordIndex);
+              wordIndex++;
+            }
+          };
+          
+          utterance.onend = () => {
+            setCurrentWordIndex(-1);
+            setSpeechWords([]);
+            setSpeechUtterance(null);
+            setIsPaused(false);
+            setIsCurrentlyReading(false);
+          };
+          
+          utterance.onerror = () => {
+            setCurrentWordIndex(-1);
+            setSpeechWords([]);
+            setSpeechUtterance(null);
+            setIsPaused(false);
+            setIsCurrentlyReading(false);
+          };
+          
+          setSpeechUtterance(utterance);
+          speechSynthesis.speak(utterance);
+        } else {
+          // OpenAI TTS
+          currentVoiceSystem.speak(cleanedText);
+          simulateWordHighlighting(remainingWords, 0);
+        }
       }
       
       setLastVoiceSettings(currentSettings);
     }
-  }, [browserVoice.settings, openaiVoice.speed, voiceType]);
+  }, [browserVoice.settings.rate, browserVoice.settings.pitch, browserVoice.settings.volume, browserVoice.settings.voice, openaiVoice.speed]);
 
   // Function to clean text for speech synthesis
   const cleanTextForSpeech = (text: string): string => {
