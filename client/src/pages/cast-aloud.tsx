@@ -7,6 +7,7 @@ import { Slider } from "@/components/ui/slider";
 import useSpeechSynthesis from "@/hooks/useSpeechSynthesis";
 import useOpenAITTS from "@/hooks/useOpenAITTS";
 import { apiRequest } from "@/lib/queryClient";
+import sdk from "@farcaster/frame-sdk";
 
 export default function CastAloud() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -29,11 +30,37 @@ export default function CastAloud() {
   const [speechUtterance, setSpeechUtterance] = useState<SpeechSynthesisUtterance | null>(null);
   const [isCurrentlyReading, setIsCurrentlyReading] = useState(false);
   const [lastVoiceSettings, setLastVoiceSettings] = useState<{ rate: number; pitch: number; volume: number; voice: SpeechSynthesisVoice | null }>({ rate: 0.8, pitch: 1, volume: 1, voice: null });
+  
+  // Farcaster embed detection
+  const [isEmbed, setIsEmbed] = useState(false);
+  const [castContext, setCastContext] = useState<any>(null);
 
   const browserVoice = useSpeechSynthesis();
   const openaiVoice = useOpenAITTS();
 
   const currentVoiceSystem = voiceType === "openai" ? openaiVoice : browserVoice;
+
+  // Detect Farcaster embed context
+  useEffect(() => {
+    async function checkContext() {
+      try {
+        await sdk.actions.ready();
+        const context = await sdk.context.get();
+        if (context?.location?.type === 'cast_embed') {
+          setIsEmbed(true);
+          setCastContext(context.location.cast);
+          // Auto-load cast text from embed context
+          if (context.location.cast?.text) {
+            setCastText(context.location.cast.text);
+          }
+        }
+      } catch (error) {
+        // Not running in Farcaster embed context, continue as standalone
+        console.log('Not running in Farcaster embed context');
+      }
+    }
+    checkContext();
+  }, []);
 
   // Handle speed changes without affecting UI state
   useEffect(() => {
