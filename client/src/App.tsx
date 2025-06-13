@@ -21,21 +21,25 @@ function Router() {
 
 function App() {
   useEffect(() => {
+    // Frame SDK initialization - temporarily disabled for debugging
     async function initializeFrameSDK() {
       try {
-        // Initialize Frame SDK when the app is ready
-        await sdk.actions.ready();
-        
-        // Check for supported capabilities
-        const capabilities = await sdk.getCapabilities();
-        const supportsCompose = capabilities.includes('actions.composeCast');
-        
-        // Store capability information for use throughout the app
-        if (supportsCompose) {
-          console.log('Cast composition supported');
+        // Only initialize if we detect we're in a Frame context
+        if (window.location.search.includes('frame=') || window.parent !== window) {
+          await sdk.actions.ready();
+          
+          const capabilities = await sdk.getCapabilities();
+          const supportsCompose = capabilities.includes('actions.composeCast');
+          
+          if (supportsCompose) {
+            console.log('Cast composition supported');
+          }
+        } else {
+          console.log('Not in Frame context, skipping Frame SDK initialization');
         }
       } catch (error) {
-        console.error('Frame SDK initialization failed:', error);
+        console.log('Frame SDK not available or failed to initialize:', error instanceof Error ? error.message : 'Unknown error');
+        // Continue without Frame SDK - this is expected in normal web context
       }
     }
     
